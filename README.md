@@ -1,17 +1,21 @@
 Este repositorio es la base para el Trabajo Práctico de la materia **Desarrollo de Software (DDS)** de la carrera **Ingeniería en Sistemas de Información** de la **UTN FRBA**. Se trata de un **monorepo** que integra una aplicación frontend con Create React App y un backend con Express, facilitando el desarrollo y la gestión de ambos proyectos en un único entorno.
 
 ## Enunciado del proyecto
-https://docs.google.com/document/d/1vaAtAC_s1R9IJ_BEY2hRz6CniXYnY8xO4MWqz5ilUu0/edit?tab=t.0#heading=h.csnyxti7soc4
+[Documento del proyecto](https://docs.google.com/document/d/1vaAtAC_s1R9IJ_BEY2hRz6CniXYnY8xO4MWqz5ilUu0/edit?tab=t.0#heading=h.csnyxti7soc4)
 
 ## Flujo de trabajo en GIT
--Ramas de iteración:
-  Cada entrega se trabajará sobre una rama específica de iteración. Se considerará una iteración por rama.
--Desarrollo de funcionalidades:
-  Las nuevas funcionalidades se desarrollarán en ramas separadas.
--Merge de funcionalidades:
-  Antes de finalizar la iteración, las ramas de funcionalidades se mergearán en la rama de la iteración correspondiente.
--Merge final al main:
-  Una vez completada la iteración, la rama de la iteración se mergeará al main.
+
+- **Ramas de iteración**  
+  Cada entrega se trabajará sobre una rama de iteración específica. Se considerará **una iteración por rama**.
+
+- **Desarrollo de funcionalidades**  
+  Todas las nuevas funcionalidades se desarrollarán en **ramas separadas**, manteniendo el trabajo modular y aislado.
+
+- **Merge de funcionalidades**  
+  Antes de finalizar la iteración, las ramas de funcionalidades se **mergearán en la rama de la iteración correspondiente**.
+
+- **Merge final al `main`**  
+  Una vez completada la iteración, la rama de iteración se **mergeará al `main`**, consolidando los cambios finales.
 
 ## 📦 Estructura del Proyecto
 
