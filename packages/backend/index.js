@@ -1,9 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import {startServer} from "./App/server.js";
+import {buildAppContext} from "./App/context.js";
 
 const app = express();
-app.use(express.json());
 app.use(
   cors({
     origin: process.env.ALLOWED_ORIGINS
@@ -11,11 +12,6 @@ app.use(
       : true,
   }),
 );
+const appContext = buildAppContext()
 
-app.get("/hello", (req, res) => {
-  res.json({ message: "hello world" });
-});
-
-app.listen(process.env.SERVER_PORT, () => {
-  console.log(`Backend escuchando en puerto ${process.env.SERVER_PORT}`);
-});
+startServer(app, process.env.SERVER_PORT , appContext);
