@@ -1,5 +1,11 @@
 Este repositorio es la base para el Trabajo Práctico de la materia **Desarrollo de Software (DDS)** de la carrera **Ingeniería en Sistemas de Información** de la **UTN FRBA**. Se trata de un **monorepo** que integra una aplicación frontend con Create React App y un backend con Express, facilitando el desarrollo y la gestión de ambos proyectos en un único entorno.
 
+## Enunciado del proyecto
+https://docs.google.com/document/d/1vaAtAC_s1R9IJ_BEY2hRz6CniXYnY8xO4MWqz5ilUu0/edit?tab=t.0#heading=h.csnyxti7soc4
+
+## Flujo de GIT
+Se trabajara en ramas por entrega, considerando "una iteracion" a cada una. Finalizada la iteracion, mergeamos al main. Durante estas iteraciones, se desarrollan funcionalidades en ramas, las mismas seran mergeadas a la rama de la iteracion correspondiente previo a finalizar la misma.
+
 ## 📦 Estructura del Proyecto
 
 El monorepo está organizado de la siguiente manera:
