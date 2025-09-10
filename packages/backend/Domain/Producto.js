@@ -1,18 +1,17 @@
-import {StockInsuficiente} from "../Excepciones/StockInsuficiente";
 
 export class Producto{
     id;
     vendedor;
     titulo;
     descripcion;
-    categorias;
+    categorias= [];
     precio;
     moneda;
     stock;
     fotos;
     activo;
 
-    constructor({vendedor, titulo, descripcion, categorias, precio, moneda, stock, fotos, activo}){
+    constructor(vendedor, titulo, descripcion, categorias, precio, moneda, stock, fotos, activo){
 
         this.vendedor = vendedor;
         this.titulo = titulo;
@@ -47,7 +46,7 @@ export class Producto{
                 this.stock -= cantidad;
             }
             else{
-                throw new StockInsuficiente ('No hay sufiente stock')
+                throw new Exception ('No hay suficiente stock')
             }
         }
     }
@@ -59,5 +58,13 @@ export class Producto{
         else{
             this.stock += cantidad;
         }
+    }
+
+    getVendedor(){
+        return this.vendedor;
+    }
+
+    getNombre(){
+        return this.titulo;
     }
 }

@@ -2,7 +2,7 @@ export class Categoria{
 
      nombre;
 
-    constructor({nombre}){
+    constructor(nombre){
         this.nombre = nombre
     }
 }

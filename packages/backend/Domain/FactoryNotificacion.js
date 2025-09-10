@@ -1,47 +1,55 @@
-import { Notificacion } from "../Domain/Notificacion.js";
-import { EstadoPedido } from "../Domain/EstadoPedido.js";
-
-import EstadoCancelado from "./Estados/EstadoCancelado.js";
-import { EstadoEnviado } from "./Estados/EstadoEnviado.js";
-import { EstadoEntregado } from "./Estados/EstadoEntregado.js";
-import { EstadoPendiente } from "./Estados/EstadoPendiente.js";
-import { EstadoEnPreparacion } from "./Estados/EstadoEnPreparacion.js";
-import { EstadoConfirmado } from "./Estados/EstadoConfirmado.js";
-
-const estadosMap = {
-    [EstadoPedido.CANCELADO]: new EstadoCancelado(),
-    [EstadoPedido.ENVIADO]: new EstadoEnviado(),
-    [EstadoPedido.ENTREGADO]: new EstadoEntregado(),
-    [EstadoPedido.PENDIENTE]: new EstadoPendiente(),
-    [EstadoPedido.EN_PREPARACION]: new EstadoEnPreparacion(),
-    [EstadoPedido.CONFIRMADO]: new EstadoConfirmado(),
-};
-
-export class FactoryNotificacion {
+import { Notificacion } from "./Notificacion.js";
+import { EstadoPedido } from "./EstadoPedido.js";
+import { Pedido } from "./Pedido.js";
+import { ItemPedido } from "./ItemPedido.js";
+class FactoryNotificacion {
 
     crearSegunEstado(estado) {
-    const estadoDePedido = estadosMap[estado];
-    if (!estadoDePedido) {
-        throw new Error("Estado no reconocido");
-    }
-    return estadoDePedido.emitirMensajeEstadoPedido();
+        let mensaje
+        switch (estado) {
+            case EstadoPedido.Cancelado:
+                mensaje = "El pedido ha sido cancelado.";
+                break;
+            case EstadoPedido.Enviado:
+                mensaje = "El pedido ha sido enviado.";
+                break;
+            case EstadoPedido.Entregado:
+                mensaje = "El pedido ha sido entregado.";
+                break;
+            case EstadoPedido.Pendiente:
+                mensaje = "El pedido ha sido creado.";
+                break;
+            case EstadoPedido.En_Preparacion:
+                mensaje = "El pedido está en preparación.";
+                break;
+            case EstadoPedido.Confirmado:
+                mensaje = "El pedido ha sido confirmado.";
+                break;
+            default:
+                throw new Error("Estado no reconocido");
+        }
+    
+        return mensaje;
     }
 
     crearSegunPedido(pedido) {
-        const mensaje = this.crearSegunEstado(pedido.getEstado());
+        const estado = pedido.getEstado();
 
-        if (pedido.getEstado() == EstadoPedido.CANCELADO || pedido.getEstado() == EstadoPedido.PENDIENTE) {
+        if (estado == EstadoPedido.Cancelado) {  // CASO QUE SE CANCELA EL PEDIDO
+            const mensaje = this.crearSegunEstado(pedido.getEstado());
+            return new Notificacion(pedido.getVendedor(), mensaje, Date.now());
 
-        return new Notificacion(pedido.getVendedor(), mensaje, Date.now()); // PREGUNTAR SI CAMBIAMOS QUE CADA PEDIDO TENGA UN VENDEDOR SOLO VENDEDOR O TIENE MAS DE UNO
-
-        } else if (pedido.getEstado() == EstadoPedido.ENVIADO) {
-
+        } else if (estado == EstadoPedido.Enviado) {    // CASO QUE SE ENVIA EL PEDIDO
+            const mensaje = this.crearSegunEstado(pedido.getEstado());
             return new Notificacion(pedido.getComprador(), mensaje, Date.now());
 
-        } else {
-            return  null //new Notificacion(pedido.vendedor, mensaje, Date.now()); por ahora no notifica nada en estos estados
+        } else if (estado == EstadoPedido.Pendiente) { // CASO QUE SE REALIZA LA COMPRA
+            
+            const mensaje = `Nuevo pedido de ${pedido.getNombreComprador()}, sobre los productos ${pedido.getNombreItems().join(", ")}. Total: ${pedido.getTotal()} ${pedido.getMoneda()}. Entrega en: ${pedido.getDireccionEntrega()}`;
+            console.log(mensaje);
+            return new Notificacion(pedido.getVendedor(), mensaje, Date.now());
         }
     }
-
 }
 
+export const factoryNotificacion = new FactoryNotificacion();

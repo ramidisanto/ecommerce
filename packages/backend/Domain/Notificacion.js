@@ -6,7 +6,7 @@ export class Notificacion{
     leida;
     fechaLeida;
 
-    constructor({usuarioDestino, mensaje, fechaAlta}){
+    constructor(usuarioDestino, mensaje, fechaAlta){
         this.usuarioDestino = usuarioDestino
         this.mensaje = mensaje
         this.fechaAlta = fechaAlta

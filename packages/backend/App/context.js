@@ -1,4 +1,1 @@
-export const buildAppContext = () => {
-
-  
-};
+export const buildAppContext = () => {};

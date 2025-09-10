@@ -1,11 +1,15 @@
-import { Usuario } from "./packages/backend/Domain/Usuario.js";
-import { ItemPedido } from "./Domain/ItemPedido.js";
+import { Usuario } from "./Usuario.js";
+import { ItemPedido } from "./ItemPedido.js";
+import { Notificacion } from "./Notificacion.js";
+import { factoryNotificacion } from "./FactoryNotificacion.js";
+import { CambioEstadoPedido } from "./CambioEstadoPedido.js";
+import { EstadoPedido } from "./EstadoPedido.js";
 
 
 export class Pedido{
     id;
     comprador;
-    items;
+    items = [];
     total;
     moneda;
     direccionEntrega;
@@ -13,45 +17,27 @@ export class Pedido{
     fechaCreacion;
     historialEstados = [];
 
-    constructor({comprador, items, moneda, direccionEntrega, fechaCreacion}){
+    constructor(comprador, items, moneda, direccionEntrega){
         this.comprador = comprador;
         this.items = items;
         this.total = this.calcularTotal();
         this.moneda = moneda;
         this.direccionEntrega = direccionEntrega;
-        this.estado = "PENDIENTE";
-        this.fechaCreacion = fechaCreacion;
+        this.estado = EstadoPedido.Pendiente;
+        this.fechaCreacion = new Date().toISOString().split("T")[0];
         this.historialEstados = [];
     }
 
-    // calcularTotal(): Double
-  calcularTotal() {
-    let cantidadTotal = 0;
-    this.items.forEach(item => {
-      cantidadTotal += item.subtotal();
-    });
-    return cantidadTotal;
-  }
-
-  total(cantidad) {
-    this.total = cantidad;
-  }
-
-
-  // validarStock(): boolean
-  validarStock() {
-    return this.items.every(item => item.tieneStockSuficiente());
-  }
-
-  guardarCambioEstado(cambioEstado) {
-    this.historialEstados.push(cambioEstado);
-    this.setEstado(cambioEstado.getEstado());
-  }
-
+/*/////////////// SETTERS ///////////////*/
   setEstado(nuevoEstado) {
     this.estado = nuevoEstado;
   }
 
+  
+
+
+
+/*/////////////// GETTERS ///////////////*/
   getEstado() {
     return this.estado;
   }
@@ -60,6 +46,59 @@ export class Pedido{
     return this.comprador;
   }
 
-  //TODO:: ver que hacer con el comprador
+  getDireccionEntrega(){
+    return this.direccionEntrega
+  }
+
+  getVendedor(){
+    return this.items[0].getVendedor(); // Asumiendo que todos los productos son del mismo vendedor
+  }
+
+  getTotal() {
+    return this.total;
+  }
+
+  getHistorialEstados() {
+    return this.historialEstados;
+  }
+
+  getItems() {
+    return this.items;
+  }
+
+  getNombreComprador() {
+    return this.comprador.getNombre();
+  }
+  
+  getNombreItems(){
+    return this.items.map(item => item.getNombre());
+  }
+
+  getMoneda(){
+    return this.moneda;
+  }
+
+  
+/*/////////////// METODOS ///////////////*/
+    // calcularTotal(): Double
+  calcularTotal() {
+    return this.items.reduce((total, item) => total + item.subtotal(), 0);
+  }
+
+  // validarStock(): boolean
+  validarStock() {
+    return this.items.every(item => item.tieneStockSuficiente());
+  }
+
+  // actualizarEstado(nuevoEstado: EstadoPedido, quien: Usuario, motivo: String): void
+  actualizarEstado(estado, usuario, motivo){
+      this.setEstado(estado);
+      const nuevoEstado = new CambioEstadoPedido(new Date().toISOString().split("T")[0], estado, this, usuario, motivo);
+      this.historialEstados.push(nuevoEstado);
+  }
+
+  notificar(){
+    return factoryNotificacion.crearSegunPedido(this);
+  }
 
 }
