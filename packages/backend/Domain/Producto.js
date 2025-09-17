@@ -58,4 +58,10 @@ export class Producto{
     getNombre(){
         return this.titulo;
     }
+
+    getId(){
+        return this.id;
+    }
+
+    
 }

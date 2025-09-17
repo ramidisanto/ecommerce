@@ -26,4 +26,20 @@ export class ItemPedido{
     getNombre(){
         return this.producto.getNombre();
     }
+
+    getProducto(){
+        return this.producto;
+    }
+
+    getCantidad(){
+        return this.cantidad;
+    }
+
+    getProductoId(){
+        return this.producto.getId();
+    }
+
+    getPrecioUnitario(){
+        return this.precioUnitario;
+    }
 }
