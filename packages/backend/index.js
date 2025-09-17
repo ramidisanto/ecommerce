@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import {startServer} from "./App/server.js";
+import {connectToDB} from "./App/db.js";
 import {buildAppContext} from "./App/context.js";
 import { Usuario } from "./Domain/Usuario.js";
 import { ItemPedido } from "./Domain/ItemPedido.js";
@@ -20,7 +21,10 @@ app.use(
       : true,
   }),
 );
-const appContext = buildAppContext()
+
+const DB_URI = "mongodb://localhost:27017";
+const DB_CLIENT = await connectToDB(DB_URI);
+const appContext = buildAppContext(DB_CLIENT);
 
 startServer(app, process.env.SERVER_PORT , appContext);
 

@@ -10,18 +10,19 @@ export class PedidoService{
             const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
             producto.validarDisponible(item.getCantidad());
         }
-        const itemsPedidos = [];
+        const itemsPedido = [];
         for(const item of items){
             const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
-            const nuevoItemPedido = await this.itemPedidoRepository.crearItemPedido(producto, item.getCantidad(), item.getPrecioUnitario());
-            itemsPedidos.push(nuevoItemPedido);
+            const itemPedido = new ItemPedido(producto, item.getCantidad(), item.getPrecioUnitario());
+            itemsPedido.push(itemPedido);
         }
-        const nuevoPedido = await this.pedidoRepository.crearPedido(comprador, itemsPedidos, moneda, direccionEntrega);
-        for (const item of itemsPedidos) {
+        const pedido = new Pedido(comprador, itemsPedido, moneda, direccionEntrega);
+        const nuevoPedido = await this.pedidoRepository.crearPedido(comprador, itemsPedido, moneda, direccionEntrega);
+        for (const item of itemsPedido) {
             const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
             producto.reducirStock(item.getCantidad());
             await this.productoRepository.actualizarProducto(producto);
         }
         return nuevoPedido;
-    }    
+    }
 }

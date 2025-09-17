@@ -8,9 +8,11 @@ export class PedidoController {
 crearPedido = async (req, res, next) => {
     try{
         const comprador = req.usuario;
-        const {items, moneda, direccionEntrega} = req.body;
-        const nuevoPedido = await this.servicioPedido.crearPedido(comprador, items, moneda, direccionEntrega);
-        res.status(201).json(nuevoPedido);
+        const items = req.body.items;
+        const moneda = req.body.moneda;
+        const direccionEntrega = req.body.direccionEntrega;
+        const pedido = await this.servicioPedido.crearPedido(comprador, items, moneda, direccionEntrega);
+        res.status(201).json(pedido);
     }
     catch(error){
         next(error);

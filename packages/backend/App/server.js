@@ -13,7 +13,7 @@ export const startServer = (app, port, appContext) => {
   res.json({ message: "hello world" });
   });
 
-  //configureRoutes(app, appContext)
+  configureRoutes(app, appContext)
 
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

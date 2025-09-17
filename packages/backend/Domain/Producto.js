@@ -63,5 +63,7 @@ export class Producto{
         return this.id;
     }
 
-    
+    getVendedorId(){
+        return this.vendedor.getId();
+    }
 }
