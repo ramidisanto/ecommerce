@@ -1,4 +1,5 @@
-
+import {DatosInsuficientesException} from "../Exceptions/DatosInsuficientesException.js";
+import {StockInsuficienteException} from "../Exceptions/StockInsuficienteException.js";
 export class Producto{
     id;
     vendedor;
@@ -24,40 +25,30 @@ export class Producto{
         this.activo = activo;
     }
 
-    estaDisponible(cantidad){
-        if(cantidad == null){
-            throw new Exception ('Para conocer si el stock del producto es suficiente, se debe conocer la cantidad solicitad')
-        }
-        else{
-            if (this.stock >= cantidad)
-                return true;
-            else
-                return false;
+    validarCantidad(cantidad){
+        if(cantidad == null || cantidad <0){
+            throw new DatosInsuficientesException ('Para conocer si el stock del producto es suficiente, se debe conocer la cantidad solicitad. La misma debe ser un valor mayor a 0')
         }
     }
 
+    estaDisponible(cantidad){
+        this.validarCantidad(cantidad);
+        return this.stock >= cantidad
+    }
+
+    validarDisponible(cantidad){
+        if(!this.estaDisponible(cantidad)){
+            throw new StockInsuficienteException ('No hay suficiente stock')
+        }
+    }
     reducirStock(cantidad){
-        if(cantidad == null || cantidad <0){
-            throw new Exception ('Para conocer si el stock del producto es suficiente, se debe conocer la cantidad solicitad. La misma debe ser un valor mayor a 0')
-        }
-        else{
-            if(this.estaDisponible(cantidad))
-            {
-                this.stock -= cantidad;
-            }
-            else{
-                throw new Exception ('No hay suficiente stock')
-            }
-        }
+        this.validarDisponible(cantidad);
+        this.stock -= cantidad;
     }
 
     aumentarStock(cantidad){
-        if(cantidad == null || cantidad < 0){
-            throw new Exception ('Para conocer si el stock del producto es suficiente, se debe conocer la cantidad solicitad')
-        }
-        else{
-            this.stock += cantidad;
-        }
+        this.validarCantidad(cantidad);
+        this.stock += cantidad;
     }
 
     getVendedor(){

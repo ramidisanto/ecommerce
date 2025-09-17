@@ -34,20 +34,16 @@ class FactoryNotificacion {
 
     crearSegunPedido(pedido) {
         const estado = pedido.getEstado();
+        const mensaje = this.crearSegunEstado(pedido.getEstado());
 
-        if (estado == EstadoPedido.Cancelado) {  // CASO QUE SE CANCELA EL PEDIDO
-            const mensaje = this.crearSegunEstado(pedido.getEstado());
+        if (estado == EstadoPedido.Cancelado || estado == EstadoPedido.Pendiente) { 
+            if(estado == EstadoPedido.Pendiente){
+                mensaje = `Nuevo pedido de ${pedido.getNombreComprador()}, sobre los productos ${pedido.getNombreItems().join(", ")}. Total: ${pedido.getTotal()} ${pedido.getMoneda()}. Entrega en: ${pedido.getDireccionEntrega()}`;
+            }
             return new Notificacion(pedido.getVendedor(), mensaje, Date.now());
 
-        } else if (estado == EstadoPedido.Enviado) {    // CASO QUE SE ENVIA EL PEDIDO
-            const mensaje = this.crearSegunEstado(pedido.getEstado());
+        } else if (estado == EstadoPedido.Enviado) {
             return new Notificacion(pedido.getComprador(), mensaje, Date.now());
-
-        } else if (estado == EstadoPedido.Pendiente) { // CASO QUE SE REALIZA LA COMPRA
-            
-            const mensaje = `Nuevo pedido de ${pedido.getNombreComprador()}, sobre los productos ${pedido.getNombreItems().join(", ")}. Total: ${pedido.getTotal()} ${pedido.getMoneda()}. Entrega en: ${pedido.getDireccionEntrega()}`;
-            console.log(mensaje);
-            return new Notificacion(pedido.getVendedor(), mensaje, Date.now());
         }
     }
 }

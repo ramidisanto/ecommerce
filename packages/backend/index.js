@@ -7,6 +7,7 @@ import { Usuario } from "./Domain/Usuario.js";
 import { ItemPedido } from "./Domain/ItemPedido.js";
 import { Pedido } from "./Domain/Pedido.js";
 import { CambioEstadoPedido } from "./Domain/CambioEstadoPedido.js";
+import { EstadoPedido } from "./Domain/EstadoPedido.js";
 import { DireccionEntrega } from "./Domain/DireccionEntrega.js";
 import { Producto } from "./Domain/Producto.js";
 import { Moneda } from "./Domain/Moneda.js";
@@ -44,7 +45,7 @@ pedidoPrueba.notificar();
 //console.log("Direccion de entrega de prueba:", direccion1);
 //console.log("Pedido de prueba:", pedidoPrueba);
 
-pedidoPrueba.actualizarEstado("CONFIRMADO", pedidoPrueba.getComprador(), "Probando");
+pedidoPrueba.actualizarEstado(EstadoPedido.Confirmado, pedidoPrueba.getComprador(), "Probando");
 pedidoPrueba.notificar();
 
 

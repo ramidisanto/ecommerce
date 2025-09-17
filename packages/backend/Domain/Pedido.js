@@ -24,7 +24,7 @@ export class Pedido{
         this.moneda = moneda;
         this.direccionEntrega = direccionEntrega;
         this.estado = EstadoPedido.Pendiente;
-        this.fechaCreacion = new Date().toISOString().split("T")[0];
+        this.fechaCreacion = new Date();
         this.historialEstados = [];
     }
 
