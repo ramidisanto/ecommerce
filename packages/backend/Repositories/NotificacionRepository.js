@@ -1,12 +1,12 @@
 import { Notificacion } from "../Domain/Notificacion.js";
-import {ObjectId} from "mongodb";
+//import {ObjectId} from "mongodb";
 
 export class NotificacionRepository{
-
+    /*
     constructor(db){
         this.collection = db.collection('notificaciones');
     }
-
+    
     // MAPPERS DE NOTIFICACION
     aNotificacionDB(notificacion){
         const notificacionDB = {
@@ -48,7 +48,7 @@ export class NotificacionRepository{
         const result = await this.collection.insertOne(notificacionDB);
         notificacion.id = result.insertedId.toString();
         return notificacion;
-    }
+    } */
 
 
 }

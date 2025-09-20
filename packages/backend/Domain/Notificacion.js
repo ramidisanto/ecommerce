@@ -26,6 +26,6 @@ export class Notificacion{
 
     marcarComoLeida(){
         this.leida = true
-        this.fechaLeida = new Date()
+        this.fechaLeida = new Date(now())
     }
 }

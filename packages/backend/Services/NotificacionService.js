@@ -19,12 +19,11 @@ export class NotificacionService{
     }
 
     //UPDATE => Marcar notificacion como leida
-    marcarNotificacionComoLeida(notificacionId){
-        notificacionRepository.marcarNotificacionComoLeida(notificacionId);
+    async marcarNotificacionComoLeida(notificacion){
+        notificacion.marcarComoLeida();
+        await this.notificacionRepository.save(notificacion); // TODO: HACER LOS METODOS DE LOS REPOSITORIOS
+        return notificacion;
     }
 
-    //DELETE => Eliminar notificacion
-    eliminarNotificacion(notificacionId){
-        return this.notificacionRepository.eliminarNotificacion(notificacionId);
-    }
+
 }
