@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb";
+import { Pedido } from "../Dominio/Pedido.js";
 
 export class PedidoRepository {
     
@@ -22,8 +23,8 @@ export class PedidoRepository {
                 precioUnitario: item.getPrecioUnitario()
                 })
             ),
-            moneda: moneda,
-            direccionEntrega: direccionEntrega,
+            moneda: pedido.getMoneda(),
+            direccionEntrega: pedido.getDireccionEntrega(),
             estado: 'PENDIENTE',
             fechaCreacion: new Date(),
             historialEstados: []
@@ -58,6 +59,36 @@ export class PedidoRepository {
         return pedido;
     }
 
+    async obtenerPedidosPorUsuarioId(usuarioId){
+        const objectIdUsuario = new ObjectId(usuarioId);
+
+        const pedidosDB = await this.collection.find({idComprador: objectIdUsuario}).toArray();
+    
+        const pedidosDominio = [];
+
+        for (const pedidoDB of pedidosDB) {
+            const pedidoDominio = await this.dePedidoDBAPedidoDominio(pedidoDB);
+            pedidosDominio.push(pedidoDominio);
+        }
+        
+        return pedidosDominio;
+    }
+
+    async obtenerPedidoPorId(pedidoId){
+        const objectIdPedido = new ObjectId(pedidoId);
+
+        const pedidoDB = await this.collection.findOne({_id: objectIdPedido});
+
+        const pedidoDominio = await this.dePedidoDBAPedidoDominio(pedidoDB);
+
+        return pedidoDominio;
+    }
+
+    async actualizarPedido(pedido){
+        const pedidoDB = this.dePedidoDominioAPedidoDB(pedido); 
+        const objectIdPedido = new ObjectId(pedido.id);
+        await this.collection.updateOne({_id: objectIdPedido}, {$set: pedidoDB},{upsert: false});
+    }
 
 }
   

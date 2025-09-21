@@ -1,8 +1,11 @@
+import { EstadoPedido } from "../Domain/EstadoPedido.js";
+
 export class PedidoService{
-    constructor(pedidoRepository, itemPedidoRepository, usuarioRepository){
+    constructor(pedidoRepository, itemPedidoRepository, usuarioRepository, productoRepository){
         this.pedidoRepository = pedidoRepository;
         this.itemPedidoRepository = itemPedidoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.productoRepository = productoRepository;
     }
 
     async crearPedido(comprador, items, moneda, direccionEntrega){
@@ -24,5 +27,18 @@ export class PedidoService{
             await this.productoRepository.actualizarProducto(producto);
         }
         return nuevoPedido;
+    }
+
+    async obtenerHistorialPedidos(usuarioId){
+        const pedidos = await this.pedidoRepository.obtenerPedidosPorUsuarioId(usuarioId);
+        return pedidos;
+    }
+
+    async marcarPedidoEnviado(pedidoId, vendedor){
+        const pedido = await this.pedidoRepository.obtenerPedidoPorId(pedidoId);
+        
+        pedido.actualizarEstado(EstadoPedido.ENVIADO, vendedor, "Pedido enviado"); 
+        await this.pedidoRepository.actualizarPedido(pedido);
+        return pedido;
     }
 }
