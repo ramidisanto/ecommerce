@@ -15,6 +15,14 @@ export default function pedidoRoutes(getController) {
           next(err);
         }
     });
+
+    router.delete('/pedido/:id', async (req, res, next) => {
+        try {
+          await getController(PedidoController).cancelarPedido(req, res);
+        } catch (err) {
+          next(err);
+        } 
+    });
     
     router.get('/usuarios/:id/pedidos', async (req, res, next) => {
         try {

@@ -25,5 +25,9 @@ export class NotificacionService{
         return notificacion;
     }
 
+    async enviarNotificacion(notificacion){
+        await this.notificacionRepository.save(notificacion);
+        return notificacion;
+    }
 
 }

@@ -49,14 +49,7 @@ export class ProductoRepository {
     }
 
     async actualizarProducto(producto){
-        const productoDB = {
-            nombre: producto.nombre,
-            descripcion: producto.descripcion,
-            precio: producto.precio,
-            stock: producto.stock,
-            disponible: producto.disponible,
-            categoria: producto.categoria
-        };
+        const productoDB = this.deProductoDominioAProductoDB(producto);
         await this.collection.updateOne({_id: new ObjectId(producto.id)}, {$set: productoDB});
         return producto;
     }

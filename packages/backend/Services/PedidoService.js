@@ -29,6 +29,20 @@ export class PedidoService{
         return nuevoPedido;
     }
 
+
+    async cancelarPedido(pedidoId, usuario){
+        const pedido = await this.pedidoRepository.obtenerPedidoPorId(pedidoId);
+        pedido.validarSePuedeCancelar(usuario);
+        pedido.actualizarEstado(EstadoPedido.CANCELADO, usuario, "Pedido cancelado por el usuario");
+        await this.pedidoRepository.actualizarPedido(pedido);   
+        for (const item of pedido.getItems()) {
+            const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
+            producto.aumentarStock(item.getCantidad());
+            await this.productoRepository.actualizarProducto(producto);
+        }
+        return pedido;
+    }
+
     async obtenerHistorialPedidos(usuarioId){
         const pedidos = await this.pedidoRepository.obtenerPedidosPorUsuarioId(usuarioId);
         return pedidos;

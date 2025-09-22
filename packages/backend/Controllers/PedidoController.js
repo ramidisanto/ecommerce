@@ -11,16 +11,51 @@ export class PedidoController {
 
 crearPedido = async (req, res, next) => {
     try{
-        const comprador = req.usuario;
+        const resultId = idTransform.safeParse(req.params.id); 
+
+        if (resultId.error) {
+            res.status(400).json(resultId.error.issues);
+            return;
+        }
+
+        const compradorId = resultId.data;
+        const comprador = await this.usuarioService.findById(compradorId);
+        if (!comprador) throw new NoExisteException(compradorId, "usuario");
+
         const items = req.body.items;
         const moneda = req.body.moneda;
         const direccionEntrega = req.body.direccionEntrega;
         const pedido = await this.servicioPedido.crearPedido(comprador, items, moneda, direccionEntrega);
-        res.status(201).json(pedido);
+        res.status(201).json(aPedidoRest(pedido));
     }
     catch(error){
         next(error);
     }
+}
+
+cancelarPedido = async (req, res, next) => {
+    try{
+        const resultId = idTransform.safeParse(req.params.id); 
+
+        if (resultId.error) {
+            res.status(400).json(resultId.error.issues);
+            return;
+        }
+
+        const pedidoId = resultId.data;
+        const pedido = await this.servicioPedido.cancelarPedido(pedidoId);
+        
+        if(pedido){
+            const notificacion = this.factoryNotificacion.crearNotificacionCancelacion(pedido);
+            await this.servicioNotificacion.enviarNotificacion(notificacion);
+            res.status(200).json(aPedidoRest(pedido));
+        } else {
+            res.status(404).json({error: 'Pedido no encontrado'});
+        }
+}
+    catch(error){
+        next(error);
+}
 }
 
 obtenerHistorial = async (req, res) => {
