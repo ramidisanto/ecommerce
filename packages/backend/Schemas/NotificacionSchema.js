@@ -31,8 +31,8 @@ const NotificacionSchema = new mongoose.Schema({
 });
 
 NotificacionSchema.pre(/^find/, function(next) {
-  this.populate('usuarioDestino');
-  next();
+    this.populate('usuarioDestino');
+    next();
 });
 
 NotificacionSchema.loadClass(Notificacion);

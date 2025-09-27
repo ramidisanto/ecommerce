@@ -1,4 +1,5 @@
 // importamos los Excepciones/error que tengamos
+import { NoExisteException } from "../Excepciones/NoExisteException.js";
 
 export function notificacionErrorHandler(err, _req, res, _next) {
     console.log(err.message);

@@ -8,12 +8,11 @@ export class NotificacionRepository{
         this.model = NotificacionModel;
     }
 
-    async obtenerNotificacionesDeUsuario(usuario, leida) {
-        const notificaciones = await this.model.find({ 
+    async obtenerNotificacionesDeUsuario(usuario, leida) { 
+        return await this.model.find({ 
             usuarioDestino: usuario, 
             leida: leida //No estoy seguro si de esta forma cuando leida = false me trae las no leidas. Según la IA funciona.
         });
-        return notificaciones.map(n => this.deNotificacionDB(n));
     }
 
     async save(notificacion) {
@@ -22,12 +21,15 @@ export class NotificacionRepository{
         const notificacionActualizada = await this.model.findByIdAndUpdate(
             notificacion.id || notificacion._id,
             notificacion,
-            { new: true, runValidators: true } // retorna el nuevo y runValidators asegura que las validaciones del schema se apliquen
+            { 
+                new: true, 
+                runValidators: true
+            } // retorna el nuevo y runValidators asegura que las validaciones del schema se apliquen
         );
 
-        // ACA tenemos que inicializar las cosas que no persistimos en la base???
-        //
+        // ACA tenemos que inicializar las cosas que no persistimos en la base??? 
         return notificacionActualizada;
+
     } else {
         // Si no tiene id, crea una nueva notificacion
         const nuevaNotificacion = new this.model(notificacion); //estamos haciendo un nuevo documento instanciado con el esquema q definimos
@@ -40,18 +42,6 @@ export class NotificacionRepository{
         return await this.model.findById(id);
     }
 
-    deNotificacionDB(notificacionDB){
-        const notificacion = new Notificacion();
-        Object.assign(notificacion, {
-            id: notificacionDB._id.toString(),
-            usuarioDestino: notificacionDB.usuario,
-            mensaje: notificacionDB.mensaje,
-            fechaAlta: notificacionDB.fechaAlta,
-            leida: notificacionDB.leida,
-            fechaLeida: notificacionDB.fechaLeida,
-        });
-        return notificacion;
-    }
 
     /*
 
@@ -63,10 +53,6 @@ export class NotificacionRepository{
         delete notificacion.id;
         return notificacionDB;
     }
-
-
-
-
 
     async marcarNotificacionComoLeida(notificacionId){
         await this.collection.updateOne(

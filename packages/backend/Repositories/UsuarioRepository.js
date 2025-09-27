@@ -1,4 +1,3 @@
-import { Usuario } from "../Domain/Usuario.js";
 import { UsuarioModel } from "../Schemas/UsuarioSchema.js";
 export class UsuarioRepository {
 
@@ -6,7 +5,12 @@ export class UsuarioRepository {
         this.model = UsuarioModel;
     }
 
-  /*  deUsuarioDominioAUsuarioDB(usuario){
+    async exists(id){
+        const usuarioDB = await this.model.findById(id);
+        return !!usuarioDB;
+    }
+
+/*  deUsuarioDominioAUsuarioDB(usuario){
         const nuevoUsuario = {
             idComprador: new ObjectId(usuario.getComprador().getId()),
             nombre: usuario.getNombre(),

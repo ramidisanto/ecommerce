@@ -8,7 +8,7 @@ import cors from "cors";
 import { NotificacionController } from "./Controllers/NotificacionController.js"
 import { NotificacionService } from "./Services/NotificacionService.js"
 import { NotificacionRepository } from "./Repositories/NotificacionRepository.js"
-import { MongoDBClient } from "./config/database.js";
+import { MongoDBClient } from "./Config/database.js";
 
 const app = express();
 app.use(

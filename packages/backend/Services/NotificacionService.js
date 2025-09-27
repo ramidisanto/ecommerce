@@ -1,4 +1,5 @@
 import { NotificacionRepository } from "../Repositories/NotificacionRepository.js";
+import { Notificacion } from "../Domain/Notificacion.js";
 
 export class NotificacionService{
 
@@ -13,16 +14,16 @@ export class NotificacionService{
     //CREATE => Se ocupa el factory notificacionFactory
 
     //READ => Obtener notificaciones de un usuario
-    async obtenerNotificacionesDeUsuario(usuario, leida){
-        const notificaciones = await this.notificacionRepository.obtenerNotificacionesDeUsuario(usuario, leida);
+    async obtenerNotificacionesDeUsuario(id, leida){
+        const notificaciones = await this.notificacionRepository.obtenerNotificacionesDeUsuario(id, leida);
         return notificaciones;
     }
 
     //UPDATE => Marcar notificacion como leida
     async marcarNotificacionComoLeida(notificacion){
         notificacion.marcarComoLeida();
-        await this.notificacionRepository.save(notificacion); // TODO: HACER LOS METODOS DE LOS REPOSITORIOS
-        return notificacion;
+        const notificacionActualizada = await this.notificacionRepository.save(notificacion); // TODO: HACER LOS METODOS DE LOS REPOSITORIOS
+        return notificacionActualizada;
     }
 
     async enviarNotificacion(notificacion){
@@ -31,7 +32,8 @@ export class NotificacionService{
     }
 
     async findById(id) {
-        return await this.notificacionRepository.findById(id);
+        const notificacion = await this.notificacionRepository.findById(id);
+        return notificacion;
     }
 
 }

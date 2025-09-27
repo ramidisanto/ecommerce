@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { NoExisteException } from "../Excepciones/NoExisteException.js";
+import mongoose from "mongoose";
 
 
 export class NotificacionController{
@@ -14,7 +15,7 @@ export class NotificacionController{
 /////// GET => Obtener notificaciones de un usuario
     async obtenerNotificacionesDeUsuario(req, res){
 
-        const resultId = idTransform.safeParse(req.params.id);
+        const resultId = paramsSchema.safeParse(req.params.id);
 
         if (resultId.error) {
             res.status(400).json(resultId.error.issues);
@@ -31,13 +32,11 @@ export class NotificacionController{
         const id = resultId.data;
         const leida = resultLeida.data;
 
-        const usuario = await this.usuarioService.findById(id); // TODO: HACER USUARIO SERVICE Y METODO FIND BY ID
-
-        if (!usuario) {
+        if ( !await this.usuarioService.exists(id)) { 
             throw new NoExisteException(id, "usuario");
         }
 
-        const notificaciones = await this.notificacionService.obtenerNotificacionesDeUsuario(usuario, leida);
+        const notificaciones = await this.notificacionService.obtenerNotificacionesDeUsuario(id, leida);
 
         if (notificaciones === null) {
             return res.status(204).send();
@@ -50,7 +49,7 @@ export class NotificacionController{
 /////// PATCH => Marcar notificacion como leida
     async marcarNotificacionLeida(req, res){
         
-        const resultId = idTransform.safeParse(req.params.id);
+        const resultId = paramsSchema.safeParse(req.params.id);
 
         if (resultId.error) {
             res.status(400).json(resultId.error.issues);
@@ -66,6 +65,7 @@ export class NotificacionController{
         }
 
         const notificacionLeida = await this.notificacionService.marcarNotificacionLeida(notificacion);
+
             res.status(200).json(aNotificacionRest(notificacionLeida));
     
     }
@@ -83,16 +83,13 @@ const aNotificacionRest = (datosDeLaNotificacion) => {
     }
 };
 
-const idTransform = z.string().transform((val, ctx) => {
-    const num = Number(val);
-    if (isNaN(num)) {
-    ctx.addIssue({
-        code: "INVALID_ID",
-        message: "id must be a number",
-    });
-        return z.NEVER;
-    }
-        return num;
+const objectIdSchema = z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "ID inválido",
+});
+
+// Ejemplo: validar params de Express
+const paramsSchema = z.object({
+    id: objectIdSchema,
 });
 
 
