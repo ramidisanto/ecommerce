@@ -1,19 +1,43 @@
 import { Notificacion } from "../Domain/Notificacion.js";
-//import {ObjectId} from "mongodb";
+import { NotificacionModel } from "../Schemas/NotificacionSchema.js";
+//import { UsarioModel } from "../Schemas/UsuarioSchema.js"; Hay que hacer
 
 export class NotificacionRepository{
-    /*
-    constructor(db){
-        this.collection = db.collection('notificaciones');
-    }
     
-    // MAPPERS DE NOTIFICACION
-    aNotificacionDB(notificacion){
-        const notificacionDB = {
-            ...notificacion,
-        };
-        delete notificacion.id;
-        return notificacionDB;
+    constructor(){
+        this.model = NotificacionModel;
+    }
+
+    async obtenerNotificacionesDeUsuario(usuario, leida) {
+        const notificaciones = await this.model.find({ 
+            usuarioDestino: usuario, 
+            leida: leida //No estoy seguro si de esta forma cuando leida = false me trae las no leidas. Según la IA funciona.
+        });
+        return notificaciones.map(n => this.deNotificacionDB(n));
+    }
+
+    async save(notificacion) {
+    if (notificacion.id || notificacion._id) {
+        // Si tiene id, actualiza la notificacion existente
+        const notificacionActualizada = await this.model.findByIdAndUpdate(
+            notificacion.id || notificacion._id,
+            notificacion,
+            { new: true, runValidators: true } // retorna el nuevo y runValidators asegura que las validaciones del schema se apliquen
+        );
+
+        // ACA tenemos que inicializar las cosas que no persistimos en la base???
+        //
+        return notificacionActualizada;
+    } else {
+        // Si no tiene id, crea una nueva notificacion
+        const nuevaNotificacion = new this.model(notificacion); //estamos haciendo un nuevo documento instanciado con el esquema q definimos
+        const notificacionGuardada = await nuevaNotificacion.save();
+        return notificacionGuardada;
+        }
+    }
+
+    async findById(id) {
+        return await this.model.findById(id);
     }
 
     deNotificacionDB(notificacionDB){
@@ -26,15 +50,23 @@ export class NotificacionRepository{
             leida: notificacionDB.leida,
             fechaLeida: notificacionDB.fechaLeida,
         });
-
         return notificacion;
     }
 
-    //FUNCIONES PARA OBTENER Y GUARDAR NOTIFICACIONES
-    async obtenerNotificacionesDeUsuario(usuario, leida) {
-        const notificaciones = await this.collection.find({ usuario: usuario, leida: leida }).toArray();
-        return notificaciones.map(n => this.deNotificacionDB(n));
+    /*
+
+    // MAPPERS DE NOTIFICACION
+    aNotificacionDB(notificacion){
+        const notificacionDB = {
+            ...notificacion,
+        };
+        delete notificacion.id;
+        return notificacionDB;
     }
+
+
+
+
 
     async marcarNotificacionComoLeida(notificacionId){
         await this.collection.updateOne(

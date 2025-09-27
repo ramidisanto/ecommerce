@@ -30,4 +30,8 @@ export class NotificacionService{
         return notificacion;
     }
 
+    async findById(id) {
+        return await this.notificacionRepository.findById(id);
+    }
+
 }

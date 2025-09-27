@@ -1,5 +1,6 @@
 export class Notificacion{
     id;
+    //Relacion
     usuarioDestino;
     mensaje;
     fechaAlta;
@@ -10,7 +11,7 @@ export class Notificacion{
         this.usuarioDestino = usuarioDestino
         this.mensaje = mensaje
         this.fechaAlta = fechaAlta
-        this.leida = false
+        this.leida = false //Se puede hacer false cuando se agrega a la base. Decidir en donde
         this.fechaLeida = null
     }
 

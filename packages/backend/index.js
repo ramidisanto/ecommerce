@@ -8,7 +8,7 @@ import cors from "cors";
 import { NotificacionController } from "./Controllers/NotificacionController.js"
 import { NotificacionService } from "./Services/NotificacionService.js"
 import { NotificacionRepository } from "./Repositories/NotificacionRepository.js"
-
+import { MongoDBClient } from "./config/database.js";
 
 const app = express();
 app.use(
@@ -42,3 +42,5 @@ server.launch()
   app.get("/hello", (req, res) => {
   res.json({ message: "hello world" });
   });
+
+MongoDBClient.connect();

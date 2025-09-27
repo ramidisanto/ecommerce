@@ -1,19 +1,12 @@
-import {ObjectId} from "mongodb";
+import { Usuario } from "../Domain/Usuario.js";
+import { UsuarioModel } from "../Schemas/UsuarioSchema.js";
+export class UsuarioRepository {
 
-export class PedidoRepository {
-
-    collection
-    pedidos = []
-    usuarioRepository
-    productoRepository      
-
-    constructor(db, usuarioRepository, productoRepository) {
-        this.collection = db.collection('pedidos');
-        this.usuarioRepository = usuarioRepository;
-        this.productoRepository = productoRepository;
+    constructor(){
+        this.model = UsuarioModel;
     }
 
-    deUsuarioDominioAUsuarioDB(usuario){
+  /*  deUsuarioDominioAUsuarioDB(usuario){
         const nuevoUsuario = {
             idComprador: new ObjectId(usuario.getComprador().getId()),
             nombre: usuario.getNombre(),
@@ -46,6 +39,6 @@ export class PedidoRepository {
         }   
         return this.deUsuarioDBAUsuarioDominio(usuarioDB);
     }
-
+*/
 }
     
