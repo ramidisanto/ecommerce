@@ -1,4 +1,5 @@
 import { UsuarioModel } from "../Schemas/UsuarioSchema.js";
+
 export class UsuarioRepository {
 
     constructor(){

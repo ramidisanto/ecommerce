@@ -9,6 +9,8 @@ import { NotificacionController } from "./Controllers/NotificacionController.js"
 import { NotificacionService } from "./Services/NotificacionService.js"
 import { NotificacionRepository } from "./Repositories/NotificacionRepository.js"
 import { MongoDBClient } from "./Config/database.js";
+import { UsuarioRepository } from "./Repositories/UsuarioRepository.js";
+import { UsuarioService } from "./Services/UsuarioService.js";
 
 const app = express();
 app.use(
@@ -25,9 +27,12 @@ dotenv.config();
 // Se envía al server el puerto
 const server = new Server(app, port)
 
+const usuarioRepository = new UsuarioRepository()
+const usuarioService = new UsuarioService(usuarioRepository)
+
 const notificacionRepository = new NotificacionRepository()
 const notificacionService = new NotificacionService(notificacionRepository)
-const notificacionController = new NotificacionController(notificacionService)
+const notificacionController = new NotificacionController(notificacionService, usuarioService)
 
 server.setController(NotificacionController, notificacionController)
 

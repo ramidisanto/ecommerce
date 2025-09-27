@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { NoExisteException } from "../Excepciones/NoExisteException.js";
+import { UsuarioService } from "../Services/UsuarioService.js";
+import { NotificacionService } from "../Services/NotificacionService.js";
 import mongoose from "mongoose";
 
 
 export class NotificacionController{
-    
     notificacionService
+    usuarioService
 
     constructor(notificacionService, usuarioService){
         this.notificacionService = notificacionService;
@@ -15,21 +17,14 @@ export class NotificacionController{
 /////// GET => Obtener notificaciones de un usuario
     async obtenerNotificacionesDeUsuario(req, res){
 
-        const resultId = paramsSchema.safeParse(req.params.id);
-
-        if (resultId.error) {
-            res.status(400).json(resultId.error.issues);
-            return;
-        }
-
-        const resultLeida = leidaTransform.safeParse(leida);
+        const resultLeida = leidaTransform.safeParse(req.query.leida);
 
         if (resultLeida.error) {
             res.status(400).json(resultLeida.error.issues);
             return;
         }
 
-        const id = resultId.data;
+        const id = req.params.id;
         const leida = resultLeida.data;
 
         if ( !await this.usuarioService.exists(id)) { 
@@ -48,15 +43,8 @@ export class NotificacionController{
 
 /////// PATCH => Marcar notificacion como leida
     async marcarNotificacionLeida(req, res){
-        
-        const resultId = paramsSchema.safeParse(req.params.id);
 
-        if (resultId.error) {
-            res.status(400).json(resultId.error.issues);
-            return;
-        }
-
-        const id = resultId.data;
+        const id = req.params.id;
 
         const notificacion = await this.notificacionService.findById(id);
 
@@ -64,10 +52,10 @@ export class NotificacionController{
             throw new NoExisteException(id, "notificacion");
         }
 
-        const notificacionLeida = await this.notificacionService.marcarNotificacionLeida(notificacion);
+        const notificacionLeida = await this.notificacionService.marcarNotificacionComoLeida(notificacion);
 
-            res.status(200).json(aNotificacionRest(notificacionLeida));
-    
+        res.status(200).json(aNotificacionRest(notificacionLeida));
+
     }
 
 }    
@@ -83,14 +71,7 @@ const aNotificacionRest = (datosDeLaNotificacion) => {
     }
 };
 
-const objectIdSchema = z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
-    message: "ID inválido",
-});
 
-// Ejemplo: validar params de Express
-const paramsSchema = z.object({
-    id: objectIdSchema,
-});
 
 
 const leidaTransform = z.string().transform((val, ctx) => {

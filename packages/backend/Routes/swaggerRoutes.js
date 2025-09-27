@@ -1,4 +1,4 @@
-import express from "express";
+/*import express from "express";
 import swaggerUiExpress from "swagger-ui-express";
 import { readFile } from "node:fs/promises";
 
@@ -11,4 +11,4 @@ export function swaggerRoutes() {
   router.use("/api-docs", swaggerUiExpress.serve);
   router.get("/api-docs", swaggerUiExpress.setup(swaggerDocument));
   return router;
-}
+}*/

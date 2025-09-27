@@ -1,14 +1,14 @@
-import { UsuarioRepository } from "../Repositories/UsuarioRepository";
+import { UsuarioRepository } from "../Repositories/UsuarioRepository.js";
 
 export class UsuarioService {
-    UsuarioRepository;
+    usuarioRepository;
     
-    constructor(UsuarioRepository) {
-        this.UsuarioRepository = UsuarioRepository;     
+    constructor(usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;     
     }
 
     async exists(id) {
-        return this.UsuarioRepository.exists(id);
+        return this.usuarioRepository.exists(id);
     }
 
 }

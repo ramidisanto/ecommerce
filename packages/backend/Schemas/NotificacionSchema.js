@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Notificacion } from './Domain/notificacion.js';
+import { Notificacion } from '../Domain/Notificacion.js';
 
 const NotificacionSchema = new mongoose.Schema({
     usuarioDestino: {
@@ -23,7 +23,7 @@ const NotificacionSchema = new mongoose.Schema({
     },
     fechaLeida: {
         type: Date,
-        required: true, //No se si será necesario guardar la fecha de leida
+        required: false, //No se si será necesario guardar la fecha de leida
     },
 }, {
     timestamps: false,
