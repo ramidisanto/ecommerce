@@ -11,4 +11,6 @@ export function productoErrorHandler(err, _req, res, _next) {
  // agregar aca todos los errores vinculados con las notificaciones
 
   res.status(500).json({ error: "Ups. Algo sucedio en el servidor." });
+  
+
 }

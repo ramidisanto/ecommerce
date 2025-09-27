@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NoExisteException } from "../Excepciones/NoExisteException.js";
+import { NoExisteIdException } from "../Excepciones/NoExisteIdException.js";
 export class PedidoController {
 
     constructor(servicioPedido, servicioNotificacion, factoryNotificacion, usuarioService){
@@ -10,7 +10,6 @@ export class PedidoController {
     }   
 
 crearPedido = async (req, res, next) => {
-    try{
         const resultId = idTransform.safeParse(req.params.id); 
 
         if (resultId.error) {
@@ -20,42 +19,33 @@ crearPedido = async (req, res, next) => {
 
         const compradorId = resultId.data;
         const comprador = await this.usuarioService.findById(compradorId);
-        if (!comprador) throw new NoExisteException(compradorId, "usuario");
+        if (!comprador) throw new NoExisteIdException(compradorId, "usuario");
 
         const items = req.body.items;
         const moneda = req.body.moneda;
         const direccionEntrega = req.body.direccionEntrega;
         const pedido = await this.servicioPedido.crearPedido(comprador, items, moneda, direccionEntrega);
         res.status(201).json(aPedidoRest(pedido));
-    }
-    catch(error){
-        next(error);
-    }
+
 }
 
 cancelarPedido = async (req, res, next) => {
-    try{
-        const resultId = idTransform.safeParse(req.params.id); 
+    const resultId = idTransform.safeParse(req.params.id); 
 
-        if (resultId.error) {
+    if (resultId.error) {
             res.status(400).json(resultId.error.issues);
             return;
-        }
+    }
 
         const pedidoId = resultId.data;
         const pedido = await this.servicioPedido.cancelarPedido(pedidoId);
         
         if(pedido){
-            const notificacion = this.factoryNotificacion.crearNotificacionCancelacion(pedido);
-            await this.servicioNotificacion.enviarNotificacion(notificacion);
+            
             res.status(200).json(aPedidoRest(pedido));
         } else {
             res.status(404).json({error: 'Pedido no encontrado'});
         }
-}
-    catch(error){
-        next(error);
-}
 }
 
 obtenerHistorial = async (req, res) => {
@@ -70,7 +60,7 @@ obtenerHistorial = async (req, res) => {
     const usuarioId = resultId.data;
 
     const usuario = await this.usuarioService.findById(usuarioId);
-    if (!usuario) throw new NoExisteException(usuarioId, "usuario");
+    if (!usuario) throw new NoExisteIdException(usuarioId, "usuario");
 
     const pedidos = await this.pedidoService.obtenerHistorialPedidos(usuarioId);
     if (!pedidos || pedidos.length === 0) return res.status(204).send();
@@ -90,7 +80,7 @@ marcarPedidoEnviado = async (req, res, next) => {
     const vendedor = req.usuario;
 
     const pedido = await this.pedidoService.marcarPedidoEnviado(pedidoId, vendedor);
-    if (!pedido) throw new NoExisteException(pedidoId, "pedido");
+    if (!pedido) throw new NoExisteIdException(pedidoId, "pedido");
 
     res.status(200).json({ message: "Pedido marcado como enviado" });
 

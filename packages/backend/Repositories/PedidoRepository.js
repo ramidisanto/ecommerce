@@ -1,19 +1,19 @@
 import {ObjectId} from "mongodb";
 import { Pedido } from "../Dominio/Pedido.js";
+import { PedidoModel } from "../Schemas/PedidoSchema.js";
+import { NoExisteIdException } from "../Excepciones/NoExisteIdException.js";
 
 export class PedidoRepository {
-    
+    /*
     collection
     pedidos = []
     usuarioRepository
     productoRepository
-
-    constructor(db, usuarioRepository, productoRepository) {
-        this.collection = db.collection('pedidos');
-        this.usuarioRepository = usuarioRepository;
-        this.productoRepository = productoRepository;
+    */
+    constructor() {
+        this.model = PedidoModel;
     }
-
+/*
     dePedidoDominioAPedidoDB(pedido){
         const nuevoPedido = {
             idComprador: new ObjectId(pedido.getComprador().getId()),
@@ -51,43 +51,32 @@ export class PedidoRepository {
         });
         return pedido;
     }
-    
+*/  
     async crearPedido(pedido){
-        const pedidoDB = this.dePedidoDominioAPedidoDB(pedido);
-        const result = await this.collection.insertOne(pedidoDB);
-        pedido.id = result.insertedId.toString();
-        return pedido;
+        const pedidoNuevo = new this.model(pedido);
+        const pedidoGuardado = await pedidoNuevo.save();
+        return pedidoGuardado;
     }
 
     async obtenerPedidosPorUsuarioId(usuarioId){
-        const objectIdUsuario = new ObjectId(usuarioId);
-
-        const pedidosDB = await this.collection.find({idComprador: objectIdUsuario}).toArray();
-    
-        const pedidosDominio = [];
-
-        for (const pedidoDB of pedidosDB) {
-            const pedidoDominio = await this.dePedidoDBAPedidoDominio(pedidoDB);
-            pedidosDominio.push(pedidoDominio);
-        }
-        
-        return pedidosDominio;
+        return await this.model.find({idComprador: usuarioId});
     }
 
     async obtenerPedidoPorId(pedidoId){
-        const objectIdPedido = new ObjectId(pedidoId);
-
-        const pedidoDB = await this.collection.findOne({_id: objectIdPedido});
-
-        const pedidoDominio = await this.dePedidoDBAPedidoDominio(pedidoDB);
-
-        return pedidoDominio;
+        return await this.model.findById(pedidoId);
     }
 
     async actualizarPedido(pedido){
-        const pedidoDB = this.dePedidoDominioAPedidoDB(pedido); 
-        const objectIdPedido = new ObjectId(pedido.id);
-        await this.collection.updateOne({_id: objectIdPedido}, {$set: pedidoDB},{upsert: false});
+        if (pedido.id || pedido._id) {
+            const pedidoActualizado = await this.model.findByIdAndUpdate(
+                pedido.id || pedido._id,
+                pedido, 
+                {new: true, runValidators: true}
+            );
+            return pedidoActualizado;   
+        } else {
+            throw new NoExisteIdException;
+        }
     }
 
 }

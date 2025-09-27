@@ -1,14 +1,15 @@
 export class CambioEstadoPedido{
     fecha;
     estado;
-    pedido;
+    //pedido;
     usuario;
     motivo;
 
     constructor(fecha, estado, pedido, usuario, motivo){
         this.fecha = fecha;
         this.estado = estado;
-        this.pedido = pedido;
+        //this.pedido = pedido;
+        //preguntar !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         this.usuario = usuario;
         this.motivo = motivo;
     }

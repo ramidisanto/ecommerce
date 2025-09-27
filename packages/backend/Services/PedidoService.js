@@ -1,11 +1,13 @@
 import { EstadoPedido } from "../Domain/EstadoPedido.js";
+import { ItemPedido } from "../Domain/ItemPedido.js";
+import { Pedido } from "../Domain/Pedido.js";
 
 export class PedidoService{
-    constructor(pedidoRepository, itemPedidoRepository, usuarioRepository, productoRepository){
+    constructor(pedidoRepository, usuarioRepository, productoRepository, servicioNotificacion){
         this.pedidoRepository = pedidoRepository;
-        this.itemPedidoRepository = itemPedidoRepository;
         this.usuarioRepository = usuarioRepository;
         this.productoRepository = productoRepository;
+        this.servicioNotificacion = servicioNotificacion;
     }
 
     async crearPedido(comprador, items, moneda, direccionEntrega){
@@ -26,6 +28,8 @@ export class PedidoService{
             producto.reducirStock(item.getCantidad());
             await this.productoRepository.actualizarProducto(producto);
         }
+        const notificacion = this.factoryNotificacion.crearNotificacion(pedido);
+        await this.servicioNotificacion.enviarNotificacion(notificacion);
         return nuevoPedido;
     }
 
@@ -40,6 +44,8 @@ export class PedidoService{
             producto.aumentarStock(item.getCantidad());
             await this.productoRepository.actualizarProducto(producto);
         }
+        const notificacion = this.factoryNotificacion.crearNotificacion(pedido);
+        await this.servicioNotificacion.enviarNotificacion(notificacion);
         return pedido;
     }
 
@@ -53,6 +59,8 @@ export class PedidoService{
         
         pedido.actualizarEstado(EstadoPedido.ENVIADO, vendedor, "Pedido enviado"); 
         await this.pedidoRepository.actualizarPedido(pedido);
+        const notificacion = this.factoryNotificacion.crearNotificacion(pedido);
+        await this.servicioNotificacion.enviarNotificacion(notificacion);
         return pedido;
     }
 }

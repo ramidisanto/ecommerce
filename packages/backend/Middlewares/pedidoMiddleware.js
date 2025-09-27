@@ -1,5 +1,5 @@
 // importamos los Excepciones/error que tengamos
-import { NoExisteException } from "../Excepciones/NoExisteException.js";
+import { NoExisteIdException } from "../Excepciones/NoExisteIdException.js";
 import { NoSePuedeCambiarDeEstadoException } from "../Excepciones/NoSePuedeCambiarDeEstadoException.js";
 
 export function pedidoErrorHandler(err, _req, res, _next) {
@@ -12,7 +12,7 @@ export function pedidoErrorHandler(err, _req, res, _next) {
 
  // agregar aca todos los errores vinculados con las pedidoes
 
-  if (err.constructor.name == NoExisteException.name) {
+  if (err.constructor.name == NoExisteIdException.name) {
     res.status(404).json({ id: err.id, message: err.message });
     return;
   }
