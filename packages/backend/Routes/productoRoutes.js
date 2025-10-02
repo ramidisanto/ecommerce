@@ -7,9 +7,10 @@ export default function productoRoutes(getController) {
     const router = express.Router();
     router.use(loggerMiddleware);
 
-    router.post('/producto', async (req, res, next) => {
+    // http://localhost:8000/vendedor/:id/productos?titulo=algo&categoria=otraCosa&descripcion=masCosas&precioMin=100&precioMax=500&sort=precioAsc
+    router.get('/vendedor/:id/productos', async (req, res, next) => {
         try {
-          await getController(ProductoController).crearproducto(req, res);
+          await getController(ProductoController).obtenerProductosPorVendedor(req, res);
         } catch (err) {
           next(err);
         }

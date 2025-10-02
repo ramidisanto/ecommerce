@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NoExisteException } from "../Excepciones/NoExisteException.js";
+import { NoExisteIdException } from "../Excepciones/NoExisteIdException.js";
 import { UsuarioService } from "../Services/UsuarioService.js";
 import { NotificacionService } from "../Services/NotificacionService.js";
 import mongoose from "mongoose";
@@ -17,6 +17,13 @@ export class NotificacionController{
 /////// GET => Obtener notificaciones de un usuario
     async obtenerNotificacionesDeUsuario(req, res){
 
+         const resultId = objectId.safeParse(req.params.id); 
+
+        if (resultId.error) {
+            res.status(400).json(resultId.error.issues);
+            return;
+        }
+
         const resultLeida = leidaTransform.safeParse(req.query.leida);
 
         if (resultLeida.error) {
@@ -24,16 +31,22 @@ export class NotificacionController{
             return;
         }
 
-        const id = req.params.id;
+        const id = resultId.data;
         const leida = resultLeida.data;
 
         if ( !await this.usuarioService.exists(id)) { 
-            throw new NoExisteException(id, "usuario");
+            throw new NoExisteIdException(id, "usuario");
         }
 
-        const notificaciones = await this.notificacionService.obtenerNotificacionesDeUsuario(id, leida);
+        let notificaciones;
 
-        if (notificaciones === null) {
+        if (leida !== undefined){
+            notificaciones = await this.notificacionService.obtenerNotificacionesDeUsuarioLeidas(id, leida);
+        }else{
+            notificaciones = await this.notificacionService.obtenerNotificacionesDeUsuario(id);
+        }
+
+        if (notificaciones === null || notificaciones.length === 0) {
             return res.status(204).send();
         }
 
@@ -44,12 +57,17 @@ export class NotificacionController{
 /////// PATCH => Marcar notificacion como leida
     async marcarNotificacionLeida(req, res){
 
-        const id = req.params.id;
+         const resultId = objectId.safeParse(req.params.id); 
 
-        const notificacion = await this.notificacionService.findById(id);
+        if (resultId.error) {
+            res.status(400).json(resultId.error.issues);
+            return;
+        }
+
+        const notificacion = await this.notificacionService.findById(resultId.data);
 
         if (!notificacion) {
-            throw new NoExisteException(id, "notificacion");
+            throw new NoExisteIdException(resultId.data, "notificacion");
         }
 
         const notificacionLeida = await this.notificacionService.marcarNotificacionComoLeida(notificacion);
@@ -74,12 +92,23 @@ const aNotificacionRest = (datosDeLaNotificacion) => {
 
 
 
-const leidaTransform = z.string().transform((val, ctx) => {
+const leidaTransform = z
+  .string()
+  .transform((val, ctx) => {
     if (val === "true") return true;
     if (val === "false") return false;
     ctx.addIssue({
-        code: "INVALID_TYPE",
-        message: "leida must be a boolean ('true' or 'false')",
+      code: "invalid_type",
+      message: "leida must be 'true' or 'false'",
     });
     return z.NEVER;
-});
+  })
+  .optional();
+
+  // Validador de ObjectId de Mongoose
+  const objectId = z
+    .string()
+    .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+      message: "El id de producto no es un ObjectId válido",
+    });
+  

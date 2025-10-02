@@ -14,9 +14,13 @@ export class NotificacionService{
     //CREATE => Se ocupa el factory notificacionFactory
 
     //READ => Obtener notificaciones de un usuario
-    async obtenerNotificacionesDeUsuario(id, leida){
-        const notificaciones = await this.notificacionRepository.obtenerNotificacionesDeUsuario(id, leida);
+    async obtenerNotificacionesDeUsuarioLeidas(id, leida){
+        const notificaciones = await this.notificacionRepository.obtenerNotificacionesDeUsuarioLeidas(id, leida);
         return notificaciones;
+    }
+
+    async obtenerNotificacionesDeUsuario(id){
+        return await this.notificacionRepository.obtenerNotificacionesDeUsuario(id);
     }
 
     //UPDATE => Marcar notificacion como leida

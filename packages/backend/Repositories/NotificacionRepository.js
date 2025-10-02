@@ -8,10 +8,16 @@ export class NotificacionRepository{
         this.model = NotificacionModel;
     }
 
-    async obtenerNotificacionesDeUsuario(usuario, leida) { 
+    async obtenerNotificacionesDeUsuarioLeidas(usuario, leida) { 
         return await this.model.find({ 
             usuarioDestino: usuario, 
             leida: leida //No estoy seguro si de esta forma cuando leida = false me trae las no leidas. Según la IA funciona.
+        });
+    }
+
+    async obtenerNotificacionesDeUsuario(usuario) {
+        return await this.model.find({ 
+            usuarioDestino: usuario
         });
     }
 

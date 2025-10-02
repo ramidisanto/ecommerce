@@ -14,7 +14,7 @@ const ProductoSchema = new mongoose.Schema({
         minlength: 5,
         maxlength: 200
     }, 
-    vendedor: {
+    vendedorId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Usuario",
         required: true
@@ -58,7 +58,7 @@ const ProductoSchema = new mongoose.Schema({
 });
 
 ProductoSchema.pre(/^find/, function(next) {
-    this.populate('vendedor');
+    this.populate('vendedorId');
     next();
 });
 

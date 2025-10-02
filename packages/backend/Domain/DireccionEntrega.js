@@ -23,4 +23,7 @@ export class DireccionEntrega{
         this.lon = lon;
     }
 
+    toString(){
+        return `${this.calle} ${this.altura}, Piso: ${this.piso}, Depto: ${this.departamento}, Codigo Postal: ${this.codigoPostal}, ${this.ciudad}, ${this.provincia}, ${this.pais}`;
+    }
 }

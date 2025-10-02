@@ -2,7 +2,7 @@ import {DatosInsuficientesException} from "../Excepciones/DatosInsuficientesExce
 import {StockInsuficienteException} from "../Excepciones/StockInsuficienteException.js";
 export class Producto{
     id;
-    vendedor;
+    vendedorId;
     titulo;
     descripcion;
     categorias= [];
@@ -11,10 +11,11 @@ export class Producto{
     stock;
     fotos;
     activo;
+    ventas;
 
-    constructor(vendedor, titulo, descripcion, categorias, precio, moneda, stock, fotos, activo){
+    constructor(vendedorId, titulo, descripcion, categorias, precio, moneda, stock, fotos, activo){
 
-        this.vendedor = vendedor;
+        this.vendedorId = vendedorId;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categorias = categorias;
@@ -23,6 +24,7 @@ export class Producto{
         this.stock = stock;
         this.fotos = fotos;
         this.activo = activo;
+        this.ventas = 0;
     }
 
     validarCantidad(cantidad){
@@ -33,7 +35,7 @@ export class Producto{
 
     estaDisponible(cantidad){
         this.validarCantidad(cantidad);
-        return this.stock >= cantidad
+        return this.getStock() >= cantidad
     }
 
     validarDisponible(cantidad){
@@ -44,6 +46,7 @@ export class Producto{
     reducirStock(cantidad){
         this.validarDisponible(cantidad);
         this.stock -= cantidad;
+        this.ventas += cantidad;
     }
 
     aumentarStock(cantidad){
@@ -65,5 +68,13 @@ export class Producto{
 
     getVendedorId(){
         return this.vendedor.getId();
+    }
+
+    getPrecio(){
+        return this.precio;
+    }
+
+    getStock(){
+        return this.stock;
     }
 }

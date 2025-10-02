@@ -24,4 +24,23 @@ export class ProductoRepository {
         return productoActualizado; 
         }
     }
+
+    async buscarPorFiltros(query, pagina, elementosPorPagina){
+        const skip = (pagina - 1) * elementosPorPagina;
+        const productos = await this.model.find(query)
+            .skip(skip)
+            .limit(elementosPorPagina);
+
+        const totalProductos = await this.model.countDocuments(query);
+        const totalPaginas = Math.ceil(totalProductos / elementosPorPagina);
+
+        return {
+            productos,
+            totalProductos,
+            totalPaginas,
+            pagina,
+        };
+
+    }
+      
 }

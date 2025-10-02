@@ -98,10 +98,11 @@ export class Pedido{
     return factoryNotificacion.crearSegunPedido(this);
   }
 
-  validarSePuedeCancelar(pedido){
-    if(pedido.getEstado() != EstadoPedido.Pendiente && pedido.getEstado() != EstadoPedido.Confirmado && pedido.getEstado() != EstadoPedido.En_Preparacion){
+  validarSePuedeCancelar(){
+    if(this.getEstado() != EstadoPedido.Pendiente && this.getEstado() != EstadoPedido.Confirmado && this.getEstado() != EstadoPedido.En_Preparacion){
         throw new NoSePuedeCambiarDeEstadoException("El pedido no se puede cancelar en su estado actual.");
     }
+    return true;
   }
 
 }

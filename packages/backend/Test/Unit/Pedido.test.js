@@ -1,64 +1,57 @@
 import { Pedido } from '../../Domain/Pedido.js';
 import { Producto } from '../../Domain/Producto.js';
+import { Usuario} from '../../Domain/Usuario.js';
+import { Categoria} from '../../Domain/Categoria.js';
+import { ItemPedido } from '../../Domain/ItemPedido.js';
+import { DireccionEntrega } from '../../Domain/DireccionEntrega.js';
+import { CambioEstadoPedido } from '../../Domain/CambioEstadoPedido.js';
+import {NoSePuedeCambiarDeEstadoException } from '../../Excepciones/NoSePuedeCambiarDeEstadoException.js';
 
-describe('Pedido.crear', () => {
-    test('debería crear una instancia de Pedido con los atributos correctos', () => {
-        const datos = {
-            id: 1,
-            clienteId: 123,
-            total: 250.75,
-            fecha: '2024-06-15',
-            estado: 'pendiente'
-        };
-        const pedido = Pedido.crear(datos);     //DEBE SER DE PEDIDO SERVICE
+describe('Verificar pedido', () => {
 
-        expect(pedido).toBeInstanceOf(Pedido);
-        expect(pedido.id).toBe(datos.id);
-        expect(pedido.clienteId).toBe(datos.clienteId);
-        expect(pedido.total).toBe(datos.total);
-        expect(pedido.fecha).toBe(datos.fecha);
-        expect(pedido.estado).toBe(datos.estado);
-    });
-    test('debería manejar valores por defecto si faltan algunos atributos', () => {
-        const datos = {
-            clienteId: 123,
-            total: 250.75
-        };
-        const pedido = Pedido.crear(datos);
-
-        expect(pedido).toBeInstanceOf(Pedido);
-        expect(pedido.id).toBeUndefined();
-        expect(pedido.clienteId).toBe(datos.clienteId);
-        expect(pedido.total).toBe(datos.total);
-        expect(pedido.fecha).toBeUndefined();
-        expect(pedido.estado).toBeUndefined();
+    const comprador_nuevo = new Usuario("Mora", "mocontreras@frba.utn.edu.ar", 1156789234, "COMPRADOR", '2025-08-22');
+    const vendedor1 = new Usuario("Ramiro", "rdisanto@frba.utn.edu.ar", 1156789234, "VENDEDOR", '2025-08-22');
+    const categoria_cocina = new Categoria("Cocina");
+    const producto1 = new Producto(vendedor1, "Servilletas Truchas", "Servilletas de cocina una hoja", [categoria_cocina], 20, "ARS", 5, [], true);
+    const producto2 = new Producto(vendedor1, "Servilletas Susex", "Servilletas de cocina doble hoja", [categoria_cocina], 50, "ARS", 10, [], true);
+    const itemPedido1 = new ItemPedido(producto1, 5, producto1.getPrecio());
+    const itemPedido2 = new ItemPedido(producto2, 2, producto2.getPrecio());
+    const direccion1 = new DireccionEntrega( "Av. Siempre Viva", 742, 1,  "A", "1234", "Ciudad Autonoma de Buenos Aires", "Buenos Aires", "Argentina", -34.6037, -34.6037,);
+    const pedido = new Pedido(comprador_nuevo, [itemPedido1, itemPedido2], "ARS" , direccion1);
+        
+    test('Debería calcular el total como la suma de los subtotales', () => {
+        expect(pedido.calcularTotal()).toBe(200);
     });
 
-    beforeEach(async () => {
-        await Producto.crear({ titulo: 'Producto de limpieza', cantidad: 10, precio: 15.00});
-        await Producto.crear({ titulo: 'Producto de cocina', cantidad: 5, precio: 30.00});
+    test('Debería devolver que la validación del stock de todos los items fue exitosa', () => {
+        expect(pedido.validarStock()).toBe(true);
     });
 
+    test('Debería devolver que la validación del stock de todos los items no fue exitosa', () => {
+        const itemPedido3 = new ItemPedido(producto1, 6, producto1.getPrecio());
+        const pedido_error = new Pedido(comprador_nuevo, [itemPedido1, itemPedido2, itemPedido3], "ARS" , direccion1);
+        expect(pedido_error.validarStock()).toBe(false);
+    });
 
-    test('debería restar stock de los productos al crear un pedido', () => {
-        const datos = {
-            id: 1,
-            clienteId: 123,
-            total: 250.75,
-            fecha: '2024-06-15',
-            estado: 'pendiente',
-            productos: [
-                { productoId: 1, cantidad: 2 },
-                { productoId: 2, cantidad: 1 }
-            ]
-        };  
-        const pedido = Pedido.crear(datos);
-        expect(pedido).toBeInstanceOf(Pedido);
-        expect(pedido.productos[0].cantidad).toBe(2);
-        expect(pedido.productos[1].cantidad).toBe(1);
-        expect(Producto.findById(1).cantidad).toBe(8); // Stock inicial 10 - 2 vendidos
-        expect(Producto.findById(2).cantidad).toBe(4); // Stock inicial 5 - 1 vendido
-    
+    test('Debería actualizarse el estado correctamente', () =>{
+        pedido.actualizarEstado("EN_PREPARACION", comprador_nuevo, "El pedido ya fue aprobado, ahora entra en preparación");
+        
+        const estadoPreparacion = new CambioEstadoPedido("2025-10-02","EN_PREPARACION",pedido,comprador_nuevo, "El pedido ya fue aprobado, ahora entra en preparación");
+
+        expect(pedido.getEstado()).toBe("EN_PREPARACION");
+        expect(pedido.getHistorialEstados()).toStrictEqual([estadoPreparacion]);
+    });
+
+    test('Debería validar correctamente que se puede cancelar un pedido', () => {
+        const resultado = pedido.validarSePuedeCancelar();
+        expect(resultado).toBe(true);
+    });
+
+    test('Debería validar correctamente que se puede cancelar un pedido', () => {
+        pedido.actualizarEstado("ENVIADO", comprador_nuevo, "El pedido ya fue enviado");
+        expect(() => { pedido.validarSePuedeCancelar(); }).toThrow(NoSePuedeCambiarDeEstadoException);
     });
 });
+
+
 

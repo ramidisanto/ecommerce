@@ -6,8 +6,8 @@
     "start": "node index.js",
     "dev": "node --watch index.js",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-  "test:unit": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=unit",
-  "test:integration": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=integration"
+    "test:unit": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=unit",
+    "test:integration": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=integration"
   },
   "keywords": [],
   "author": "",

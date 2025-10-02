@@ -1,34 +1,40 @@
 import { EstadoPedido } from "../Domain/EstadoPedido.js";
 import { ItemPedido } from "../Domain/ItemPedido.js";
 import { Pedido } from "../Domain/Pedido.js";
+import { FactoryNotificacion } from "../Domain/FactoryNotificacion.js";
+
 
 export class PedidoService{
-    constructor(pedidoRepository, usuarioRepository, productoRepository, servicioNotificacion){
+    constructor(pedidoRepository, usuarioRepository, productoRepository, servicioNotificacion, factoryNotificacion ){
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
         this.productoRepository = productoRepository;
         this.servicioNotificacion = servicioNotificacion;
+        this.factoryNotificacion = factoryNotificacion;
     }
 
     async crearPedido(comprador, items, moneda, direccionEntrega){
         for (const item of items) {
-            const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
-            producto.validarDisponible(item.getCantidad());
+            const producto = await this.productoRepository.obtenerProductoPorId(item.productoId);
+            producto.validarDisponible(item.cantidad);
         }
         const itemsPedido = [];
         for(const item of items){
-            const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
-            const itemPedido = new ItemPedido(producto, item.getCantidad(), item.getPrecioUnitario());
+            const producto = await this.productoRepository.obtenerProductoPorId(item.productoId);
+            const itemPedido = new ItemPedido(producto, item.cantidad, item.precioUnitario);
             itemsPedido.push(itemPedido);
         }
         const pedido = new Pedido(comprador, itemsPedido, moneda, direccionEntrega);
-        const nuevoPedido = await this.pedidoRepository.crearPedido(comprador, itemsPedido, moneda, direccionEntrega);
+
+        const nuevoPedido = await this.pedidoRepository.crearPedido(pedido);
+
         for (const item of itemsPedido) {
             const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
             producto.reducirStock(item.getCantidad());
             await this.productoRepository.actualizarProducto(producto);
         }
-        const notificacion = this.factoryNotificacion.crearNotificacion(pedido);
+
+        const notificacion = this.factoryNotificacion.crearSegunPedido(pedido);
         await this.servicioNotificacion.enviarNotificacion(notificacion);
         return nuevoPedido;
     }
@@ -36,14 +42,16 @@ export class PedidoService{
 
     async cancelarPedido(pedidoId, usuario){
         const pedido = await this.pedidoRepository.obtenerPedidoPorId(pedidoId);
-        pedido.validarSePuedeCancelar(usuario);
+        pedido.validarSePuedeCancelar();
         pedido.actualizarEstado(EstadoPedido.CANCELADO, usuario, "Pedido cancelado por el usuario");
         await this.pedidoRepository.actualizarPedido(pedido);   
+
         for (const item of pedido.getItems()) {
             const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
             producto.aumentarStock(item.getCantidad());
             await this.productoRepository.actualizarProducto(producto);
         }
+        
         const notificacion = this.factoryNotificacion.crearNotificacion(pedido);
         await this.servicioNotificacion.enviarNotificacion(notificacion);
         return pedido;
