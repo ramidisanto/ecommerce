@@ -10,7 +10,7 @@ describe('Pedido.crear', () => {
             fecha: '2024-06-15',
             estado: 'pendiente'
         };
-        const pedido = Pedido.crear(datos);
+        const pedido = Pedido.crear(datos);     //DEBE SER DE PEDIDO SERVICE
 
         expect(pedido).toBeInstanceOf(Pedido);
         expect(pedido.id).toBe(datos.id);

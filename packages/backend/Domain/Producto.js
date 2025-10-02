@@ -1,5 +1,5 @@
-import {DatosInsuficientesException} from "../Exceptions/DatosInsuficientesException.js";
-import {StockInsuficienteException} from "../Exceptions/StockInsuficienteException.js";
+import {DatosInsuficientesException} from "../Excepciones/DatosInsuficientesException.js";
+import {StockInsuficienteException} from "../Excepciones/StockInsuficienteException.js";
 export class Producto{
     id;
     vendedor;

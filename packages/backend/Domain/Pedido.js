@@ -4,7 +4,7 @@ import { Notificacion } from "./Notificacion.js";
 import { factoryNotificacion } from "./FactoryNotificacion.js";
 import { CambioEstadoPedido } from "./CambioEstadoPedido.js";
 import { EstadoPedido } from "./EstadoPedido.js";
-import { NoSePuedeCambiarDeEstadoException } from "../Exceptions/NoSePuedeCancelarException.js";
+import { NoSePuedeCambiarDeEstadoException } from "../Excepciones/NoSePuedeCambiarDeEstadoException.js";
 
 export class Pedido{
     id;
@@ -32,9 +32,6 @@ export class Pedido{
   setEstado(nuevoEstado) {
     this.estado = nuevoEstado;
   }
-
-  
-
 
 
 /*/////////////// GETTERS ///////////////*/
