@@ -2,6 +2,8 @@ import { EstadoPedido } from "../Domain/EstadoPedido.js";
 import { ItemPedido } from "../Domain/ItemPedido.js";
 import { Pedido } from "../Domain/Pedido.js";
 import { FactoryNotificacion } from "../Domain/FactoryNotificacion.js";
+import { TipoUsuario } from "../Domain/TipoUsuario.js";
+import { Usuario } from "../Domain/Usuario.js";
 
 
 export class PedidoService{
@@ -43,7 +45,7 @@ export class PedidoService{
     async cancelarPedido(pedidoId, usuario){
         const pedido = await this.pedidoRepository.obtenerPedidoPorId(pedidoId);
         pedido.validarSePuedeCancelar();
-        pedido.actualizarEstado(EstadoPedido.CANCELADO, usuario, "Pedido cancelado por el usuario");
+        pedido.actualizarEstado(EstadoPedido.Cancelado, usuario, "Pedido cancelado por el usuario");
         await this.pedidoRepository.actualizarPedido(pedido);   
 
         for (const item of pedido.getItems()) {
@@ -65,7 +67,7 @@ export class PedidoService{
     async marcarPedidoEnviado(pedidoId, vendedor){
         const pedido = await this.pedidoRepository.obtenerPedidoPorId(pedidoId);
         
-        pedido.actualizarEstado(EstadoPedido.ENVIADO, vendedor, "Pedido enviado"); 
+        pedido.actualizarEstado(EstadoPedido.Enviado, vendedor, "Pedido enviado"); 
         await this.pedidoRepository.actualizarPedido(pedido);
         const notificacion = this.factoryNotificacion.crearNotificacion(pedido);
         await this.servicioNotificacion.enviarNotificacion(notificacion);
