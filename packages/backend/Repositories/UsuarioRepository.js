@@ -11,6 +11,10 @@ export class UsuarioRepository {
         return !!usuarioDB;
     }
 
+    async findById(id){
+         return await this.model.findById(id);
+    }
+
     
 
 /*  deUsuarioDominioAUsuarioDB(usuario){

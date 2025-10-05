@@ -55,7 +55,7 @@ export class Producto{
     }
 
     getVendedor(){
-        return this.vendedor;
+        return this.vendedorId;
     }
 
     getNombre(){
@@ -66,9 +66,6 @@ export class Producto{
         return this.id;
     }
 
-    getVendedorId(){
-        return this.vendedor.getId();
-    }
 
     getPrecio(){
         return this.precio;

@@ -11,5 +11,7 @@ export class UsuarioService {
         return this.usuarioRepository.exists(id);
     }
 
-
+    async findById(id) {
+        return this.usuarioRepository.findById(id);
+    }
 }

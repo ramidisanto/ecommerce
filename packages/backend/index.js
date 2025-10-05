@@ -11,6 +11,13 @@ import { NotificacionRepository } from "./Repositories/NotificacionRepository.js
 import { MongoDBClient } from "./Config/database.js";
 import { UsuarioRepository } from "./Repositories/UsuarioRepository.js";
 import { UsuarioService } from "./Services/UsuarioService.js";
+import { PedidoController } from "./Controllers/PedidoController.js"
+import { PedidoService } from "./Services/PedidoService.js"
+import { PedidoRepository } from "./Repositories/PedidoRepository.js"
+import { factoryNotificacion } from "./Domain/FactoryNotificacion.js";
+import { ProductoController } from "./Controllers/ProductoController.js"
+import { ProductoService } from "./Services/ProductoService.js"
+import { ProductoRepository } from "./Repositories/ProductoRepository.js"
 
 const app = express();
 app.use(
@@ -34,7 +41,23 @@ const notificacionRepository = new NotificacionRepository()
 const notificacionService = new NotificacionService(notificacionRepository)
 const notificacionController = new NotificacionController(notificacionService, usuarioService)
 
+const productoRepository = new ProductoRepository()
+const productoService = new ProductoService(productoRepository, usuarioRepository)
+const productoController = new ProductoController(productoService)
+
+
+const pedidoRepository = new PedidoRepository()
+const pedidoService = new PedidoService(pedidoRepository, usuarioRepository, productoRepository, notificacionService, factoryNotificacion)
+const pedidoController = new PedidoController(pedidoService, notificacionService, usuarioService)
+
+
+
+
+
+
 server.setController(NotificacionController, notificacionController)
+server.setController(PedidoController, pedidoController)
+server.setController(ProductoController, productoController)
 
 routes.forEach(route => server.addRoute(route))
 server.configureRoutes();

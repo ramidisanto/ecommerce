@@ -1,5 +1,7 @@
 import {Producto} from "../Domain/Producto.js";
 import { NoExisteIdException } from "../Excepciones/NoExisteIdException.js";
+import {Usuario} from "../Domain/Usuario.js";
+import { ProductoRepository } from "../Repositories/ProductoRepository.js";
 
 
 export class ProductoService{
@@ -9,22 +11,22 @@ export class ProductoService{
     }
 
     async buscarTodosPorVendedor(page, limit, filtros, vendedorId){
-        const vendedor = await this.usuarioRepository.exists(vendedorId)
+        const vendedor = await this.usuarioRepository.findById(vendedorId)
         if (!vendedor) {
             throw new NoExisteIdException(vendedorId, "vendedor");
         }
 
         vendedor.verificarEsVendedor();
 
-         const query = { vendedorId: vendedorId };
+        const query = { vendedorId: vendedorId };
 
         // Filtros opcionales
         if (filtros.titulo) {
             query.titulo = new RegExp(filtros.titulo, "i"); // búsqueda parcial
         }
 
-        if (filtros.categoria) {
-            query.categoria = new RegExp(filtros.categoria, "i");
+        if (filtros.categorias) {
+            query.categorias = new RegExp(filtros.categorias, "i");
         }
 
         if (filtros.descripcion) {
@@ -46,7 +48,7 @@ export class ProductoService{
         const numeroPagina = Math.max(Number(page), 1);
         const elementosPorPagina = Math.min(Math.max(Number(limit), 1), 100);
 
-        const productosDeVendedor = this.productoRepository.buscarConFiltros(query, numeroPagina, elementosPorPagina);
+        const productosDeVendedor = this.productoRepository.buscarConFiltros(query, numeroPagina, elementosPorPagina, sortOption);
 
         return productosDeVendedor
     }

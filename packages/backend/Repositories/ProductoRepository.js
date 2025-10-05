@@ -25,11 +25,12 @@ export class ProductoRepository {
         }
     }
 
-    async buscarPorFiltros(query, pagina, elementosPorPagina){
+    async buscarConFiltros(query, pagina, elementosPorPagina, sortOption){
         const skip = (pagina - 1) * elementosPorPagina;
         const productos = await this.model.find(query)
             .skip(skip)
-            .limit(elementosPorPagina);
+            .limit(elementosPorPagina)
+            .sort(sortOption);
 
         const totalProductos = await this.model.countDocuments(query);
         const totalPaginas = Math.ceil(totalProductos / elementosPorPagina);

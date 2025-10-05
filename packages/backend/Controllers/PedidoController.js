@@ -1,13 +1,15 @@
 import { z } from "zod";
 import mongoose from "mongoose";
 import { NoExisteIdException } from "../Excepciones/NoExisteIdException.js";
+import {UsuarioService} from "../Services/UsuarioService.js";
+import { PedidoService } from "../Services/PedidoService.js";
+import { NotificacionService } from "../Services/NotificacionService.js";
 export class PedidoController {
 
-    constructor(servicioPedido, servicioNotificacion, factoryNotificacion, usuarioService){
+    constructor(servicioPedido, servicioNotificacion, usuarioService){
         this.usuarioService = usuarioService;
         this.servicioPedido = servicioPedido;
         this.servicioNotificacion = servicioNotificacion;
-        this.factoryNotificacion = factoryNotificacion;
     }   
 
     async crearPedido (req, res){
@@ -18,14 +20,9 @@ export class PedidoController {
             res.status(400).json(resultbody.error.issues);
             return;
         }
-        const resultId = objectId.safeParse(req.params.id); 
 
-        if (resultId.error) {
-            res.status(400).json(resultId.error.issues);
-            return;
-        }
 
-        const compradorId = resultId.data;
+        const compradorId = resultbody.data.comprador;
         const comprador = await this.usuarioService.findById(compradorId);
         if (!comprador) throw new NoExisteIdException(compradorId, "usuario");
 
@@ -33,7 +30,7 @@ export class PedidoController {
         const moneda = resultbody.data.moneda;
         const direccionEntrega = resultbody.data.direccionEntrega;
         const pedido = await this.servicioPedido.crearPedido(comprador, items, moneda, direccionEntrega);
-        res.status(201).json(aPedidoRest(pedido));
+        res.status(201).json(pedido);
 
 }
 
@@ -135,21 +132,22 @@ const itemSchema = z.object({
 const direccionSchema = z.object({
   calle: z.string().min(1, "La calle es obligatoria"),
   altura: z.number().int().min(1, "La altura debe ser un número positivo"),
-  piso: z.string().optional().nullable(),
+  piso: z.number().int().optional().nullable(),
   departamento: z.string().optional().nullable(),
   codigoPostal: z.number().int().min(1, "El código postal es obligatorio"),
   ciudad: z.string().min(1, "La ciudad es obligatoria"),
   provincia: z.string().min(1, "La provincia es obligatoria"),
   pais: z.string().min(1, "El país es obligatorio"),
-  lat: z.number().int(),
-  lon: z.number().int(),
+  lat: z.number(),
+  lon: z.number(),
 });
 
 // Schema principal del pedido
 export const pedidoSchema = z.object({
-  moneda: z.enum(["ARS", "USD", "EUR"]), 
-  direccionEntrega: direccionSchema,
-  items: z.array(itemSchema).min(1, "Debe haber al menos un item"),
+    comprador: objectId,
+    moneda: z.enum(["ARS", "USD", "EUR"]), 
+    direccionEntrega: direccionSchema,
+    items: z.array(itemSchema).min(1, "Debe haber al menos un item"),
 });
 
 

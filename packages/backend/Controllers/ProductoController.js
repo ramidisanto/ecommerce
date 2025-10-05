@@ -20,7 +20,7 @@ export class ProductoController{
 
         const productosPaginados = await this.productoService.buscarTodosPorVendedor(page, limit, filtros, vendedorId)
 
-        if (productosPaginados.items.length === null || productosPaginados.items.length === 0) {
+        if (productosPaginados === null) {
             res.status(204).send();
             return;
         }

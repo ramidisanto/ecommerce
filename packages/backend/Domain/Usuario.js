@@ -1,4 +1,5 @@
 import { TipoUsuario } from "./TipoUsuario.js";
+import { NoEsVendedorException } from "../Excepciones/NoEsVendedorException.js";
 
 export class Usuario{
     id;
@@ -22,7 +23,7 @@ export class Usuario{
     }
 
     verificarEsVendedor(){
-        if (this.tipo !== TipoUsuario.VENDEDOR) {
+        if (this.tipo !== TipoUsuario.Vendedor) {
             throw new NoEsVendedorException('El usuario no es un Vendedor.');
         }
     }

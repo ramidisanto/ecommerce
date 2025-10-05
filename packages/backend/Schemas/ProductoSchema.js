@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Producto } from "../Domain/Pedido.js";
+import { Producto } from "../Domain/Producto.js";
 
 const ProductoSchema = new mongoose.Schema({
     titulo: {
@@ -51,6 +51,11 @@ const ProductoSchema = new mongoose.Schema({
         type: Boolean,  
         required: true,
         default: true
+    },
+    ventas: {
+        type: Number,
+        required: true,
+        default: 0
     }
 }, {
     timestamps: false,

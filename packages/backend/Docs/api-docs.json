@@ -279,14 +279,14 @@
         "properties": {
           "calle": { "type": "string" },
           "altura": { "type": "integer" },
-          "piso": { "type": "string", "nullable": true },
+          "piso": { "type": "integer", "nullable": true },
           "departamento": { "type": "string", "nullable": true },
           "codigoPostal": { "type": "integer" },
           "ciudad": { "type": "string" },
           "provincia": { "type": "string" },
           "pais": { "type": "string" },
-          "lat": { "type": "integer" },
-          "lon": { "type": "integer" }
+          "lat": { "type": "float" },
+          "lon": { "type": "float" }
         }
       },
       "ItemPedido": {

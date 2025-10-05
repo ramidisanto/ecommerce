@@ -1,5 +1,20 @@
 import mongoose from "mongoose";
 import { Pedido } from "../Domain/Pedido.js";
+import { DireccionEntrega } from "../Domain/DireccionEntrega.js";
+
+const DireccionEntregaSchema = new mongoose.Schema({
+  calle: { type: String, required: true },
+  altura: { type: Number, required: true },
+  piso: { type: Number },
+  departamento: { type: String },
+  codigoPostal: { type: Number, required: true },
+  ciudad: { type: String, required: true },
+  provincia: { type: String, required: true },
+  pais: { type: String, required: true },
+  lat: { type: Number },
+  lon: { type: Number }
+}, { _id: false });
+
 
 const PedidoSchema = new mongoose.Schema({
     comprador: {
@@ -7,8 +22,8 @@ const PedidoSchema = new mongoose.Schema({
         ref: "Usuario",
         required: true
     },
-    itemsPedidos: [{
-        producto: {
+    items: [{
+        productoId: {
             type: mongoose.Schema.Types.ObjectId,   
             ref: "Producto",
             required: true
@@ -31,10 +46,8 @@ const PedidoSchema = new mongoose.Schema({
         enum: ['ARS','USD','EUR']
     },
     direccionEntrega: {
-        type: String,
-        required: true,
-        minlength: 5,
-        maxlength: 100
+        type: DireccionEntregaSchema,
+        required: true
     },
     estado: {
         type: String,
@@ -76,7 +89,7 @@ const PedidoSchema = new mongoose.Schema({
 });
 
 PedidoSchema.pre(/^find/, function(next) {
-    this.populate('comprador').populate('historialEstados.usuario').populate('itemsPedidos.producto');
+    this.populate('comprador').populate('historialEstados.usuario').populate('items.productoId');
     next();
 });
 PedidoSchema.loadClass(Pedido);

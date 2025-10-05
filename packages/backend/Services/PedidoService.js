@@ -18,6 +18,7 @@ export class PedidoService{
     async crearPedido(comprador, items, moneda, direccionEntrega){
         for (const item of items) {
             const producto = await this.productoRepository.obtenerProductoPorId(item.productoId);
+            if (!producto) throw new NoExisteIdException(item.productoId, "producto");
             producto.validarDisponible(item.cantidad);
         }
         const itemsPedido = [];

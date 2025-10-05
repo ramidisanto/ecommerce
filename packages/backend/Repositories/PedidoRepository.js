@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb";
-import { Pedido } from "../Dominio/Pedido.js";
+import { Pedido } from "../Domain/Pedido.js";
 import { PedidoModel } from "../Schemas/PedidoSchema.js";
 import { NoExisteIdException } from "../Excepciones/NoExisteIdException.js";
 
@@ -52,7 +52,10 @@ export class PedidoRepository {
         return pedido;
     }
 */  
-    async crearPedido(pedido){
+    async crearPedido(pedido){//VER COMO GUARDAR EL ID DE TODO
+        const pedidoADb = pedido.map(p => ({
+            idComprador: new ObjectId(p.getComprador().id),
+        })
         const pedidoNuevo = new this.model(pedido);
         const pedidoGuardado = await pedidoNuevo.save();
         return pedidoGuardado;

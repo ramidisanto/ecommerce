@@ -427,7 +427,7 @@ components:
         altura:
           type: integer
         piso:
-          type: string
+          type: integer
           nullable: true
         departamento:
           type: string
@@ -441,9 +441,9 @@ components:
         pais:
           type: string
         lat:
-          type: integer
+          type: float
         lon:
-          type: integer
+          type: float
     ItemPedido:
       type: object
       properties:
