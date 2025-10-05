@@ -99,7 +99,7 @@ const leidaTransform = z
     if (val === "false") return false;
     ctx.addIssue({
       code: "invalid_type",
-      message: "leida must be 'true' or 'false'",
+      message: "El parámetro 'leida' debe ser booleano",
     });
     return z.NEVER;
   })

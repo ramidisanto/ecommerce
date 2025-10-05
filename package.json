@@ -27,7 +27,8 @@
     "prettier": "3.6.2"
   },
   "dependencies": {
-    "mongoose": "^8.18.2",
-    "sabe": "^1.0.0"
+    "mongoose": "^8.19.0",
+    "sabe": "^1.0.0",
+    "swagger-ui-express": "^5.0.1"
   }
 }

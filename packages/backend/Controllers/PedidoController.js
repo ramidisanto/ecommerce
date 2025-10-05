@@ -141,8 +141,8 @@ const direccionSchema = z.object({
   ciudad: z.string().min(1, "La ciudad es obligatoria"),
   provincia: z.string().min(1, "La provincia es obligatoria"),
   pais: z.string().min(1, "El país es obligatorio"),
-  lat: z.number().float(),
-  lon: z.number().float(),
+  lat: z.number().int(),
+  lon: z.number().int(),
 });
 
 // Schema principal del pedido

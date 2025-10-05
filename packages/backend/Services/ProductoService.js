@@ -3,7 +3,7 @@ import { NoExisteIdException } from "../Excepciones/NoExisteIdException.js";
 
 
 export class ProductoService{
-    constructor(ProductoRepository, UsuarioRepositoryUsuarioRepository){
+    constructor(ProductoRepository, UsuarioRepository){
         this.productoRepository = ProductoRepository
         this.usuarioRepository = UsuarioRepository
     }
