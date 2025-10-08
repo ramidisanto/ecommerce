@@ -12,7 +12,7 @@ export class UsuarioRepository {
     }
 
     async findById(id){
-         return await this.model.findById(id);
+        return await this.model.findById(id);
     }
 
     

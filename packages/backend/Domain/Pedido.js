@@ -48,7 +48,7 @@ export class Pedido{
   }
 
   getVendedor(){
-    return this.items[0].getVendedor(); // Asumiendo que todos los productos son del mismo vendedor
+    return this.items[0]?.getVendedor(); // Asumiendo que todos los productos son del mismo vendedor
   }
 
   getTotal() {

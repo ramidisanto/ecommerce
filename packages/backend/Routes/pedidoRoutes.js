@@ -16,7 +16,7 @@ export default function pedidoRoutes(getController) {
         }
     });
 
-    router.delete('/pedido/:id', async (req, res, next) => {
+    router.delete('/usuarios/:usuarioId/pedido/:pedidoId', async (req, res, next) => {
         try {
           await getController(PedidoController).cancelarPedido(req, res);
         } catch (err) {

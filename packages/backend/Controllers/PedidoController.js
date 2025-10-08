@@ -15,43 +15,61 @@ export class PedidoController {
     async crearPedido (req, res){
 
         const resultbody = pedidoSchema.safeParse(req.body); 
+        console.log("primera entrada");
 
         if (resultbody.error) {
             res.status(400).json(resultbody.error.issues);
             return;
         }
 
+        console.log("segunda entrada");
 
         const compradorId = resultbody.data.comprador;
+
+        console.log("tercera entrada");
+
         const comprador = await this.usuarioService.findById(compradorId);
         if (!comprador) throw new NoExisteIdException(compradorId, "usuario");
-
+        console.log("cuarta entrada");
         const items = resultbody.data.items;
         const moneda = resultbody.data.moneda;
         const direccionEntrega = resultbody.data.direccionEntrega;
+        console.log("quinta entrada");
         const pedido = await this.servicioPedido.crearPedido(comprador, items, moneda, direccionEntrega);
+        console.log("sexta entrada");
         res.status(201).json(pedido);
 
 }
 
      async cancelarPedido (req, res){
 
-        const resultId = objectId.safeParse(req.params.id); 
+        const resultIdPedido = objectId.safeParse(req.params.pedidoId); 
+        const resultIdUsuario = objectId.safeParse(req.params.usuarioId);
+        console.log("primera entrada");
 
-        if (resultId.error) {
+        if (resultIdPedido.error) {
                 res.status(400).json(resultId.error.issues);
                 return;
         }
 
-        const pedidoId = resultId.data;
-        const pedido = await this.servicioPedido.cancelarPedido(pedidoId);
-            
+        if (resultIdUsuario.error) {
+                res.status(400).json(resultId.error.issues);
+                return;
+        }
+
+        console.log("segunda entrada");
+        const pedidoId = resultIdPedido.data;
+        const usuarioId = resultIdUsuario.data;
+        const pedido = await this.servicioPedido.cancelarPedido(pedidoId, usuarioId);
+        
+        console.log("tercera entrada");
         if(pedido){   
             res.status(200).json(aPedidoRest(pedido));
         } else {
             throw new NoExisteIdException(pedidoId, "pedido");
         }
     }
+        
 
      async obtenerHistorial (req, res){
         
@@ -92,7 +110,7 @@ export class PedidoController {
     }
 }
 
-const aPedidoRest = (pedido) => ({
+const aPedidoRest = (pedido) => {return {
     id: pedido.id,
     comprador: pedido.getNombreComprador(),
     items: pedido.getItems().map(item => ({
@@ -111,7 +129,7 @@ const aPedidoRest = (pedido) => ({
         quien: estado.usuario.getNombre(),
         motivo: estado.motivo
     }))
-});
+}};
 
 
 // Validador de ObjectId de Mongoose

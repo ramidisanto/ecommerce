@@ -52,35 +52,37 @@ export class PedidoRepository {
         return pedido;
     }
 */  
-    async crearPedido(pedido){//VER COMO GUARDAR EL ID DE TODO
-        const pedidoADb = pedido.map(p => ({
-            idComprador: new ObjectId(p.getComprador().id),
-        })
+    async crearPedido(pedido){
         const pedidoNuevo = new this.model(pedido);
         const pedidoGuardado = await pedidoNuevo.save();
         return pedidoGuardado;
     }
 
-    async obtenerPedidosPorUsuarioId(usuarioId){
-        return await this.model.find({idComprador: usuarioId});
-    }
-
-    async obtenerPedidoPorId(pedidoId){
-        return await this.model.findById(pedidoId);
-    }
-
     async actualizarPedido(pedido){
-        if (pedido.id || pedido._id) {
-            const pedidoActualizado = await this.model.findByIdAndUpdate(
-                pedido.id || pedido._id,
-                pedido, 
-                {new: true, runValidators: true}
-            );
-            return pedidoActualizado;   
-        } else {
-            throw new NoExisteIdException;
-        }
+        let pedidoActualizado = await this.model.findByIdAndUpdate(
+            pedido.id || pedido._id,
+            pedido, 
+            {new: true, runValidators: true}
+        );
+        pedidoActualizado = await this.obtenerProductosDePedido(pedidoActualizado);
+        return pedidoActualizado;
     }
+
+    async obtenerPedidosPorUsuarioId(usuarioId) {
+        const pedidos = await this.model.find({ idComprador: usuarioId });
+        return Promise.all(pedidos.map(p => this.obtenerProductosDePedido(p)));
+    }
+
+    async obtenerProductosDePedido(pedido) {
+        await pedido.populate('items.productoId');
+        return pedido;
+    }
+
+    async obtenerPedidoPorId(pedidoId) {
+        const pedido = await this.model.findById(pedidoId);
+        return await this.obtenerProductosDePedido(pedido);
+    }
+
 
 }
   

@@ -2,6 +2,7 @@ import {Producto} from "../Domain/Producto.js";
 import { NoExisteIdException } from "../Excepciones/NoExisteIdException.js";
 import {Usuario} from "../Domain/Usuario.js";
 import { ProductoRepository } from "../Repositories/ProductoRepository.js";
+import { UsuarioRepository } from "../Repositories/UsuarioRepository.js";
 
 
 export class ProductoService{
@@ -11,7 +12,7 @@ export class ProductoService{
     }
 
     async buscarTodosPorVendedor(page, limit, filtros, vendedorId){
-        const vendedor = await this.usuarioRepository.findById(vendedorId)
+        const vendedor = await this.usuarioRepository.findById(vendedorId);
         if (!vendedor) {
             throw new NoExisteIdException(vendedorId, "vendedor");
         }
@@ -22,7 +23,7 @@ export class ProductoService{
 
         // Filtros opcionales
         if (filtros.titulo) {
-            query.titulo = new RegExp(filtros.titulo, "i"); // búsqueda parcial
+            query.titulo = new RegExp(filtros.titulo, "i"); 
         }
 
         if (filtros.categorias) {
