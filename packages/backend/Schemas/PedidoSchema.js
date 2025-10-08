@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Pedido } from "../Domain/Pedido.js";
 import { DireccionEntrega } from "../Domain/DireccionEntrega.js";
+import { ItemPedido } from "../Domain/ItemPedido.js";
 
 const DireccionEntregaSchema = new mongoose.Schema({
   calle: { type: String, required: true },
@@ -15,6 +16,32 @@ const DireccionEntregaSchema = new mongoose.Schema({
   lon: { type: Number }
 }, { _id: false });
 
+DireccionEntregaSchema.loadClass(DireccionEntrega);
+
+const ItemPedidoSchema = new mongoose.Schema({
+    producto: {
+                type: mongoose.Schema.Types.ObjectId,   
+                ref: "Producto",
+                required: true
+            },
+            cantidad: {
+                type: Number,
+                required: true,
+                min: 1
+            },
+            precioUnitario: {
+                type: Number,
+                required: true,
+                min: 0
+}}, { _id: false }); 
+/*
+ItemPedidoSchema.pre(/^find/, function(next) {
+    this.populate('productoId');
+    next();
+});*/
+
+ItemPedidoSchema.loadClass(ItemPedido);
+
 
 const PedidoSchema = new mongoose.Schema({
     comprador: {
@@ -22,23 +49,10 @@ const PedidoSchema = new mongoose.Schema({
         ref: "Usuario",
         required: true
     },
-    items: [{
-        productoId: {
-            type: mongoose.Schema.Types.ObjectId,   
-            ref: "Producto",
-            required: true
-        },
-        cantidad: {
-            type: Number,
-            required: true,
-            min: 1
-        },
-        precioUnitario: {
-            type: Number,
-            required: true,
-            min: 0
-        }
-    }],
+    items: {
+        type: [ItemPedidoSchema],
+        required: true
+    },
     // evitamos adrede el atributo total por ser calculable
     moneda: {
         type: String,
@@ -71,7 +85,7 @@ const PedidoSchema = new mongoose.Schema({
             required: true,
             enum: ['PENDIENTE', 'ENVIADO', 'ENTREGADO', 'CANCELADO']    
         },
-        // no tendría sentido meter el pedido en el historial de cambios de estado
+        // no tendrÃ­a sentido meter el pedido en el historial de cambios de estado
         usuario: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Usuario",
@@ -89,7 +103,7 @@ const PedidoSchema = new mongoose.Schema({
 });
 
 PedidoSchema.pre(/^find/, function(next) {
-    this.populate('comprador').populate('historialEstados.usuario').populate('items.productoId');
+    this.populate('comprador').populate('historialEstados.usuario').populate('items.producto').populate('items.producto.vendedorId');
     next();
 });
 PedidoSchema.loadClass(Pedido);

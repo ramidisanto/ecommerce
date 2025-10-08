@@ -48,7 +48,7 @@ export class Pedido{
   }
 
   getVendedor(){
-    return this.items[0]?.getVendedor(); // Asumiendo que todos los productos son del mismo vendedor
+    return this.items[0].getVendedor(); // Asumiendo que todos los productos son del mismo vendedor
   }
 
   getTotal() {
@@ -90,7 +90,7 @@ export class Pedido{
   // actualizarEstado(nuevoEstado: EstadoPedido, quien: Usuario, motivo: String): void
   actualizarEstado(estado, usuario, motivo){
       this.setEstado(estado);
-      const nuevoEstado = new CambioEstadoPedido(new Date().toISOString().split("T")[0], estado, this, usuario, motivo);
+      const nuevoEstado = new CambioEstadoPedido(new Date().toISOString().split("T")[0], estado, usuario, motivo);
       this.historialEstados.push(nuevoEstado);
   }
 

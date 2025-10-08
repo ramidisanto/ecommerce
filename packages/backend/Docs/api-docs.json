@@ -285,8 +285,8 @@
           "ciudad": { "type": "string" },
           "provincia": { "type": "string" },
           "pais": { "type": "string" },
-          "lat": { "type": "float" },
-          "lon": { "type": "float" }
+          "lat": { "type": "number" },
+          "lon": { "type": "number" }
         }
       },
       "ItemPedido": {

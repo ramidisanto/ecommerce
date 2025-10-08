@@ -15,28 +15,18 @@ export class PedidoController {
     async crearPedido (req, res){
 
         const resultbody = pedidoSchema.safeParse(req.body); 
-        console.log("primera entrada");
 
         if (resultbody.error) {
             res.status(400).json(resultbody.error.issues);
             return;
         }
-
-        console.log("segunda entrada");
-
         const compradorId = resultbody.data.comprador;
-
-        console.log("tercera entrada");
-
         const comprador = await this.usuarioService.findById(compradorId);
         if (!comprador) throw new NoExisteIdException(compradorId, "usuario");
-        console.log("cuarta entrada");
         const items = resultbody.data.items;
         const moneda = resultbody.data.moneda;
         const direccionEntrega = resultbody.data.direccionEntrega;
-        console.log("quinta entrada");
         const pedido = await this.servicioPedido.crearPedido(comprador, items, moneda, direccionEntrega);
-        console.log("sexta entrada");
         res.status(201).json(pedido);
 
 }
@@ -44,25 +34,18 @@ export class PedidoController {
      async cancelarPedido (req, res){
 
         const resultIdPedido = objectId.safeParse(req.params.pedidoId); 
-        const resultIdUsuario = objectId.safeParse(req.params.usuarioId);
-        console.log("primera entrada");
+
 
         if (resultIdPedido.error) {
                 res.status(400).json(resultId.error.issues);
                 return;
         }
 
-        if (resultIdUsuario.error) {
-                res.status(400).json(resultId.error.issues);
-                return;
-        }
 
-        console.log("segunda entrada");
         const pedidoId = resultIdPedido.data;
-        const usuarioId = resultIdUsuario.data;
-        const pedido = await this.servicioPedido.cancelarPedido(pedidoId, usuarioId);
+        const pedido = await this.servicioPedido.cancelarPedido(pedidoId);
         
-        console.log("tercera entrada");
+
         if(pedido){   
             res.status(200).json(aPedidoRest(pedido));
         } else {
@@ -85,10 +68,10 @@ export class PedidoController {
         const usuario = await this.usuarioService.findById(usuarioId);
         if (!usuario) throw new NoExisteIdException(usuarioId, "usuario");
 
-        const pedidos = await this.pedidoService.obtenerHistorialPedidos(usuarioId);
+        const pedidos = await this.servicioPedido.obtenerHistorialPedidos(usuarioId);
         if (!pedidos || pedidos.length === 0) return res.status(204).send();
 
-        res.status(200).json(pedidos.map(aPedidoRest));
+        res.status(200).json(pedidos);
         }
 
       async marcarPedidoEnviado(req, res){
@@ -100,43 +83,21 @@ export class PedidoController {
         }
 
         const pedidoId = resultId.data;
-        const vendedor = req.usuario;
 
-        const pedido = await this.pedidoService.marcarPedidoEnviado(pedidoId, vendedor);
+        const pedido = await this.servicioPedido.marcarPedidoEnviado(pedidoId);
         if (!pedido) throw new NoExisteIdException(pedidoId, "pedido");
 
-        res.status(200).json({ message: "Pedido marcado como enviado" });
+        res.status(200).json(pedido);
 
     }
 }
-
-const aPedidoRest = (pedido) => {return {
-    id: pedido.id,
-    comprador: pedido.getNombreComprador(),
-    items: pedido.getItems().map(item => ({
-        producto: item.getProductoId(),
-        cantidad: item.getCantidad(),
-        precioUnitario: item.getPrecioUnitario()
-    })),
-    total: pedido.getTotal(),
-    moneda: pedido.getMoneda(),
-    direccionEntrega: pedido.getDireccionEntrega(),
-    estado: pedido.getEstado(),
-    fechaCreacion: pedido.fechaCreacion,
-    historialEstados: pedido.getHistorialEstados().map(estado => ({
-        fecha: estado.fecha,
-        estado: estado.estado,
-        quien: estado.usuario.getNombre(),
-        motivo: estado.motivo
-    }))
-}};
 
 
 // Validador de ObjectId de Mongoose
 const objectId = z
   .string()
   .refine((val) => mongoose.Types.ObjectId.isValid(val), {
-    message: "El id de producto no es un ObjectId válido",
+    message: "El id no es un ObjectId válido",
   });
 
 // Schema para un item del pedido

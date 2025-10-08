@@ -441,9 +441,9 @@ components:
         pais:
           type: string
         lat:
-          type: float
+          type: number
         lon:
-          type: float
+          type: number
     ItemPedido:
       type: object
       properties:
