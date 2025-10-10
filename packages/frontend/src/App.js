@@ -1,24 +1,30 @@
-import React, { useState, useEffect } from "react";
-import "./App.css";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+
+import Navbar from './componentes/Navbar/Navbar';
+import Footer from './componentes/Footer/Footer';
+
+import Landing from './paginas/Landing';
+
 
 function App() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    fetch("http://localhost:8000/hello")
-      .then((response) => response.json())
-      .then((data) => setMessage(data.message))
-      .catch((error) => console.error("Error cargando mensaje.", error));
-  }, []);
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Monorepo Demo</h1>
-        <p>{message ? message : "Cargando mensaje del backend..."}</p>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Navbar />
+        
+        <main>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
 export default App;
+
