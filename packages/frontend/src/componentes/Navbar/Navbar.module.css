@@ -1,0 +1,78 @@
+.navbarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+  position: sticky; 
+  z-index: 1000; 
+  width: 100%;
+  box-sizing: border-box; 
+}
+
+.logo a {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #1A2C42; 
+  text-decoration: none;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 30px; 
+  margin: 0;
+  padding: 0;
+}
+
+.navList a {
+  text-decoration: none;
+  color: #4A4A4A;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.2s ease-in-out;
+}
+
+.navList a:hover {
+  color: #FF6B00; 
+}
+
+.actionBoton {
+  display: flex;
+  gap: 1rem;
+}
+
+.loginBoton, .carritoBoton {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.loginBoton{
+  background-color: transparent;
+  color: #1A2C42;
+  border-color: #1A2C42;
+}
+
+.loginBotonhover { /*Es la sombrita que se hace cuando posicionas*/
+  background-color: #1A2C42;
+  color: white;
+}
+
+.carritoBoton{
+  background-color: #FF6B00; 
+  color: white;
+  border-color: #FF6B00;
+}
+
+.carritoBotonhover {  /*Es la sombrita que se hace cuando posicionas*/
+  background-color: #e66000;
+  border-color: #e66000;
+}
