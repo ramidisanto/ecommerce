@@ -1,0 +1,545 @@
+openapi: 3.0.3
+info:
+  title: API de Tienda Sol - Plataforma de Comercio Electrónico
+  version: 1.0.1
+  description: API REST que gestiona pedidos, productos y notificaciones de la plataforma Tienda Sol. Incluye rutas para crear, consultar, cancelar y actualizar pedidos; listar productos de vendedores; y manejar notificaciones de usuarios.
+servers:
+  - url: http://localhost:8000
+    description: Servidor local de desarrollo
+tags:
+  - name: Notificaciones
+    description: Gestión de notificaciones de usuarios
+  - name: Pedidos
+    description: Operaciones relacionadas con pedidos
+  - name: Productos
+    description: Consulta de productos por vendedor
+paths:
+  /usuarios/{id}/notificaciones:
+    get:
+      tags:
+        - Notificaciones
+      summary: Obtener notificaciones de un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del usuario
+        - name: leida
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Filtra notificaciones leídas o no leídas
+      responses:
+        '200':
+          description: Lista de notificaciones del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notificacion'
+        '204':
+          description: El usuario no tiene notificaciones
+        '400':
+          description: ID o parámetro 'leida' inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                parametrosInvalidos:
+                  value:
+                    error: El parámetro 'leida' debe ser booleano.
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                usuarioNoExiste:
+                  value:
+                    id: '123'
+                    message: Usuario con id 123 no existe
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                errorInterno:
+                  value:
+                    error: Ups. Algo sucedio en el servidor.
+  /notificacion/{id}:
+    patch:
+      tags:
+        - Notificaciones
+      summary: Marcar notificación como leída
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de la notificación
+      responses:
+        '200':
+          description: Notificación marcada como leída
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+        '400':
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Notificación no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notificacionNoExiste:
+                  value:
+                    id: '321'
+                    message: Notificación con id 321 no existe
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /pedido:
+    post:
+      tags:
+        - Pedidos
+      summary: Crear un nuevo pedido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PedidoInput'
+      responses:
+        '201':
+          description: Pedido creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pedido'
+        '400':
+          description: Datos insuficientes o stock insuficiente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                datosInsuficientes:
+                  value:
+                    message: Para conocer si el stock del producto es suficiente, se debe conocer la cantidad solicitada. La misma debe ser un valor mayor a 0
+                stockInsuficiente:
+                  value:
+                    message: No hay suficiente stock
+        '404':
+          description: Usuario comprador no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                usuarioNoExiste:
+                  value:
+                    id: u12
+                    message: Usuario con id u12 no existe
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /pedido/{id}:
+    delete:
+      tags:
+        - Pedidos
+      summary: Cancelar un pedido por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del pedido
+      responses:
+        '200':
+          description: Pedido cancelado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pedido'
+        '400':
+          description: No se puede cancelar el pedido en su estado actual
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                noSePuedeCancelar:
+                  value:
+                    message: El pedido no se puede cancelar en su estado actual.
+        '404':
+          description: Pedido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                pedidoNoExiste:
+                  value:
+                    id: p45
+                    message: Pedido con id p45 no existe
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /usuarios/{id}/pedidos:
+    get:
+      tags:
+        - Pedidos
+      summary: Obtener historial de pedidos de un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del usuario
+      responses:
+        '200':
+          description: Lista de pedidos del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pedido'
+        '204':
+          description: El usuario no tiene pedidos
+        '400':
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                usuarioNoExiste:
+                  value:
+                    id: u22
+                    message: Usuario con id u22 no existe
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /pedido/{id}/enviado:
+    patch:
+      tags:
+        - Pedidos
+      summary: Marcar un pedido como enviado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del pedido
+      responses:
+        '200':
+          description: Pedido marcado como enviado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Pedido marcado como enviado
+        '400':
+          description: ID inválido o no se puede cambiar de estado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                noSePuedeCambiar:
+                  value:
+                    message: El pedido no se puede cancelar en su estado actual.
+        '404':
+          description: Pedido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                pedidoNoExiste:
+                  value:
+                    id: p77
+                    message: Pedido con id p77 no existe
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /vendedor/{id}/productos:
+    get:
+      tags:
+        - Productos
+      summary: Obtener productos por vendedor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: titulo
+          in: query
+          schema:
+            type: string
+        - name: categoria
+          in: query
+          schema:
+            type: string
+        - name: descripcion
+          in: query
+          schema:
+            type: string
+        - name: precioMin
+          in: query
+          schema:
+            type: number
+        - name: precioMax
+          in: query
+          schema:
+            type: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: precioAsc
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista paginada de productos del vendedor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductosPaginados'
+        '204':
+          description: No hay productos para mostrar
+        '403':
+          description: El usuario no es un vendedor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                noEsVendedor:
+                  value:
+                    id: v12
+                    message: El usuario no es un Vendedor.
+        '404':
+          description: Vendedor o producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                vendedorNoExiste:
+                  value:
+                    id: v12
+                    message: Vendedor con id v12 no existe
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          nullable: true
+          example: f4a1b23
+        message:
+          type: string
+          example: Pedido con id f4a1b23 no existe
+        error:
+          type: string
+          example: Ups. Algo sucedio en el servidor.
+      description: Estructura base de errores manejados por la API
+    Notificacion:
+      type: object
+      properties:
+        id:
+          type: string
+        mensaje:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+        leida:
+          type: boolean
+        usuarioId:
+          type: string
+    Direccion:
+      type: object
+      properties:
+        calle:
+          type: string
+        altura:
+          type: integer
+        piso:
+          type: integer
+          nullable: true
+        departamento:
+          type: string
+          nullable: true
+        codigoPostal:
+          type: integer
+        ciudad:
+          type: string
+        provincia:
+          type: string
+        pais:
+          type: string
+        lat:
+          type: number
+        lon:
+          type: number
+    ItemPedido:
+      type: object
+      properties:
+        producto:
+          type: string
+        cantidad:
+          type: integer
+        precioUnitario:
+          type: number
+    Pedido:
+      type: object
+      properties:
+        id:
+          type: string
+        comprador:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemPedido'
+        total:
+          type: number
+        moneda:
+          type: string
+          enum:
+            - ARS
+            - USD
+            - EUR
+        direccionEntrega:
+          $ref: '#/components/schemas/Direccion'
+        estado:
+          type: string
+        fechaCreacion:
+          type: string
+          format: date-time
+        historialEstados:
+          type: array
+          items:
+            type: object
+            properties:
+              fecha:
+                type: string
+                format: date-time
+              estado:
+                type: string
+              quien:
+                type: string
+              motivo:
+                type: string
+    PedidoInput:
+      type: object
+      properties:
+        moneda:
+          type: string
+          enum:
+            - ARS
+            - USD
+            - EUR
+        direccionEntrega:
+          $ref: '#/components/schemas/Direccion'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemPedido'
+          minItems: 1
+      required:
+        - moneda
+        - direccionEntrega
+        - items
+    Producto:
+      type: object
+      properties:
+        id:
+          type: string
+        titulo:
+          type: string
+        categoria:
+          type: string
+        descripcion:
+          type: string
+        precio:
+          type: number
+        stock:
+          type: integer
+        vendedorId:
+          type: string
+    ProductosPaginados:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Producto'

@@ -4,7 +4,7 @@ import { Notificacion } from "./Notificacion.js";
 import { factoryNotificacion } from "./FactoryNotificacion.js";
 import { CambioEstadoPedido } from "./CambioEstadoPedido.js";
 import { EstadoPedido } from "./EstadoPedido.js";
-
+import { NoSePuedeCambiarDeEstadoException } from "../Excepciones/NoSePuedeCambiarDeEstadoException.js";
 
 export class Pedido{
     id;
@@ -32,9 +32,6 @@ export class Pedido{
   setEstado(nuevoEstado) {
     this.estado = nuevoEstado;
   }
-
-  
-
 
 
 /*/////////////// GETTERS ///////////////*/
@@ -93,12 +90,19 @@ export class Pedido{
   // actualizarEstado(nuevoEstado: EstadoPedido, quien: Usuario, motivo: String): void
   actualizarEstado(estado, usuario, motivo){
       this.setEstado(estado);
-      const nuevoEstado = new CambioEstadoPedido(new Date().toISOString().split("T")[0], estado, this, usuario, motivo);
+      const nuevoEstado = new CambioEstadoPedido(new Date().toISOString().split("T")[0], estado, usuario, motivo);
       this.historialEstados.push(nuevoEstado);
   }
 
   notificar(){
     return factoryNotificacion.crearSegunPedido(this);
+  }
+
+  validarSePuedeCancelar(){
+    if(this.getEstado() != EstadoPedido.Pendiente && this.getEstado() != EstadoPedido.Confirmado && this.getEstado() != EstadoPedido.En_Preparacion){
+        throw new NoSePuedeCambiarDeEstadoException("El pedido no se puede cancelar en su estado actual.");
+    }
+    return true;
   }
 
 }

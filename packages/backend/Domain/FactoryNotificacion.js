@@ -2,7 +2,7 @@ import { Notificacion } from "./Notificacion.js";
 import { EstadoPedido } from "./EstadoPedido.js";
 import { Pedido } from "./Pedido.js";
 import { ItemPedido } from "./ItemPedido.js";
-class FactoryNotificacion {
+export class FactoryNotificacion {
 
     crearSegunEstado(estado) {
         let mensaje
@@ -34,11 +34,11 @@ class FactoryNotificacion {
 
     crearSegunPedido(pedido) {
         const estado = pedido.getEstado();
-        const mensaje = this.crearSegunEstado(pedido.getEstado());
+        let mensaje = this.crearSegunEstado(pedido.getEstado());
 
         if (estado == EstadoPedido.Cancelado || estado == EstadoPedido.Pendiente) { 
             if(estado == EstadoPedido.Pendiente){
-                mensaje = `Nuevo pedido de ${pedido.getNombreComprador()}, sobre los productos ${pedido.getNombreItems().join(", ")}. Total: ${pedido.getTotal()} ${pedido.getMoneda()}. Entrega en: ${pedido.getDireccionEntrega()}`;
+                mensaje = `Nuevo pedido de ${pedido.getNombreComprador()}, sobre los productos ${pedido.getNombreItems().join(", ")}. Total: ${pedido.getTotal()} ${pedido.getMoneda()}. Entrega en: ${pedido.getDireccionEntrega().toString()}`;
             }
             return new Notificacion(pedido.getVendedor(), mensaje, Date.now());
 

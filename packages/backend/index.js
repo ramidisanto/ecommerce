@@ -1,16 +1,23 @@
 import "dotenv/config";
-import express from "express";
+import dotenv from "dotenv"
+import express from "express"
+import { Server } from "./server.js"
+import routes from "./Routes/routes.js"
 import cors from "cors";
-import {startServer} from "./App/server.js";
-import {buildAppContext} from "./App/context.js";
-import { Usuario } from "./Domain/Usuario.js";
-import { ItemPedido } from "./Domain/ItemPedido.js";
-import { Pedido } from "./Domain/Pedido.js";
-import { CambioEstadoPedido } from "./Domain/CambioEstadoPedido.js";
-import { EstadoPedido } from "./Domain/EstadoPedido.js";
-import { DireccionEntrega } from "./Domain/DireccionEntrega.js";
-import { Producto } from "./Domain/Producto.js";
-import { Moneda } from "./Domain/Moneda.js";
+
+import { NotificacionController } from "./Controllers/NotificacionController.js"
+import { NotificacionService } from "./Services/NotificacionService.js"
+import { NotificacionRepository } from "./Repositories/NotificacionRepository.js"
+import { MongoDBClient } from "./Config/database.js";
+import { UsuarioRepository } from "./Repositories/UsuarioRepository.js";
+import { UsuarioService } from "./Services/UsuarioService.js";
+import { PedidoController } from "./Controllers/PedidoController.js"
+import { PedidoService } from "./Services/PedidoService.js"
+import { PedidoRepository } from "./Repositories/PedidoRepository.js"
+import { factoryNotificacion } from "./Domain/FactoryNotificacion.js";
+import { ProductoController } from "./Controllers/ProductoController.js"
+import { ProductoService } from "./Services/ProductoService.js"
+import { ProductoRepository } from "./Repositories/ProductoRepository.js"
 
 const app = express();
 app.use(
@@ -20,35 +27,48 @@ app.use(
       : true,
   }),
 );
-const appContext = buildAppContext()
 
-startServer(app, process.env.SERVER_PORT , appContext);
+const port = process.env.SERVER_PORT 
+dotenv.config();
 
+// Se envía al server el puerto
+const server = new Server(app, port)
 
-//PRUEBAS DE CONSTRUCCION DE OBJETOS
-const monedaArgentina = Moneda.Peso
+const usuarioRepository = new UsuarioRepository()
+const usuarioService = new UsuarioService(usuarioRepository)
 
-const fechaActual = new Date().toISOString().split("T")[0];
+const notificacionRepository = new NotificacionRepository()
+const notificacionService = new NotificacionService(notificacionRepository)
+const notificacionController = new NotificacionController(notificacionService, usuarioService)
 
-const usuario1 = new Usuario("Juan", "juan@email.com", 123456789, "COMPRADOR", fechaActual);
-
-const producto1 = new Producto(usuario1, "Pastas de diente", "Es de muy buena calidad", ["categoria"], 200, monedaArgentina , 1234566, true)
-
-const item1 = new ItemPedido( producto1, 2,  15.99);
-const direccion1 = new DireccionEntrega( "Av. Siempre Viva", 742, 1,  "A", "1234", "Ciudad Autonoma de Buenos Aires", "Buenos Aires", "Argentina", -34.6037, -34.6037,);
-
-const pedidoPrueba = new Pedido(usuario1, [item1], monedaArgentina , direccion1);
-pedidoPrueba.notificar();
-
-//console.log("Comprador de prueba:", usuario1);
-//console.log("Item de prueba 1:", item1);
-//console.log("Direccion de entrega de prueba:", direccion1);
-//console.log("Pedido de prueba:", pedidoPrueba);
-
-pedidoPrueba.actualizarEstado(EstadoPedido.Confirmado, pedidoPrueba.getComprador(), "Probando");
-pedidoPrueba.notificar();
+const productoRepository = new ProductoRepository()
+const productoService = new ProductoService(productoRepository, usuarioRepository)
+const productoController = new ProductoController(productoService)
 
 
-console.log("Pedido de prueba:", pedidoPrueba);
-console.log("Historial de estados del pedido de prueba:", pedidoPrueba.getHistorialEstados());
+const pedidoRepository = new PedidoRepository()
+const pedidoService = new PedidoService(pedidoRepository, usuarioRepository, productoRepository, notificacionService, factoryNotificacion)
+const pedidoController = new PedidoController(pedidoService, notificacionService, usuarioService)
 
+
+
+
+
+
+server.setController(NotificacionController, notificacionController)
+server.setController(PedidoController, pedidoController)
+server.setController(ProductoController, productoController)
+
+routes.forEach(route => server.addRoute(route))
+server.configureRoutes();
+server.launch()
+
+  app.get('/healthCheck', (req, res) => {
+    res.status(200).json({mensaje:'Todo marcha bien!'})
+  })
+
+  app.get("/hello", (req, res) => {
+  res.json({ message: "hello world" });
+  });
+
+MongoDBClient.connect();

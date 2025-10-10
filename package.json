@@ -11,7 +11,8 @@
     "start:frontend": "npm start --workspace=frontend",
     "start:dev": "concurrently \"npm run dev:backend\" \"npm run start:frontend\"",
     "lint": "eslint .",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "test": "NODE_OPTIONS=- - experimental-vm-modules jest"
   },
   "keywords": [],
   "author": "",
@@ -24,5 +25,10 @@
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
     "prettier": "3.6.2"
+  },
+  "dependencies": {
+    "mongoose": "^8.19.0",
+    "sabe": "^1.0.0",
+    "swagger-ui-express": "^5.0.1"
   }
 }
