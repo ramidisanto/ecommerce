@@ -60,7 +60,7 @@ describe('FactoryNotificacion.crearSegunPedido', () => {
 
     test('debería crear notificación para pedido Nuevo', () => {
         let notificacion = factoryNotificacion.crearSegunPedido(pedido);
-        expect(notificacion.mensaje).toBe('Nuevo pedido de Juan, sobre los productos Pastas de diente. Total: 31.98 ARS. Entrega en: Av. Siempre Viva 742, Piso: 1, Depto: A, Codigo Postal: 1234, Ciudad Autonoma de Buenos Aires, Buenos Aires, Argentina');
+        expect(notificacion.mensaje).toBe('Nuevo pedido de Juan, sobre los productos Pastas de diente. Total: 31.98 ARS.');
     });
 
     test('debería crear notificación para pedido Cancelado', () => {
