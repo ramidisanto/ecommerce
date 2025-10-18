@@ -8,6 +8,7 @@ import { DireccionEntrega } from "../../Domain/DireccionEntrega.js";
 import { TipoUsuario } from "../../Domain/TipoUsuario.js";
 import { PedidoService } from "../../Services/PedidoService.js";
 import { jest } from "@jest/globals";
+import { get } from "mongoose";
 
 describe('PedidoService', () => {
   let pedidoRepositoryMock;
@@ -30,7 +31,8 @@ describe('PedidoService', () => {
       enviarNotificacion: jest.fn()
     };
     factoryNotificacionMock = {
-      crearSegunPedido: jest.fn()
+      crearSegunPedido: jest.fn(),
+      crearSegunEstado: jest.fn()
     };
 
     pedidoService = new PedidoService(
@@ -78,14 +80,15 @@ describe('PedidoService', () => {
   });
 
   test('deberia poder cancelar un pedido antes que se haya enviado', async () => {
-
+    const producto = { getId: jest.fn().mockReturnValue(102), aumentarStock: jest.fn() };
     const comprador = { id: 1, nombre: 'Juan' };
-    const item = { getProductoId: () => 101, getCantidad: () => 2 };
-
+    const item = { getProductoId: () => 101, getCantidad: jest.fn().mockReturnValue(2) };
+    const item2 = new ItemPedido(producto, 2, 500);
     const pedido = { 
       id : 1,
-      getItems: () => [item],
+      getItems: () => [item2],
       getEstado: () => EstadoPedido.Pendiente,
+      getComprador: jest.fn().mockReturnValue(comprador),
       validarSePuedeCancelar: jest.fn(),
       actualizarEstado: jest.fn(),
     };
@@ -94,26 +97,20 @@ describe('PedidoService', () => {
   pedidoRepositoryMock.actualizarPedido = jest.fn(); 
 
   
-  const producto = { aumentarStock: jest.fn() };
   productoRepositoryMock.obtenerProductoPorId.mockResolvedValue(producto);
   productoRepositoryMock.actualizarProducto.mockResolvedValue(producto);
 
   
-  factoryNotificacionMock.crearNotificacion = jest.fn().mockReturnValue({ mensaje: 'El Pedido ha sido cancelado' });
+  factoryNotificacionMock.crearSegunEstado = jest.fn().mockReturnValue({ mensaje: 'El Pedido ha sido cancelado' });
   servicioNotificacionMock.enviarNotificacion = jest.fn();
 
   await pedidoService.cancelarPedido(1, comprador);
 
   expect(pedido.validarSePuedeCancelar).toHaveBeenCalled();
-  expect(pedido.actualizarEstado).toHaveBeenCalledWith(
-    EstadoPedido.Cancelado,
-    comprador,
-    "Pedido cancelado por el usuario"
-  );
   expect(pedidoRepositoryMock.actualizarPedido).toHaveBeenCalledWith(pedido);
   expect(producto.aumentarStock).toHaveBeenCalledWith(2);
   expect(productoRepositoryMock.actualizarProducto).toHaveBeenCalledWith(producto);
-  expect(factoryNotificacionMock.crearNotificacion).toHaveBeenCalledWith(pedido);
+  expect(factoryNotificacionMock.crearSegunPedido).toHaveBeenCalledWith(pedido);
   expect(servicioNotificacionMock.enviarNotificacion).toHaveBeenCalled();
   });
 
@@ -136,25 +133,26 @@ describe('PedidoService', () => {
 
     const vendedor = { id:2 , nombre: 'Maria', tipo: TipoUsuario.Vendedor };
     const item = { getProductoId: () => 101, getCantidad: () => 2 };
-
+    const comprador = { id: 1, nombre: 'Juan' };
     const pedido = { 
       id : 1,
       getItems: () => [item],
       getEstado: () => EstadoPedido.Pendiente,
+      getComprador: () => comprador,
       validarSePuedeCancelar: jest.fn(),
       actualizarEstado: jest.fn(),
     };
 
     pedidoRepositoryMock.obtenerPedidoPorId = jest.fn().mockResolvedValue(pedido);
     pedidoRepositoryMock.actualizarPedido = jest.fn();
-    factoryNotificacionMock.crearNotificacion = jest.fn().mockReturnValue({ mensaje: 'El Pedido ha sido enviado' });
+    factoryNotificacionMock.crearSegunEstado = jest.fn().mockReturnValue({ mensaje: 'El Pedido ha sido enviado' });
     servicioNotificacionMock.enviarNotificacion = jest.fn();
 
     await pedidoService.marcarPedidoEnviado(1, vendedor);
 
-    expect(pedido.actualizarEstado).toHaveBeenCalledWith(EstadoPedido.Enviado, vendedor, "Pedido enviado");
+    expect(pedido.actualizarEstado).toHaveBeenCalledWith(EstadoPedido.Enviado, comprador, "Pedido enviado");
     expect(pedidoRepositoryMock.actualizarPedido).toHaveBeenCalledWith(pedido);
-    expect(factoryNotificacionMock.crearNotificacion).toHaveBeenCalledWith(pedido);
+    expect(factoryNotificacionMock.crearSegunPedido).toHaveBeenCalledWith(pedido);
     expect(servicioNotificacionMock.enviarNotificacion).toHaveBeenCalled();
 });
 

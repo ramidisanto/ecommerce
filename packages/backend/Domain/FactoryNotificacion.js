@@ -38,7 +38,7 @@ export class FactoryNotificacion {
 
         if (estado == EstadoPedido.Cancelado || estado == EstadoPedido.Pendiente) { 
             if(estado == EstadoPedido.Pendiente){
-                mensaje = `Nuevo pedido de ${pedido.getNombreComprador()}, sobre los productos ${pedido.getNombreItems().join(", ")}. Total: ${pedido.getTotal()} ${pedido.getMoneda()}. Entrega en: ${pedido.getDireccionEntrega().toString()}`;
+                mensaje = `Nuevo pedido de ${pedido.getNombreComprador()}, sobre los productos ${pedido.getNombreItems().join(", ")}. Total: ${pedido.getTotal()} ${pedido.getMoneda()}.`;
             }
             return new Notificacion(pedido.getVendedor(), mensaje, Date.now());
 
