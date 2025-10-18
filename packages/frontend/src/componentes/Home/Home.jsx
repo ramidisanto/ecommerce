@@ -14,6 +14,9 @@ function Home() {
         <div className={styles.homeButtons}>
           <button className={styles.primaryButton}>Buscar Productos</button>
         </div>
+        <div className={styles.carousel}>
+          {/* Aca agrego un carrusel de imágenes o productos destacados */}
+        </div>
       </div>
     </section>
   );
