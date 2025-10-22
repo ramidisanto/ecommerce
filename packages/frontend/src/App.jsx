@@ -22,7 +22,6 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <div className="App">
           <Navbar />
           <main>
             <Routes>
@@ -30,7 +29,6 @@ function App() {
             </Routes>
           </main>
           <Footer />
-        </div>
       </BrowserRouter>
     </ThemeProvider>
   );
