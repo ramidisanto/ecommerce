@@ -1,0 +1,75 @@
+.carousel-container {
+    width: 90%;
+    height: 90%;
+    margin: 40px auto;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.carousel-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.carousel-wrapper {
+    position: relative;
+}
+
+.carousel-viewport {
+    overflow: hidden;
+    width: 100%;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* --- ESTILOS DE LOS BOTONES --- */
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s;
+}
+
+.carousel-btn:hover {
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.left-btn {
+    left: 20px;
+}
+
+.right-btn {
+    right: 20px;
+}
+
+.carousel-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.carousel-empty {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #777;
+    padding: 40px;
+}
