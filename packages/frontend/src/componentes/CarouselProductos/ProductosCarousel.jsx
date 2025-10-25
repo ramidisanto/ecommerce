@@ -8,8 +8,8 @@ export default function ProductoCarousel({ productos }) {
         setIndex(0);
     }, [productos]);
 
-    const [index, setIndex] = useState(0);
-    const visible = 3; // Cuántos items mostrar a la vez
+    const [index, setIndex] = useState(0);  //INDEX SE POSICIONA EN EL ITEM NUMERO N 
+    const visible = 3; // Cuantos items mostrar a la vez en el carrusel
 
     const siguiente = () => {
         if (index < productos.length - visible) {
