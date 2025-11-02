@@ -7,7 +7,7 @@
 
 .footerContenido {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   max-width: 1200px;
   margin: 0 auto;
   flex-wrap: wrap; 
@@ -15,7 +15,6 @@
 }
 
 .column {
-  flex: 1;
   min-width: 200px; 
 }
 
@@ -60,3 +59,4 @@
   font-size: 0.9rem;
   color: #7f8c8d;
 }
+

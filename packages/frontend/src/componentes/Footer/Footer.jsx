@@ -11,17 +11,7 @@ function Footer() {
         </div>
         <div className={style.column}>
           <h4>Navegación</h4>
-          <ul>
-            <li><a href="/productos">Explorar</a></li>
-            <li><a href="/nosotros">Nosotros</a></li>
-          </ul>
-        </div>
-        <div className={style.column}>
-          <h4>Legal</h4>
-          <ul>
-            <li><a href="/terminos">Términos y Condiciones</a></li>
-            <li><a href="/privacidad">Políticas de Privacidad</a></li>
-          </ul>
+          <p>El lugar para comprar y vender, a tu manera.</p>
         </div>
       </div>
       <div className={style.footerBoton}>

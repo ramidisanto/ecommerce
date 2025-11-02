@@ -30,7 +30,17 @@
   font-size: 1.5rem;
   color: #1A2C42;
   text-decoration: none;
+    display: inline-block; 
+
 }
+
+.logo img {
+  max-height: 80px; 
+  width: auto; 
+  vertical-align: middle;
+}
+
+
 
 /* --- Barra buscador centrada --- */
 .centerSearch {
@@ -45,15 +55,23 @@
   gap: 1rem;
 }
 
+
 .loginBoton,
 .carritoBoton {
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  background-color: #FF6B00;
+  color: white;
+  border-color: #FF6B00;  
+  font-size: 1.2rem; 
+  padding: 10px 12px; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
   border-radius: 8px;
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.3s ease;
+
 }
 
 /* Botón de inicio de sesión */
@@ -124,4 +142,6 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
+  
 }
+
