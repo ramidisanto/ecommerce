@@ -1,0 +1,107 @@
+.sales-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.sales-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sales-header h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-left: 0.5rem;
+}
+
+.back-link {
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #1f2937;
+}
+
+.sale-card {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.sale-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.sale-header h3 {
+  font-weight: bold;
+  font-size: 1.125rem;
+  color: #1f2937;
+}
+
+.sale-header p {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper select {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #fff;
+  font-size: 0.875rem;
+  appearance: none;
+}
+
+.select-wrapper svg {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.sale-body {
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+.cart-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.cart-items p {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.sale-footer {
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total {
+  font-weight: bold;
+  font-size: 1.125rem;
+}

@@ -1,0 +1,116 @@
+.orders-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.orders-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.orders-header h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937; /* text-sol-dark */
+  margin-left: 0.5rem;
+}
+
+.back-link {
+  color: #6b7280; /* gray */
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #1f2937;
+}
+
+.order-card {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.order-header h3 {
+  font-weight: bold;
+  font-size: 1.125rem;
+  color: #1f2937;
+}
+
+.order-header p {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.chip {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+
+.chip.gray {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+.chip.blue {
+  background-color: #bfdbfe;
+  color: #1e40af;
+}
+.chip.yellow {
+  background-color: #fef08a;
+  color: #78350f;
+}
+.chip.green {
+  background-color: #bbf7d0;
+  color: #166534;
+}
+.chip.purple {
+  background-color: #ddd6fe;
+  color: #4c1d95;
+}
+.chip.red {
+  background-color: #fecaca;
+  color: #991b1b;
+}
+
+.order-body {
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+.cart-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.cart-items p {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.order-footer {
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total {
+  font-weight: bold;
+  font-size: 1.125rem;
+}

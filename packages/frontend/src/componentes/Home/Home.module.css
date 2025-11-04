@@ -1,80 +1,80 @@
 .homeSection {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: 80vh; 
-  padding: 2rem 0; 
-  background-color: #f8f9fa;
-  color: #1A2C42;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+text-align: center;
+min-height: 80vh; 
+padding: 2rem 0; 
+background-color: #f8f9fa;
+color: #1A2C42;
 }
 
 .homeContent {
-  max-width: 1500px; 
-  padding: 0 2rem; 
-  width: 100%;
-  box-sizing: border-box; 
+max-width: 1500px; 
+padding: 0 2rem; 
+width: 100%;
+box-sizing: border-box; 
 }
 
 .homeTitle {
-  font-size: 3.5rem; 
-  font-weight: 700;
-  margin-bottom: 1rem;
+font-size: 3.5rem; 
+font-weight: 700;
+margin-bottom: 1rem;
 }
 
 .homeSubtitle {
-  font-size: 1.25rem;
-  margin-bottom: 2rem;
-  color: #4A4A4A; 
-  line-height: 1.6;
+font-size: 1.25rem;
+margin-bottom: 2rem;
+color: #4A4A4A; 
+line-height: 1.6;
 }
 
 .homeButtons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem; 
+display: flex;
+justify-content: center;
+gap: 1rem; 
 }
 
 .primaryButton, .secondaryButton {
-  padding: 15px 30px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
+padding: 15px 30px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+border: 2px solid transparent;
+transition: all 0.3s ease;
 }
 
 .primaryButton {
-  background-color: #FF6B00; 
-  color: white;
-  border-color: #FF6B00;
+background-color: #FF6B00; 
+color: white;
+border-color: #FF6B00;
 }
 
 .primaryButton:hover {
-  background-color: #e66000;
-  border-color: #e66000;
+background-color: #e66000;
+border-color: #e66000;
 }
 
 .secondaryButton {
-  background-color: transparent;
-  color: #1A2C42;
-  border-color: #1A2C42;
+background-color: transparent;
+color: #1A2C42;
+border-color: #1A2C42;
 }
 
 .secondaryButton:hover {
-  background-color: #1A2C42;
-  color: white;
+background-color: #1A2C42;
+color: white;
 }
 
 
 .homeBanner {
-  width: 100%; 
-  height: auto; 
-  margin-bottom: 2rem;
+width: 100%; 
+height: auto; 
+margin-bottom: 2rem;
 }
 
 .spinnerContainer {
-  padding: 4rem;
+padding: 4rem;
 }
