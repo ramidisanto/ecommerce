@@ -54,4 +54,8 @@ export class ProductoService{
         return productosDeVendedor
     }
 
+    async obtenerProductosDestacados() {
+        return this.productoRepository.obtenerMasVendidoPorVendedor();
+    }
+
 }

@@ -1,13 +1,13 @@
 import { z } from "zod";
 import mongoose from "mongoose";
 
-export class ProductoController{
-    constructor(productoService){
+export class ProductoController {
+    constructor(productoService) {
         this.productoService = productoService;
     }
 
-    async obtenerProductosPorVendedor(req, res){
-        const resultId = objectId.safeParse(req.params.id); 
+    async obtenerProductosPorVendedor(req, res) {
+        const resultId = objectId.safeParse(req.params.id);
 
         if (resultId.error) {
             res.status(400).json(resultId.error.issues);
@@ -26,12 +26,23 @@ export class ProductoController{
         }
         res.status(200).json(productosPaginados);
     }
+
+    async obtenerProductosDestacados(req, res) {
+        const productos = await this.productoService.obtenerProductosDestacados();
+
+        if (productos === null || productos.length === 0) {
+            res.status(204).send();
+            return;
+        }
+
+        res.status(200).json(productos);
+    }
 }
 
 
- const objectId = z
+const objectId = z
     .string()
     .refine((val) => mongoose.Types.ObjectId.isValid(val), {
-      message: "El id de producto no es un ObjectId válido",
+        message: "El id de producto no es un ObjectId válido",
     });
 
