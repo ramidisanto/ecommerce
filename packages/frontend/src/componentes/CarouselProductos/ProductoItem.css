@@ -1,5 +1,4 @@
 .carousel-card {
-    flex-basis: calc(100% / 3);
     flex-shrink: 0;
     padding: 20px 10px;
     box-sizing: border-box;
@@ -83,8 +82,12 @@
     font-weight: 600;
     padding: 8px 0;
     transition: color 0.2s;
+        align-items: center;
+
 }
 
 .ver-detalles .link-no-style:hover {
     color: #0056b3;
+        align-items: center;
+
 }

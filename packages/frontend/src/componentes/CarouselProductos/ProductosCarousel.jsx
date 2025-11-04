@@ -2,17 +2,15 @@ import React, { useState, useEffect } from "react";
 import styles from './ProductosCarousel.css';
 import ProductoItem from "./ProductoItem.jsx";
 
-export default function ProductoCarousel({ productos }) {
+export default function ProductoCarousel({ productos, itemsVisibles = 4 }) {
     useEffect(() => {
-        // Resetea el índice si la lista de productos cambia
         setIndex(0);
     }, [productos]);
 
-    const [index, setIndex] = useState(0);  //INDEX SE POSICIONA EN EL ITEM NUMERO N 
-    const visible = 3; // Cuantos items mostrar a la vez en el carrusel
+    const [index, setIndex] = useState(0);
 
     const siguiente = () => {
-        if (index < productos.length - visible) {
+        if (index < productos.length - itemsVisibles) {
             setIndex(index + 1);
         }
     };
@@ -23,26 +21,28 @@ export default function ProductoCarousel({ productos }) {
         }
     };
 
-    // Verifica si productos es un array válido y tiene items
     if (!Array.isArray(productos) || productos.length === 0) {
         return <p className="carousel-empty">No hay productos disponibles</p>;
     }
 
     return (
         <div className="carousel-container">
-            <h2 className="carousel-title">Productos Destacados</h2>
+            <h2 className="carousel-title">Vendedores Destacados</h2>
 
             <div className="carousel-wrapper">
                 <div className="carousel-viewport">
                     <div
                         className="carousel-track"
                         style={{
-                            // Mueve el "track" horizontalmente
-                            transform: `translateX(-${index * (100 / visible)}%)`,
+                            transform: `translateX(-${index * (100 / itemsVisibles)}%)`,
                         }}
                     >
                         {productos.map((producto) => (
-                            <ProductoItem producto={producto} key={producto.id} />
+                            <ProductoItem
+                                producto={producto}
+                                key={producto._id || producto.id}
+                                itemsVisibles={itemsVisibles}
+                            />
                         ))}
                     </div>
                 </div>
@@ -57,8 +57,8 @@ export default function ProductoCarousel({ productos }) {
 
                 <button
                     onClick={siguiente}
-                    disabled={index >= productos.length - visible}
-                    className={`carousel-btn right-btn ${index >= productos.length - visible ? "disabled" : ""
+                    disabled={index >= productos.length - itemsVisibles}
+                    className={`carousel-btn right-btn ${index >= productos.length - itemsVisibles ? "disabled" : ""
                         }`}
                 >
                     ▶

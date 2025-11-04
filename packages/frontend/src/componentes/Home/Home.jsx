@@ -1,26 +1,63 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Home.module.css';
 import ProductoCarousel from '../../componentes/CarouselProductos/ProductosCarousel'; 
-import mockProductos from '../../mockData/productos';
+import { getProductosDestacados } from '../../services/productoService'; 
 import { Spinner } from 'react-bootstrap'; 
 
 function Home() {
   const [productos, setProductos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null); 
 
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setProductos(mockProductos); 
-      setIsLoading(false);
-    }, 1500);
+    const fetchProductosDestacados = async () => {
+      try {
+        setIsLoading(true);
+        setError(null); 
+        const data = await getProductosDestacados(); 
+        setProductos(data);
+      } catch (err) {
+        console.error("Error en Home.jsx al cargar productos destacados:", err);
+        setError("No se pudieron cargar los productos destacados."); 
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer); 
+    fetchProductosDestacados();
   }, []); 
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className={styles.spinnerContainer}>
+          <Spinner animation="border" role="status" variant="light" />
+        </div>
+      );
+    }
+
+    if (error) {
+      return <p className={styles.homeSubtitle} style={{ color: 'red' }}>{error}</p>;
+    }
+
+    if (!productos || productos.length === 0) {
+      return <p className={styles.homeSubtitle}>No hay productos destacados disponibles.</p>;
+    }
+
+    return <ProductoCarousel productos={productos} />;
+  };
 
   return (
     <section className={styles.homeSection}>
+      
+      <img 
+        src="/images/banner.png" 
+        alt="Banner Tienda Sol" 
+        className={styles.homeBanner} 
+      />
+      
       <div className={styles.homeContent}>
+        
         <h1 className={styles.homeTitle}>
           Tu tienda online, simple y poderosa
         </h1>
@@ -32,13 +69,7 @@ function Home() {
         </div>
 
         <div className={styles.carousel}>
-          {isLoading ? (
-            <div className={styles.spinnerContainer}>
-              <Spinner animation="border" role="status" variant="light" />
-            </div>
-          ) : (
-            <ProductoCarousel productos={productos} />
-          )}
+          {renderContent()} 
         </div>
       </div>
     </section>

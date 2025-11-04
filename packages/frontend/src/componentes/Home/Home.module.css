@@ -5,13 +5,16 @@
   align-items: center;
   text-align: center;
   min-height: 80vh; 
-  padding: 2rem;
+  padding: 2rem 0; 
   background-color: #f8f9fa;
   color: #1A2C42;
 }
 
 .homeContent {
   max-width: 1500px; 
+  padding: 0 2rem; 
+  width: 100%;
+  box-sizing: border-box; 
 }
 
 .homeTitle {
@@ -63,4 +66,15 @@
 .secondaryButton:hover {
   background-color: #1A2C42;
   color: white;
+}
+
+
+.homeBanner {
+  width: 100%; 
+  height: auto; 
+  margin-bottom: 2rem;
+}
+
+.spinnerContainer {
+  padding: 4rem;
 }

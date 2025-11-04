@@ -1,5 +1,5 @@
 .carousel-container {
-    width: 90%;
+    width: 100%;
     height: 90%;
     margin: 40px auto;
     padding: 0;
@@ -27,8 +27,6 @@
     display: flex;
     transition: transform 0.3s ease-in-out;
 }
-
-/* --- ESTILOS DE LOS BOTONES --- */
 
 .carousel-btn {
     position: absolute;
