@@ -75,6 +75,40 @@ height: auto;
 margin-bottom: 2rem;
 }
 
+/**/
 .spinnerContainer {
 padding: 4rem;
+}
+
+.skeletonContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.skeletonCard {
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  padding: 1rem;
+  width: 220px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.skeletonImage {
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+}
+
+.skeletonTitle {
+  margin-bottom: 0.5rem;
+}
+
+.skeletonPrice {
+  margin-bottom: 1rem;
+}
+
+.skeletonButton {
+  border-radius: 8px;
 }

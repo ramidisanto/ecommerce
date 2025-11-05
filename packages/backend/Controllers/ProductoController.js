@@ -37,6 +37,23 @@ export class ProductoController {
 
         res.status(200).json(productos);
     }
+
+    async obtenerProductoPorId(req, res) {
+        const resultId = objectId.safeParse(req.params.id); 
+        if (resultId.error) {
+            res.status(400).json(resultId.error.issues);
+            return;
+        }
+        const productoId = resultId.data;
+
+        const producto = await this.productoService.obtenerProductoPorId(productoId);
+        if (!producto) {
+            res.status(404).json({ message: `Producto con id ${productoId} no encontrado.` });
+            return;
+        }   
+        res.status(200).json(producto);
+    }
+
 }
 
 

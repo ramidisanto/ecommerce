@@ -75,3 +75,18 @@
 .w-full {
     width: 100%;
 }
+
+.producto-cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem 0 1rem 0;
+  gap: 0.5rem;
+}
+
+.producto-cantidad-valor {
+  font-size: 1rem;
+  font-weight: 500;
+  width: 2rem;
+  text-align: center;
+}

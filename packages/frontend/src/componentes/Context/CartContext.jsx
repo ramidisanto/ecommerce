@@ -1,10 +1,14 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types'; 
+import { useNotification } from './NotificationContext';
 
 const CartContext = createContext(undefined);
 
 
+
 export const CartProvider = ({ children }) => {
+
+  const { addNotification } = useNotification();
   const [cartItems, setCartItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const [cartTotal, setCartTotal] = useState(0);
@@ -32,8 +36,10 @@ export const CartProvider = ({ children }) => {
       }
       // Aseguramos que el producto tenga 'id' para consistencia interna
       const newProduct = { ...product, id: product._id || product.id };
+    
       return [...prevItems, { ...newProduct, quantity }];
     });
+    addNotification(`"${product.titulo}" se agregó al carrito con éxito`, "success");
   };
 
   const removeItem = (productId) => {

@@ -58,4 +58,8 @@ export class ProductoService{
         return this.productoRepository.obtenerMasVendidoPorVendedor();
     }
 
+    async obtenerProductoPorId(productoId) {
+        return this.productoRepository.findById(productoId);
+    }
+
 }

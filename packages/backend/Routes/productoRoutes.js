@@ -25,6 +25,14 @@ export default function productoRoutes(getController) {
         }
     });
 
+    router.get('/productos/:id', async (req, res, next) => {
+        try {
+          await getController(ProductoController).obtenerProductoPorId(req, res); 
+        } catch (err) {
+          next(err);
+        }
+    });
+
     router.use(productoErrorHandler);
 
     return router;

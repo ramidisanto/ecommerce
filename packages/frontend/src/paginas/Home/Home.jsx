@@ -4,6 +4,9 @@ import ProductoCarousel from '../../componentes/CarouselProductos/ProductosCarou
 import { getProductosDestacados } from '../../services/productoService'; 
 import { Spinner } from 'react-bootstrap'; 
 import { Button } from '../../componentes/Button/Button';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+
 
 function Home() {
   const [productos, setProductos] = useState([]);
@@ -29,13 +32,27 @@ function Home() {
   }, []); 
 
   const renderContent = () => {
+    // if (isLoading) {
+    //   return (
+    //     <div className={styles.spinnerContainer}>
+    //       <Spinner animation="border" role="status" variant="light" />
+    //     </div>
+    //   );
+    // }
     if (isLoading) {
-      return (
-        <div className={styles.spinnerContainer}>
-          <Spinner animation="border" role="status" variant="light" />
+    return (
+    <div className={styles.skeletonContainer}>
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className={styles.skeletonCard}>
+          <Skeleton height={180} className={styles.skeletonImage} />
+          <Skeleton height={25} width="80%" className={styles.skeletonTitle} />
+          <Skeleton height={20} width="60%" className={styles.skeletonPrice} />
+          <Skeleton height={40} width="100%" className={styles.skeletonButton} />
         </div>
-      );
-    }
+      ))}
+    </div>
+    );
+}
 
     if (error) {
       return <p className={styles.homeSubtitle} style={{ color: 'red' }}>{error}</p>;

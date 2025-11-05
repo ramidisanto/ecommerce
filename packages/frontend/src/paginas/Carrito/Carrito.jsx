@@ -8,6 +8,7 @@ import './Carrito.css';
 
 const CartPage = () => {
     const { cartItems, cartTotal, updateQuantity, removeItem, clearCart } = useCart();
+    
 
     return (
         <div className="cart-container">

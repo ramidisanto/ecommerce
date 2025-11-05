@@ -21,3 +21,13 @@ export const getProductosDestacados = async () => {
         throw error;
     }
 };
+
+export const getProductoPorId = async (productoId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/productos/${productoId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching producto por ID:', error);
+        throw error;
+    }   
+};

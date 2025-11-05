@@ -9,13 +9,18 @@ import {SalesPage} from './paginas/Ventas/Ventas';
 import {OrdersPage} from './paginas/Pedidos/Pedidos';
 import  Notificaciones  from './paginas/notificaciones/Notificaciones';
 import { TiendaVendedor } from './paginas/TiendaVendedor/TiendaVendedor';
+import ProductoDetalle from './paginas/DetalleProducto/DetalleProducto';
+import NotificationProvider from './componentes/Context/NotificationContext';
+import { ToastContainer} from './componentes/Toast/ToastContainer';
 import Home from './paginas/Home/Home';
 
 import './App.css';
 
 function App() {
   return (
+    <NotificationProvider>
     <CartProvider>
+  
       <HashRouter>
         <div className="app-wrapper">
           <Header />
@@ -28,12 +33,15 @@ function App() {
               <Route path="/notificationes" element={<Notificaciones/>} />
               <Route path="/ventas" element={<SalesPage/>} />
               <Route path="/pedidos" element={<OrdersPage/>} />
+              <Route path="/productos/:productoId" element={<ProductoDetalle/>} />
             </Routes>
+            <ToastContainer />
           </main>
           <Footer />
         </div>
       </HashRouter>
     </CartProvider>
+    </NotificationProvider>
   );
 }
 

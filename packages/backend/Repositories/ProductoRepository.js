@@ -76,4 +76,8 @@ export class ProductoRepository {
             throw error;
         }
     }
+
+    async findById(id) {
+        return this.model.findById(id);
+    }
 }

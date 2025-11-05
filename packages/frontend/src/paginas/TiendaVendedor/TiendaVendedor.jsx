@@ -9,9 +9,16 @@ import './TiendaVendedor.css';
 export const TiendaVendedor = () => {
     const { id } = useParams(); 
     const [productos, setProductos] = useState([]);
+    const [productosFiltrados, setProductosFiltrados] = useState([]);
     const [vendedorNombre, setVendedorNombre] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const [nombre, setNombre] = useState('');
+    const [categoria, setCategoria] = useState('');
+    const [descripcion, setDescripcion] = useState('');
+    const [precioMin, setPrecioMin] = useState('');
+    const [precioMax, setPrecioMax] = useState('');
 
     useEffect(() => {
         const fetchProductos = async () => {
@@ -24,9 +31,11 @@ export const TiendaVendedor = () => {
 
                 if (data && data.length > 0) {
                     setProductos(data);
+                    setProductosFiltrados(data);
                     setVendedorNombre(data[0].vendedorId.nombre);
                 } else {
                     setProductos([]);
+                    setProductosFiltrados([]);
                     setVendedorNombre('Vendedor');
                 }
             } catch (err) {
@@ -39,6 +48,20 @@ export const TiendaVendedor = () => {
 
         fetchProductos();
     }, [id]);
+
+    useEffect(() => {
+        let filtrados = productos.filter((p) => {
+            const coincideNombre = p.titulo.toLowerCase().includes(nombre.toLowerCase());
+            const coincideCategoria = categoria ? p.categoria?.toLowerCase().includes(categoria.toLowerCase()) : true;
+            const coincideDescripcion = p.descripcion?.toLowerCase().includes(descripcion.toLowerCase());
+            const coincidePrecioMin = precioMin ? p.precio >= parseFloat(precioMin) : true;
+            const coincidePrecioMax = precioMax ? p.precio <= parseFloat(precioMax) : true;
+
+            return coincideNombre && coincideCategoria && coincideDescripcion && coincidePrecioMin && coincidePrecioMax;
+        });
+
+        setProductosFiltrados(filtrados);
+    }, [nombre, categoria, descripcion, precioMin, precioMax, productos]);
 
     const renderContent = () => {
         if (isLoading) {
@@ -59,8 +82,8 @@ export const TiendaVendedor = () => {
 
         return (
             <div className="producto-grid">
-                {productos.map(producto => (
-                    <ProductoCard key={producto._id} producto={producto} />
+                {productosFiltrados.map(producto => (
+                <ProductoCard producto={producto} />
                 ))}
             </div>
         );
@@ -76,6 +99,47 @@ export const TiendaVendedor = () => {
                 <h1 className="tienda-title">
                     Tienda de {vendedorNombre || '...'}
                 </h1>
+            </div>
+            {/* FILTROS */}
+            <div className="filtros-container">
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Categoría"
+                    value={categoria}
+                    onChange={(e) => setCategoria(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Descripción"
+                    value={descripcion}
+                    onChange={(e) => setDescripcion(e.target.value)}
+                />
+                <input
+                    type="number"
+                    placeholder="Precio mínimo"
+                    min="0"
+                    value={precioMin}
+                    onChange={(e) => {
+                    const value = Math.max(0, Number(e.target.value));
+                    setPrecioMin(value);
+                    }}
+                />
+                <input
+                    type="number"
+                    placeholder="Precio máximo"
+                    min="0"
+                    value={precioMax}
+                    onChange={(e) => {
+                    const value = Math.max(0, Number(e.target.value));
+                    setPrecioMax(value);
+                    }}
+                />
             </div>
             {renderContent()}
         </div>
