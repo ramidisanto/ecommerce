@@ -1,0 +1,87 @@
+.tienda-container {
+    width: 100%;
+}
+
+.tienda-header {
+    margin-bottom: 2rem;
+}
+
+.tienda-back-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1rem;
+    color: #64748B;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+    margin-bottom: 0.5rem;
+}
+
+.tienda-back-link:hover {
+    color: #1E293B;
+}
+
+.tienda-back-link .icon-md {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.25rem;
+}
+
+.tienda-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1E293B;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+/* Grilla de Productos */
+.producto-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+/* Spinner y Errores */
+.tienda-spinner {
+    padding: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tienda-error,
+.tienda-empty {
+    padding: 2rem;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #475569;
+}
+
+.tienda-error {
+    color: #ef4444;
+}
+
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+    .producto-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .producto-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tienda-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .producto-grid {
+        grid-template-columns: 1fr;
+    }
+}

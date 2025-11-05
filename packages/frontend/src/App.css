@@ -7,11 +7,12 @@ background-color: #F1F5F9;
 }
 
 .main-content {
-flex-grow: 1; 
-max-width: 1280px;
-margin-left: auto;
-margin-right: auto;
-padding: 1rem; 
+  flex-grow: 1; 
+  width: 90%;
+  max-width: 1400px; 
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem; 
 }
 
 @media (min-width: 768px) {

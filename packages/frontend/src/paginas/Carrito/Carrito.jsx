@@ -28,36 +28,48 @@ const CartPage = () => {
                             <div className="cart-col-subtotal">Subtotal</div>
                         </div>
 
-                        {cartItems.map(item => (
-                            <div key={item.id} className="cart-item">
-                                <div className="cart-product">
-                                    <img src={item.photos[0]} alt={item.title} className="cart-product-img" />
-                                    <div>
-                                        <p className="cart-product-title">{item.title}</p>
-                                        <p className="cart-product-seller">{item.seller.name}</p>
+                        {cartItems.map(item => {
+
+                            const imagenProducto = item.fotos && item.photos.length > 0
+                                ? item.photos[0]
+                                : "/images/LOGOSOL.png";
+
+                            const itemId = item._id || item.id;
+
+                            return (
+                                <div key={itemId} className="cart-item">
+                                    <div className="cart-product">
+
+                                        <img src={imagenProducto} alt={item.titulo} className="cart-product-img" />
+
+                                        <div>
+                                            <p className="cart-product-title">{item.titulo}</p>
+
+                                        </div>
+                                    </div>
+
+                                    <div className="cart-quantity">
+                                        <Button size="sm" variant="ghost" onClick={() => updateQuantity(itemId, item.quantity - 1)}>
+                                            <MinusIcon className="icon-small" />
+                                        </Button>
+                                        <span className="cart-quantity-value">{item.quantity}</span>
+                                        <Button size="sm" variant="ghost" onClick={() => updateQuantity(itemId, item.quantity + 1)}>
+                                            <PlusIcon className="icon-small" />
+                                        </Button>
+                                    </div>
+
+                                    <div className="cart-price">${item.precio.toFixed(2)}</div>
+
+                                    <div className="cart-subtotal">${(item.precio * item.quantity).toFixed(2)}</div>
+
+                                    <div className="cart-remove-mobile">
+                                        <Button size="sm" variant="danger" onClick={() => removeItem(itemId)}>
+                                            <TrashIcon className="icon-small mr-1" /> Quitar
+                                        </Button>
                                     </div>
                                 </div>
-
-                                <div className="cart-quantity">
-                                    <Button size="sm" variant="ghost" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
-                                        <MinusIcon className="icon-small" />
-                                    </Button>
-                                    <span className="cart-quantity-value">{item.quantity}</span>
-                                    <Button size="sm" variant="ghost" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                                        <PlusIcon className="icon-small" />
-                                    </Button>
-                                </div>
-
-                                <div className="cart-price">${item.price.toFixed(2)}</div>
-                                <div className="cart-subtotal">${(item.price * item.quantity).toFixed(2)}</div>
-
-                                <div className="cart-remove-mobile">
-                                    <Button size="sm" variant="danger" onClick={() => removeItem(item.id)}>
-                                        <TrashIcon className="icon-small mr-1" /> Quitar
-                                    </Button>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
 
                         <div className="cart-summary">
                             <div className="cart-total">
@@ -91,4 +103,5 @@ const CartPage = () => {
         </div>
     );
 };
+
 export default CartPage;

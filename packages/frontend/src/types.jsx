@@ -7,8 +7,6 @@ export const OrderStatus = {
   CANCELLED: "CANCELADO",
 };
 
-
-
 export const UserType = {
   BUYER: 'COMPRADOR',
   SELLER: 'VENDEDOR',

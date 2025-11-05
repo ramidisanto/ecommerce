@@ -3,6 +3,7 @@ import styles from './Home.module.css';
 import ProductoCarousel from '../../componentes/CarouselProductos/ProductosCarousel'; 
 import { getProductosDestacados } from '../../services/productoService'; 
 import { Spinner } from 'react-bootstrap'; 
+import { Button } from '../../componentes/Button/Button';
 
 function Home() {
   const [productos, setProductos] = useState([]);
@@ -61,13 +62,12 @@ function Home() {
         <h1 className={styles.homeTitle}>
           Tu tienda online, simple y poderosa
         </h1>
-        <p className={styles.homeSubtitle}>
-          Rama, tu novia te está engañando.
-        </p>
-        <div className={styles.homeButtons}>
-          <button className={styles.primaryButton}>Buscar Productos</button>
-        </div>
 
+        <div className={styles.homeButtons}>
+          <Button variant="primary" size="lg">
+            Buscar Productos
+          </Button>
+        </div>
         <div className={styles.carousel}>
           {renderContent()} 
         </div>

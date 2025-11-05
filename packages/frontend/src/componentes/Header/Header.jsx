@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SunIcon, BellIcon, CartIcon, UserIcon, SearchIcon, TrashIcon, CheckCircleIcon } from '../icons'; 
 import { useCart } from '../Context/CartContext'; 
-import { MOCK_NOTIFICATIONS } from '../../mockData/data'; 
 import { Button } from '../Button/Button'; 
+import { getNotificaciones } from '../../services/notificacionService';
 
 import './Header.css'; 
 
@@ -26,7 +26,6 @@ const useClickOutside = (handler) => {
   return ref;
 };
 
-// --- Dropdown del Carrito ---
 const CartDropdown = () => {
   const { cartItems, cartTotal, updateQuantity, removeItem } = useCart();
 
@@ -37,26 +36,38 @@ const CartDropdown = () => {
   return (
     <div className="cart-dropdown">
       <div className="cart-dropdown-list">
-        {cartItems.map(item => (
-          <div key={item.id} className="cart-item">
-            <img src={item.photos[0]} alt={item.title} className="cart-item-img" />
-            <div className="cart-item-details">
-              <p className="cart-item-title">{item.title}</p>
-              <p className="cart-item-price">${item.price.toFixed(2)}</p>
-              <div className="cart-item-quantity">
-                <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
-                <span>{item.quantity}</span>
-                <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+        {cartItems.map(item => {
+          
+          const imagenProducto = item.fotos && item.fotos.length > 0
+            ? item.fotos[0]
+            : "/images/LOGOSOL.png";
+
+          return (
+            <div key={item.id || item._id} className="cart-item">
+              
+              <img src={imagenProducto} alt={item.titulo} className="cart-item-img" />
+              
+              <div className="cart-item-details">
+
+                <p className="cart-item-title">{item.titulo}</p>
+                
+                <p className="cart-item-price">${item.precio.toFixed(2)}</p>
+                
+                <div className="cart-item-quantity">
+                  <button onClick={() => updateQuantity(item.id || item._id, item.quantity - 1)}>-</button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => updateQuantity(item.id || item._id, item.quantity + 1)}>+</button>
+                </div>
+              </div>
+              <div className="cart-item-subtotal">
+                <p>${(item.precio * item.quantity).toFixed(2)}</p>
+                <button onClick={() => removeItem(item.id || item._id)} className="cart-item-remove">
+                  <TrashIcon className="icon-xs" />
+                </button>
               </div>
             </div>
-            <div className="cart-item-subtotal">
-              <p>${(item.price * item.quantity).toFixed(2)}</p>
-              <button onClick={() => removeItem(item.id)} className="cart-item-remove">
-                <TrashIcon className="icon-xs" />
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="dropdown-footer">
         <p className="cart-total">Total: ${cartTotal.toFixed(2)}</p>
@@ -73,25 +84,43 @@ const CartDropdown = () => {
   );
 };
 
-// --- Dropdown de Notificaciones ---
-const NotificationsDropdown = () => {
-  // (El useState se queda igual)
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+const NotificationsDropdown = ({ onDropdownToggle }) => {
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    getNotificaciones(false)
+      .then(notifs => {
+        if (Array.isArray(notifs)) {
+          setNotifications(notifs);
+        } else {
+          setNotifications([]); 
+        }
+      })
+      .catch(err => {
+        console.error("Error en dropdown de notificaciones:", err);
+        setNotifications([]); 
+      });
+  }, []); 
+
+  const handleLinkClick = () => {
+    if (onDropdownToggle) {
+      onDropdownToggle(null);
+    }
+  };
 
   return (
     <div className="notifications-dropdown">
       <div className="notifications-list">
-        {notifications.map(notif => {
-            // Clases para el estilo (igual que antes)
+        {notifications.length > 0 ? (
+          notifications.map(notif => {
             const titleClasses = `notification-title ${notif.isRead ? 'title-read' : 'title-unread'}`;
             
             return (
-              // --- ESTE ES EL CAMBIO ---
-              // Convertimos el <div> en un <Link>
               <Link
                 key={notif.id}
                 to={`/notificationes?id=${notif.id}`} 
                 className="notification-item" 
+                onClick={handleLinkClick} 
               >
                 <div className="notification-icon">
                   <CheckCircleIcon className={`icon-md ${notif.isRead ? 'icon-read' : 'icon-unread'}`} />
@@ -101,12 +130,18 @@ const NotificationsDropdown = () => {
                   <p className="notification-message">{notif.message}</p>
                 </div>
               </Link>
-              // --- FIN DEL CAMBIO ---
             );
-        })}
+          })
+        ) : (
+          <p className="dropdown-empty">No hay notificaciones nuevas.</p>
+        )}
       </div>
       <div className="dropdown-footer">
-        <Link to="/notificationes" className="dropdown-link">
+        <Link 
+          to="/notificationes" 
+          className="dropdown-link" 
+          onClick={handleLinkClick} 
+        >
           Ver todas las notificaciones
         </Link>
       </div>
@@ -114,7 +149,6 @@ const NotificationsDropdown = () => {
   );
 };
 
-// --- Dropdown de Usuario ---
 const UserDropdown = () => {
   return (
     <div className="user-dropdown">
@@ -127,18 +161,34 @@ const UserDropdown = () => {
   );
 };
 
-// --- Componente Header Principal ---
 export const Header = () => {
-  const [activeDropdown, setActiveDropdown] = useState(null); // Se saca <string | null>
+  const [activeDropdown, setActiveDropdown] = useState(null);
   const { cartCount } = useCart();
   const dropdownRef = useClickOutside(() => setActiveDropdown(null));
+  
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    getNotificaciones(false)
+      .then(notifs => {
+        if (Array.isArray(notifs)) {
+          setUnreadCount(notifs.length);
+        } else {
+          setUnreadCount(0); 
+        }
+      })
+      .catch(err => {
+        console.error("Error contando notificaciones:", err);
+        setUnreadCount(0); 
+      });
+  }, [activeDropdown]); 
 
   const toggleDropdown = (name) => {
     setActiveDropdown(activeDropdown === name ? null : name);
   };
 
   const DROPDOWNS = {
-    notifications: <NotificationsDropdown />,
+    notifications: <NotificationsDropdown onDropdownToggle={setActiveDropdown} />,
     cart: <CartDropdown />,
     user: <UserDropdown />,
   };
@@ -157,12 +207,14 @@ export const Header = () => {
             <div className="icon-button-wrapper">
               <button onClick={() => toggleDropdown('notifications')} className="icon-button">
                 <BellIcon className="icon-lg" />
-                <span className="notification-badge-wrapper">
-                  <span className="notification-ping"></span>
-                  <span className="notification-badge">
-                    {MOCK_NOTIFICATIONS.filter(n => !n.isRead).length}
+                {unreadCount > 0 && (
+                  <span className="notification-badge-wrapper">
+                    <span className="notification-ping"></span>
+                    <span className="notification-badge">
+                      {unreadCount}
+                    </span>
                   </span>
-                </span>
+                )}
               </button>
             </div>
 

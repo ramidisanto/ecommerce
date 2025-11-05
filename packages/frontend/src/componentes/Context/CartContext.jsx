@@ -11,25 +11,33 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     setCartCount(cartItems.reduce((sum, item) => sum + item.quantity, 0));
-    setCartTotal(cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0));
+    
+    // --- CORRECCIÓN AQUÍ ---
+    // Cambiamos item.price a item.precio
+    setCartTotal(cartItems.reduce((sum, item) => sum + item.precio * item.quantity, 0));
+    // --- FIN DE LA CORRECCIÓN ---
+
   }, [cartItems]);
 
   const addItem = (product, quantity = 1) => {
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
+      // Buscamos por '_id' (de MongoDB) o 'id' (si es que se usa)
+      const existingItem = prevItems.find(item => (item._id || item.id) === (product._id || product.id));
       if (existingItem) {
         return prevItems.map(item =>
-          item.id === product.id
+          (item._id || item.id) === (product._id || product.id)
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
-      return [...prevItems, { ...product, quantity }];
+      // Aseguramos que el producto tenga 'id' para consistencia interna
+      const newProduct = { ...product, id: product._id || product.id };
+      return [...prevItems, { ...newProduct, quantity }];
     });
   };
 
   const removeItem = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+    setCartItems(prevItems => prevItems.filter(item => (item._id || item.id) !== productId));
   };
 
   const updateQuantity = (productId, quantity) => {
@@ -39,7 +47,7 @@ export const CartProvider = ({ children }) => {
     }
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item.id === productId ? { ...item, quantity } : item
+        (item._id || item.id) === productId ? { ...item, quantity } : item
       )
     );
   };

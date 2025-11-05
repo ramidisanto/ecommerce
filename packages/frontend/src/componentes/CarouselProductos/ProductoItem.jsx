@@ -1,6 +1,7 @@
 import React from "react";
 import "./ProductoItem.css";
 import { Link } from "react-router-dom";
+import { Button } from "../Button/Button";
 import "../../index.css";
 
 const ProductoItem = ({ producto, itemsVisibles }) => {
@@ -31,13 +32,15 @@ const ProductoItem = ({ producto, itemsVisibles }) => {
                             ${producto.precio.toLocaleString("es-AR")}
                         </span>
                     </div>
+
                     <div className="ver-detalles-container">
-                        <span className="ver-detalles">
-                            <Link to={`/vendedor/${idVendedor}/productos`} className="link-no-style">
+                        <Link to={`/vendedor/${idVendedor}/productos`} className="link-no-style">
+                            <Button variant="primary" size="md" className="w-full">
                                 Ver Tienda
-                            </Link>
-                        </span>
+                            </Button>
+                        </Link>
                     </div>
+
                 </div>
             </div>
         </div>

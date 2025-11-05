@@ -71,23 +71,21 @@
 }
 
 .ver-detalles-container {
-    margin-top: auto;
+    margin-top: auto; 
     padding-top: 15px;
-    text-align: right;
 }
 
-.ver-detalles .link-no-style {
+.ver-detalles-container .link-no-style {
     text-decoration: none;
-    color: #007bff;
-    font-weight: 600;
-    padding: 8px 0;
-    transition: color 0.2s;
-        align-items: center;
-
+    display: block; 
 }
 
 .ver-detalles .link-no-style:hover {
     color: #0056b3;
         align-items: center;
 
+}
+
+.w-full {
+    width: 100%;
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from './ProductosCarousel.css';
+import './ProductosCarousel.css';
 import ProductoItem from "./ProductoItem.jsx";
 
 export default function ProductoCarousel({ productos, itemsVisibles = 4 }) {
@@ -27,7 +27,7 @@ export default function ProductoCarousel({ productos, itemsVisibles = 4 }) {
 
     return (
         <div className="carousel-container">
-            <h2 className="carousel-title">Vendedores Destacados</h2>
+            <h2 className="carousel-title">Productos Destacados</h2>
 
             <div className="carousel-wrapper">
                 <div className="carousel-viewport">
