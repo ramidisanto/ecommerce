@@ -199,7 +199,7 @@ export const Checkout = () => {
           </div>
         </div>
 
-        {/* TOTAL Y BOTONES */}
+        
         <div className="checkout-total">
           <p>Total a pagar:</p>
           <h2>${cartTotal.toFixed(2)}</h2>

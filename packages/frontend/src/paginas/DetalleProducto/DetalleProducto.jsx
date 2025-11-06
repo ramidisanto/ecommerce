@@ -5,15 +5,13 @@ import { ProductoCard } from '../../componentes/ProductoCard/ProductoCard';
 import { Button } from '../../componentes/Button/Button';
 import { useCart } from '../../componentes/Context/CartContext';
 import { ChevronLeftIcon, ChevronRightIcon } from '../../componentes/icons';
-import { Spinner } from 'react-bootstrap'; // Para el "Cargando..."
+import { Spinner } from 'react-bootstrap'; 
 import './DetalleProducto.css'; 
 
 const ProductoDetalle = () => {
     const { productoId } = useParams();
     const { addItem } = useCart();
     const navigate = useNavigate();
-
-    // const product = MOCK_PRODUCTS.find(p => p._id === productoId); // <--- ESTO SE VA
 
     const [product, setProduct] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
@@ -130,7 +128,7 @@ const ProductoDetalle = () => {
 
             <div className="product-detail-content">
                 <div className="product-detail-grid">
-                    {/* --- Columna de las imagenes --- */}
+                  
                     <div className="product-images">
                         <div className="product-thumbnails">
                             {product.fotos && product.fotos.map((photo, index) => (
@@ -139,7 +137,7 @@ const ProductoDetalle = () => {
                                     onClick={() => setCurrentImageIndex(index)}
                                     className={`thumbnail-button ${currentImageIndex === index ? 'active' : ''}`}
                                 >
-                                    {/* urls de imagenes  */}
+                                   
                                     <img src={photo} alt={`${product.titulo} thumbnail ${index + 1}`} />
                                 </button>
                             ))}
@@ -163,10 +161,10 @@ const ProductoDetalle = () => {
                         </div>
                     </div>
 
-                    {/* info */}
+                    
                     <div className="product-info">
                         <h1 className="product-title">{product.titulo}</h1>
-                        {/* */}
+                       
                         <Link to={`/vendedor/${product.vendedorId._id}/productos`} className="product-seller-link">
                             Vendido por {product.vendedorId.nombre}
                         </Link>
@@ -201,7 +199,7 @@ const ProductoDetalle = () => {
                 </div>
             </div>
 
-            {/* ------------- datos relacionados ---- */}
+            
             {relatedProducts.length > 0 && (
                 <div className="related-products">
                     <h2>Más de {product.vendedorId.nombre}</h2>

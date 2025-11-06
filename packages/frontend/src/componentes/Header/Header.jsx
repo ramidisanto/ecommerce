@@ -40,7 +40,7 @@ const CartDropdown = ({ closeDropdown }) => {
             
             <img 
               src={item.fotos && item.fotos.length > 0 ? item.fotos[0] : "/images/LOGOSOL.png"} 
-              alt={item.titulo} // <-- CAMBIO 2: 'item.title' -> 'item.titulo'
+              alt={item.titulo}
               className="cart-item-img" 
             />
 
@@ -69,7 +69,6 @@ const CartDropdown = ({ closeDropdown }) => {
         ))}
       </div>
       <div className="dropdown-footer">
-        {/* 'cartTotal' ya viene bien calculado desde tu Context */}
         <p className="cart-total">Total: ${cartTotal.toFixed(2)}</p>
         <div className="dropdown-actions">
           <Link to="/carrito" onClick={closeDropdown} className="w-full">
@@ -91,24 +90,24 @@ const NotificationsDropdown = ({ closeDropdown, notifications }) => {
 <div className="notifications-dropdown">
  <div className="notifications-list">
  
-  {/* Sigue usando 'notifications.length' (del estado) */}
+
  {notifications.length > 0 ? (
      notifications.map(notif => (
       <Link
-       // CAMBIO A: Usa 'id' (que tu servicio mapea)
+      
        key={notif.id} 
        to={`/notificationes?id=${notif.id}`} 
        className="notification-item"
        onClick={closeDropdown}
       >
    <div className="notification-icon">
-    {/* CAMBIO B: Usa 'isRead' (que tu servicio mapea) */}
+ 
     <CheckCircleIcon className={`icon-md ${!notif.isRead ? 'icon-unread' : 'icon-read'}`} />
    </div>
    <div className="notification-details">
-    {/* CAMBIO C: Usa 'title' (que tu servicio crea) */}
+   
     <p className={`notification-title ${!notif.isRead ? 'title-unread' : 'title-read'}`}>{notif.title}</p>
-    {/* CAMBIO D: Usa 'message' (que tu servicio mapea) */}
+    
     <p className="notification-message">{notif.message}</p> 
    </div>
   </Link>
@@ -127,7 +126,7 @@ const NotificationsDropdown = ({ closeDropdown, notifications }) => {
 );
 };
 
-// Los propTypes quedan igual
+
 NotificationsDropdown.propTypes = { 
 closeDropdown: PropTypes.func.isRequired,
  notifications: PropTypes.array.isRequired
@@ -145,7 +144,6 @@ const UserDropdown = ({ closeDropdown }) => {
 const MobileMenu = ({ isOpen, closeMenu }) => {
     if (!isOpen) return null;
 
-    // Usamos NavLink para que el link activo se pinte
     const getLinkClass = ({ isActive }) => {
       return `mobile-nav-link ${isActive ? 'active' : ''}`;
     };
@@ -176,13 +174,13 @@ MobileMenu.propTypes = {
 
 export const Header = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para menú móvil
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); 
   const { cartCount } = useCart();
   const dropdownRef = useClickOutside(() => setActiveDropdown(null));
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   
-  // Bloquea el scroll del body cuando el menú móvil está abierto
+ 
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -197,7 +195,7 @@ useEffect(() => {
     try {
       const data = await getNotificaciones();
 
-      // 🧠 Normalizamos la estructura para que coincida con el Dropdown
+     
       const normalizadas = data.map((n) => ({
         id: n.id || n._id || n.ID || Math.random().toString(36).slice(2),
         isRead: n.isRead ?? n.leida ?? n.read ?? false,
@@ -222,14 +220,14 @@ useEffect(() => {
     setActiveDropdown(activeDropdown === name ? null : name);
   };
   
-  // Cierra todo (dropdowns y menú móvil)
+ 
   const closeAll = () => {
     setActiveDropdown(null);
     setIsMobileMenuOpen(false);
   }
 
   const DROPDOWNS = {
-    // Pasamos las notificaciones del estado al dropdown
+   
     notifications: <NotificationsDropdown closeDropdown={closeAll} notifications={notifications} />,
     cart: <CartDropdown closeDropdown={closeAll} />,
     user: <UserDropdown closeDropdown={closeAll} />,
@@ -280,7 +278,6 @@ useEffect(() => {
               <MenuIcon className="icon-lg" />
             </button>
 
-             {/* Contenedor de Dropdowns (sin cambios) */}
              {activeDropdown && (
                 <div 
                     ref={dropdownRef}

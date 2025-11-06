@@ -8,7 +8,7 @@ const ICONS = {
     info: <InformationCircleIcon className="toast-icon info" />,
 };
 
-const TOAST_DURATION = 5000; // 5 segundos
+const TOAST_DURATION = 5000; 
 
 export const Toast = ({ notification, onDismiss }) => {
   const [isExiting, setIsExiting] = useState(false);
@@ -19,11 +19,11 @@ export const Toast = ({ notification, onDismiss }) => {
     }, TOAST_DURATION);
 
     return () => clearTimeout(timer);
-  }, [notification.id]); // Agregamos dependencia
+  }, [notification.id]);
   
   const handleDismiss = () => {
       setIsExiting(true);
-      setTimeout(() => onDismiss(notification.id), 300); // Espera la animación
+      setTimeout(() => onDismiss(notification.id), 300); 
   }
 
   const toastClass = `toast-item ${isExiting ? 'animate-fade-out' : 'animate-fade-in'}`;

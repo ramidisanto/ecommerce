@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNotification } from '../Context/NotificationContext';
 import { Toast } from './Toast';
-import './Toast.css'; // ¡CSS para ambos!
+import './Toast.css'; 
 
 export const ToastContainer = () => {
   const { notifications, removeNotification } = useNotification();

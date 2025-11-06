@@ -1,6 +1,6 @@
-/* --- Estilos del Carrito --- */
+
 .cart-container {
-  max-width: 56rem; /* max-w-4xl */
+  max-width: 56rem; 
   margin: 0 auto;
 }
 
@@ -35,15 +35,14 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* --- Header de la Tabla (Oculto en móvil) --- */
+
 .cart-table-header {
   display: none; 
 }
 
-/* --- Item del Carrito (Mobile-First) --- */
+
 .cart-item {
   display: grid;
-  /* 2 columnas: [Imagen+Info] [Cantidad+Quitar] */
   grid-template-columns: 1fr auto;
   gap: 1rem;
   padding: 1rem;
@@ -70,7 +69,6 @@
   color: #1E293B;
 }
 
-/* Apilamos Cantidad y Quitar en la columna 2 */
 .cart-quantity-stack {
   display: flex;
   flex-direction: column;
@@ -92,18 +90,18 @@
   height: 1rem;
 }
 
-/* Ocultamos Precio y Subtotal en móvil */
+
 .cart-price,
 .cart-subtotal {
   display: none;
 }
 
 .cart-remove-mobile {
-  display: flex; /* ¡Se muestra en móvil! */
+  display: flex; 
   margin-top: 0.5rem;
 }
 
-/* --- Resumen del Carrito --- */
+
 .cart-summary {
   padding: 1.5rem;
 }
@@ -136,7 +134,7 @@
   gap: 1rem;
 }
 
-/* --- Estado Vacío --- */
+
 .cart-empty {
   padding: 3rem;
   text-align: center;
@@ -152,15 +150,12 @@
 }
 
 
-/* --- ============================ --- */
-/* --- VISTA DESKTOP (Tablet y más) --- */
-/* --- ============================ --- */
 
-@media (min-width: 768px) { /* 768px es el breakpoint 'md' */
+
+@media (min-width: 768px) { 
   
   .cart-table-header {
     display: grid;
-    /* 5 columnas: Producto, Cantidad, Precio, Subtotal, Quitar */
     grid-template-columns: 3fr 1.5fr 1fr 1fr 1fr;
     padding: 1rem 1.5rem;
     border-bottom: 2px solid #e5e7eb;
@@ -175,17 +170,17 @@
   }
 
   .cart-item {
-    /* 5 columnas, alineadas al centro */
+
     grid-template-columns: 3fr 1.5fr 1fr 1fr 1fr;
     align-items: center;
     padding: 1.5rem;
   }
 
   .cart-product {
-    grid-column: auto; /* Resetea el span */
+    grid-column: auto; 
   }
 
-  /* Disolvemos el 'stack' de móvil */
+
   .cart-quantity-stack {
     display: contents; 
   }
@@ -193,7 +188,7 @@
   .cart-quantity,
   .cart-price,
   .cart-subtotal {
-    display: flex; /* Mostramos las celdas */
+    display: flex; 
     justify-content: center;
     text-align: center;
     font-weight: 500;
@@ -202,11 +197,11 @@
   .cart-subtotal { color: #1E293B; font-weight: 700; }
   
   .cart-remove-mobile {
-    display: flex; /* ¡Ocultamos el botón de móvil! */
+    display: flex; 
     justify-content: center;
   }
   
   .cart-actions {
-    flex-direction: row; /* Botones en fila */
+    flex-direction: row; 
   }
 }

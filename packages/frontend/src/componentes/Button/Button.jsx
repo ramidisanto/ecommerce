@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { SpinnerIcon } from '../icons'; // 1. Importar SpinnerIcon
+import { SpinnerIcon } from '../icons'; 
 import './Button.css';
 
 export const Button = (props) => {
@@ -9,7 +9,7 @@ export const Button = (props) => {
     variant = 'primary',
     size = 'md',
     className = '',
-    isLoading = false, // 2. Agregar 'isLoading'
+    isLoading = false, 
     ...restProps
   } = props;
 
@@ -18,10 +18,9 @@ export const Button = (props) => {
   return (
     <button
       className={buttonClasses.trim()}
-      disabled={isLoading} // 3. Deshabilitar si está cargando
+      disabled={isLoading} 
       {...restProps}
     >
-      {/* 4. Mostrar spinner o children */}
       {isLoading ? <SpinnerIcon className="icon-sm" /> : children}
     </button>
   );
@@ -32,5 +31,5 @@ Button.propTypes = {
   variant: PropTypes.string,
   size: PropTypes.string,
   className: PropTypes.string,
-  isLoading: PropTypes.bool, // 5. Agregar a propTypes
+  isLoading: PropTypes.bool, 
 };
