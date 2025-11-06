@@ -1,69 +1,91 @@
 .carousel-card {
-  display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  padding: 0 6px;
-  flex-shrink: 0;
+    flex-shrink: 0;
+    padding: 20px 10px;
+    box-sizing: border-box;
 }
 
 .producto-card {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  height: 100%;
-  width: 100%;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .producto-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
 .producto-image {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
 }
 
 .producto-info {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .producto-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 6px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 10px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.producto-stock {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 12px;
 }
 
 .producto-details {
-  font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.producto-sales {
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 500;
 }
 
 .producto-price {
-  font-weight: 700;
-  color: #222;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2c2c2c;
 }
 
 .ver-detalles-container {
-  margin-top: auto;
-  width: 100%;
+    margin-top: auto; 
+    padding-top: 15px;
 }
 
-.link-no-style {
-  text-decoration: none;
+.ver-detalles-container .link-no-style {
+    text-decoration: none;
+    display: block; 
 }
 
+.ver-detalles .link-no-style:hover {
+    color: #0056b3;
+        align-items: center;
+
+}
+
+.w-full {
+    width: 100%;
+}

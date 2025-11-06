@@ -15,6 +15,7 @@ const ProductoItem = ({ producto, itemsVisibles }) => {
         <div
             key={producto._id}
             className="carousel-card"
+            style={{ flexBasis: `calc(100% / ${itemsVisibles})` }}
         >
             <div className="producto-card">
                 <img
@@ -24,9 +25,9 @@ const ProductoItem = ({ producto, itemsVisibles }) => {
                 />
                 <div className="producto-info">
                     <h3 className="producto-name">{producto.titulo}</h3>
-                    
+                    <p className="producto-stock">Stock: {producto.stock}</p>
                     <div className="producto-details">
-                        
+                        <span className="producto-sales">Ventas: {producto.ventas}</span>
                         <span className="producto-price">
                             ${producto.precio.toLocaleString("es-AR")}
                         </span>
