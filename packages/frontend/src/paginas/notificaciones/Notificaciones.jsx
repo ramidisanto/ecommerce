@@ -89,6 +89,11 @@ export const Notificaciones = () => {
         }
     };
 
+    const layoutClass = `
+      notifications-layout 
+      ${selectedNotification ? 'mobile-show-detail' : ''}
+    `;
+
     const filteredNotifications = filter === 'unread'
         ? notifications.filter(n => !n.isRead)
         : notifications;
@@ -102,7 +107,8 @@ export const Notificaciones = () => {
                 <h1 className="header-title">Notificaciones</h1>
             </div>
 
-            <div className="notifications-layout">
+            <div className={layoutClass}>
+
                 <div className="notifications-sidebar">
                     <div className="sidebar-actions">
                         <Button onClick={markAllAsRead} variant="secondary" size="sm" disabled={isLoading}>
@@ -161,6 +167,13 @@ export const Notificaciones = () => {
                 </div>
 
                 <div className="notification-content">
+                    <button 
+                    className="mobile-back-button"
+                    onClick={() => setSelectedNotification(null)}
+                  >
+                    <ChevronLeftIcon className="icon-md" />
+                    Volver a la lista
+                  </button>
                     {selectedNotification ? (
                         <div>
                             <div className="content-header">

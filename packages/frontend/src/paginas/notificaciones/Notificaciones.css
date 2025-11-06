@@ -1,3 +1,10 @@
+/* --- Contenedor Principal --- */
+.notifications-container {
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .notifications-header {
   display: flex;
   align-items: center;
@@ -11,7 +18,7 @@
 .header-back-link:hover {
   color: #1E293B;
 }
-.header-back-link .icon-md { 
+.header-back-link .icon-md {
   width: 1.5rem;
   height: 1.5rem;
 }
@@ -23,9 +30,11 @@
   margin-left: 0.5rem;
 }
 
+/* --- Layout Principal (Sidebar + Contenido) --- */
 .notifications-layout {
   display: flex;
-  flex-direction: column;
+  /* Mobile-first: Apilado por defecto */
+  flex-direction: column; 
   gap: 2rem;
   background-color: #ffffff;
   border-radius: 0.5rem;
@@ -33,12 +42,14 @@
   overflow: hidden;
   min-height: 600px;
 }
+/* Desktop: Se pone en fila */
 @media (min-width: 768px) {
   .notifications-layout {
-    flex-direction: row; 
+    flex-direction: row; /* md:flex-row */
   }
 }
 
+/* --- Barra Lateral (Lista de Notificaciones) --- */
 .notifications-sidebar {
   width: 100%;
   border-right: 1px solid #F1F5F9;
@@ -61,16 +72,14 @@
 }
 
 .sidebar-filters {
-  /* Original: "flex gap-2" */
   display: flex;
   gap: 0.5rem;
 }
-.sidebar-filters .w-full { /* Clase de utilidad que pasamos desde el Button */
+.sidebar-filters .w-full {
   width: 100%;
 }
 
 .sidebar-list {
-  /* Original: "flex-grow overflow-y-auto" */
   flex-grow: 1;
   overflow-y: auto;
 }
@@ -89,21 +98,18 @@
   border-bottom: none;
 }
 .notification-list-item:hover {
-  background-color: #f9fafb; /* hover:bg-gray-50 */
+  background-color: #f9fafb;
 }
 .notification-list-item.selected {
-  /* Original: "bg-sol-light-gray" */
   background-color: #F1F5F9;
 }
 
 .item-content-wrapper {
-  /* Original: "flex items-start" */
   display: flex;
   align-items: flex-start;
 }
 
 .item-status-dot {
-  /* Original: "w-2 h-2 bg-sol-orange rounded-full mt-2 mr-3 flex-shrink-0" */
   width: 0.5rem;
   height: 0.5rem;
   background-color: #FF8A00;
@@ -114,34 +120,27 @@
 }
 
 .item-details {
-  /* Original: "flex-grow" */
   flex-grow: 1;
-  min-width: 0; /* Para que el 'truncate' funcione */
+  min-width: 0;
 }
 .item-details.read {
-  /* Original: "pl-5" (0.5rem del dot + 0.75rem del mr-3 = 1.25rem) */
-  /* (El pl-5 original es 1.25rem, lo ajustamos) */
   padding-left: 1.25rem;
 }
 
 .item-title {
-  /* Original: "font-semibold truncate" */
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .item-title.read {
-  /* Original: "text-sol-gray" */
   color: #64748B;
 }
 .item-title.unread {
-  /* Original: "text-sol-dark" */
   color: #1E293B;
 }
 
 .item-message {
-  /* Original: "text-sm text-sol-gray truncate" */
   font-size: 0.875rem;
   color: #64748B;
   overflow: hidden;
@@ -150,14 +149,12 @@
 }
 
 .item-date {
-  /* Original: "text-xs text-gray-400 mt-1" */
   font-size: 0.75rem;
   color: #9ca3af;
   margin-top: 0.25rem;
 }
 
 .sidebar-empty {
-  /* Original: "p-8 text-center text-sol-gray" */
   padding: 2rem;
   text-align: center;
   color: #64748B;
@@ -166,7 +163,6 @@
 
 /* --- Panel de Contenido (Detalle) --- */
 .notification-content {
-  /* Original: "w-full md:w-2/3 p-8" */
   width: 100%;
   padding: 2rem;
 }
@@ -177,33 +173,27 @@
 }
 
 .content-header {
-  /* Original: "flex justify-between items-center mb-4 pb-4 border-b" */
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+  border-bottom: 1px solid #e5e7eb;
 }
 .content-title {
-  /* Original: "text-2xl font-bold text-sol-dark" */
   font-size: 1.5rem;
   font-weight: 700;
   color: #1E293B;
 }
 .content-date {
-  /* Original: "text-sm text-sol-gray" */
   font-size: 0.875rem;
   color: #64748B;
 }
 .content-body {
-  /* Original: "prose max-w-none text-gray-700" */
-  /* 'prose' es complejo, lo simulamos simple */
-  color: #374151; /* text-gray-700 */
+  color: #374151;
   line-height: 1.6;
 }
 .content-read-date {
-  /* Original: "text-xs text-gray-400 mt-6 pt-4 border-t" */
   font-size: 0.75rem;
   color: #9ca3af;
   margin-top: 1.5rem;
@@ -213,7 +203,6 @@
 
 /* --- Estado Vacío (Sin selección) --- */
 .content-empty-state {
-  /* Original: "flex flex-col items-center justify-center h-full text-center text-sol-gray" */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -223,13 +212,63 @@
   color: #64748B;
 }
 .empty-state-icon {
-  /* Original: "w-16 h-16 mb-4" */
   width: 4rem;
   height: 4rem;
   margin-bottom: 1rem;
 }
 .empty-state-title {
-  /* Original: "text-xl font-semibold" */
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+.mobile-back-button {
+  display: none; /* 1. Oculto por defecto en desktop */
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748B;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  margin-left: -0.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+.mobile-back-button:hover {
+  color: #1E293B;
+}
+
+@media (max-width: 767px) {
+
+  .notifications-layout .notification-content {
+    display: none;
+  }
+  
+  
+  .notifications-layout.mobile-show-detail .notifications-sidebar {
+    display: none; 
+  }
+
+  .notifications-layout.mobile-show-detail .notification-content {
+    display: block; 
+  }
+
+  .mobile-back-button {
+    display: inline-flex; 
+  }
+
+  .notifications-layout.mobile-show-detail .notifications-header {
+    display: none;
+  }
+
+  .notifications-layout {
+    padding: 0;
+    gap: 0;
+    box-shadow: none;
+    background: none;
+  }
+  .notification-content {
+    padding: 0;
+  }
 }

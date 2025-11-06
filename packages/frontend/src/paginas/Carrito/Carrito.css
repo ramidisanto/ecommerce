@@ -1,206 +1,212 @@
+/* --- Estilos del Carrito --- */
 .cart-container {
-padding: 0 1rem;
+  max-width: 56rem; /* max-w-4xl */
+  margin: 0 auto;
 }
 
 .cart-header {
-display: flex;
-align-items: center;
-margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
-
 .cart-back-link {
-color: #6b7280;
-text-decoration: none;
-transition: color 0.2s ease;
+  color: #64748B;
+  padding: 0.5rem;
+  margin-left: -0.5rem;
+  border-radius: 9999px;
 }
-
 .cart-back-link:hover {
-color: #111827;
+  color: #1E293B;
 }
-
-.icon {
-width: 24px;
-height: 24px;
+.cart-back-link .icon {
+  width: 1.5rem;
+  height: 1.5rem;
 }
-
 .cart-title {
-font-size: 1.5rem;
-font-weight: bold;
-color: #111827;
-margin-left: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin-left: 0.5rem;
 }
 
 .cart-box {
-background-color: white;
-border-radius: 0.5rem;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* Table Header */
+/* --- Header de la Tabla (Oculto en móvil) --- */
 .cart-table-header {
-display: none;
-padding: 1rem;
-font-weight: 600;
-font-size: 0.875rem;
-color: #6b7280;
-border-bottom: 1px solid #e5e7eb;
+  display: none; 
 }
 
-@media (min-width: 768px) {
-.cart-table-header {
-display: grid;
-grid-template-columns: 3fr 1fr 1fr 1fr;
-gap: 1rem;
-}
-}
-
-/* Items */
+/* --- Item del Carrito (Mobile-First) --- */
 .cart-item {
-display: grid;
-grid-template-columns: 1fr;
-gap: 1rem;
-align-items: center;
-padding: 1rem;
-border-bottom: 1px solid #e5e7eb;
+  display: grid;
+  /* 2 columnas: [Imagen+Info] [Cantidad+Quitar] */
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
 }
-
 .cart-item:last-child {
-border-bottom: none;
-}
-
-@media (min-width: 768px) {
-.cart-item {
-grid-template-columns: 3fr 1fr 1fr 1fr;
-}
+  border-bottom: none;
 }
 
 .cart-product {
-display: flex;
-align-items: center;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
-
 .cart-product-img {
-width: 80px;
-height: 80px;
-object-fit: cover;
-border-radius: 0.375rem;
-margin-right: 1rem;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 0.375rem;
+  flex-shrink: 0;
 }
-
 .cart-product-title {
-font-weight: 600;
-color: #111827;
+  font-weight: 600;
+  color: #1E293B;
 }
 
-.cart-product-seller {
-font-size: 0.875rem;
-color: #6b7280;
+/* Apilamos Cantidad y Quitar en la columna 2 */
+.cart-quantity-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
 }
 
-/* Quantity */
 .cart-quantity {
-display: flex;
-align-items: center;
-justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
-
-.icon-small {
-width: 16px;
-height: 16px;
-}
-
 .cart-quantity-value {
-padding: 0 1rem;
-font-weight: 600;
+  padding: 0 0.75rem;
+  font-weight: 600;
+}
+.icon-small {
+  width: 1rem;
+  height: 1rem;
 }
 
-/* Prices */
+/* Ocultamos Precio y Subtotal en móvil */
 .cart-price,
 .cart-subtotal {
-text-align: right;
-font-weight: 600;
+  display: none;
 }
 
-.cart-price {
-color: #6b7280;
-}
-
-.cart-subtotal {
-color: #111827;
-font-weight: 700;
-}
-
-/* Mobile remove */
 .cart-remove-mobile {
-grid-column: 1 / -1;
-display: flex;
-justify-content: flex-end;
+  display: flex; /* ¡Se muestra en móvil! */
+  margin-top: 0.5rem;
 }
 
-@media (min-width: 768px) {
-.cart-remove-mobile {
-display: none;
-}
-}
-
-/* Summary */
+/* --- Resumen del Carrito --- */
 .cart-summary {
-padding: 1.5rem;
+  padding: 1.5rem;
 }
-
 .cart-total {
-display: flex;
-justify-content: flex-end;
-align-items: center;
-margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
-
 .cart-total-label {
-font-size: 1.125rem;
-font-weight: 600;
-color: #111827;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1E293B;
 }
-
 .cart-total-value {
-font-size: 1.5rem;
-font-weight: 700;
-color: #111827;
-margin-left: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin-left: 1rem;
 }
 
 .cart-actions {
-display: flex;
-justify-content: space-between;
-flex-direction: column-reverse;
-gap: 1rem;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  gap: 1rem;
 }
-
-@media (min-width: 640px) {
-.cart-actions {
-flex-direction: row;
-}
-}
-
 .cart-action-buttons {
-display: flex;
-gap: 1rem;
+  display: flex;
+  gap: 1rem;
 }
 
-/* Empty cart */
+/* --- Estado Vacío --- */
 .cart-empty {
-text-align: center;
-padding: 3rem;
+  padding: 3rem;
+  text-align: center;
 }
-
 .cart-empty-title {
-font-size: 1.25rem;
-font-weight: 600;
-color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1E293B;
 }
-
 .cart-empty-text {
-color: #6b7280;
-margin: 0.5rem 0 1.5rem;
+  color: #64748B;
+  margin: 0.5rem 0 1.5rem 0;
 }
 
+
+/* --- ============================ --- */
+/* --- VISTA DESKTOP (Tablet y más) --- */
+/* --- ============================ --- */
+
+@media (min-width: 768px) { /* 768px es el breakpoint 'md' */
+  
+  .cart-table-header {
+    display: grid;
+    /* 5 columnas: Producto, Cantidad, Precio, Subtotal, Quitar */
+    grid-template-columns: 3fr 1.5fr 1fr 1fr 1fr;
+    padding: 1rem 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+    font-weight: 600;
+    color: #64748B;
+    font-size: 0.875rem;
+  }
+  .cart-col-quantity, 
+  .cart-col-price, 
+  .cart-col-subtotal {
+    text-align: center;
+  }
+
+  .cart-item {
+    /* 5 columnas, alineadas al centro */
+    grid-template-columns: 3fr 1.5fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: 1.5rem;
+  }
+
+  .cart-product {
+    grid-column: auto; /* Resetea el span */
+  }
+
+  /* Disolvemos el 'stack' de móvil */
+  .cart-quantity-stack {
+    display: contents; 
+  }
+
+  .cart-quantity,
+  .cart-price,
+  .cart-subtotal {
+    display: flex; /* Mostramos las celdas */
+    justify-content: center;
+    text-align: center;
+    font-weight: 500;
+  }
+  .cart-price { color: #64748B; }
+  .cart-subtotal { color: #1E293B; font-weight: 700; }
+  
+  .cart-remove-mobile {
+    display: flex; /* ¡Ocultamos el botón de móvil! */
+    justify-content: center;
+  }
+  
+  .cart-actions {
+    flex-direction: row; /* Botones en fila */
+  }
+}

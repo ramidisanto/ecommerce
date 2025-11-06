@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { SunIcon, BellIcon,XIcon, CartIcon, UserIcon, SearchIcon, TrashIcon, CheckCircleIcon, MenuIcon} from '../icons'; 
+import { SunIcon, BellIcon,XIcon, CartIcon, UserIcon, TrashIcon, CheckCircleIcon, MenuIcon} from '../icons'; 
 import { useCart } from '../Context/CartContext'; 
 import { Button } from '../Button/Button'; 
-//import { getNotificaciones } from '../../services/notificacionService';
-import { MOCK_NOTIFICATIONS } from '../../mockData/data';
+import { getNotificaciones } from '../../services/notificacionService';
 import './Header.css'; 
 
 const useClickOutside = (handler) => {
@@ -86,41 +85,59 @@ const CartDropdown = ({ closeDropdown }) => {
 };
 CartDropdown.propTypes = { closeDropdown: PropTypes.func.isRequired };
 
-const NotificationsDropdown = ({ closeDropdown }) => {
-  const [notifications] = useState(MOCK_NOTIFICATIONS);
-  return (
-    <div className="notifications-dropdown">
-      <div className="notifications-list">
-        {notifications.map(notif => (
-          <div key={notif.id} className="notification-item">
-            <div className="notification-icon">
-              <CheckCircleIcon className={`icon-md ${notif.isRead ? 'icon-read' : 'icon-unread'}`} />
-            </div>
-            <div className="notification-details">
-              <p className={`notification-title ${notif.isRead ? 'title-read' : 'title-unread'}`}>{notif.title}</p>
-              <p className="notification-message">{notif.message}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="dropdown-footer">
-        <Link to="/notificationes" onClick={closeDropdown} className="dropdown-link">
-          Ver todas las notificaciones
-        </Link>
-      </div>
-    </div>
-  );
+const NotificationsDropdown = ({ closeDropdown, notifications }) => {
+ 
+ return (
+<div className="notifications-dropdown">
+ <div className="notifications-list">
+ 
+  {/* Sigue usando 'notifications.length' (del estado) */}
+ {notifications.length > 0 ? (
+     notifications.map(notif => (
+      <Link
+       // CAMBIO A: Usa 'id' (que tu servicio mapea)
+       key={notif.id} 
+       to={`/notificationes?id=${notif.id}`} 
+       className="notification-item"
+       onClick={closeDropdown}
+      >
+   <div className="notification-icon">
+    {/* CAMBIO B: Usa 'isRead' (que tu servicio mapea) */}
+    <CheckCircleIcon className={`icon-md ${!notif.isRead ? 'icon-unread' : 'icon-read'}`} />
+   </div>
+   <div className="notification-details">
+    {/* CAMBIO C: Usa 'title' (que tu servicio crea) */}
+    <p className={`notification-title ${!notif.isRead ? 'title-unread' : 'title-read'}`}>{notif.title}</p>
+    {/* CAMBIO D: Usa 'message' (que tu servicio mapea) */}
+    <p className="notification-message">{notif.message}</p> 
+   </div>
+  </Link>
+   ))
+  ) : (
+   <div className="dropdown-empty">No hay notificaciones.</div>
+  )}
+
+ </div>
+ <div className="dropdown-footer">
+ <Link to="/notificationes" onClick={closeDropdown} className="dropdown-link">
+ Ver todas las notificaciones
+ </Link>
+ </div>
+</div>
+);
 };
-NotificationsDropdown.propTypes = { closeDropdown: PropTypes.func.isRequired };
+
+// Los propTypes quedan igual
+NotificationsDropdown.propTypes = { 
+closeDropdown: PropTypes.func.isRequired,
+ notifications: PropTypes.array.isRequired
+};
 
 const UserDropdown = ({ closeDropdown }) => {
   return (
     <div className="user-dropdown">
       <Link to="/ventas" onClick={closeDropdown} className="user-dropdown-link">Mis Ventas</Link>
       <Link to="/pedidos" onClick={closeDropdown} className="user-dropdown-link">Mis Pedidos</Link>
-      <a href="#" onClick={closeDropdown} className="user-dropdown-link">Perfil</a>
-      <div className="dropdown-divider"></div>
-      <a href="#" onClick={closeDropdown} className="user-dropdown-link link-danger">Cerrar Sesión</a>
     </div>
   );
 };
@@ -162,6 +179,8 @@ export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para menú móvil
   const { cartCount } = useCart();
   const dropdownRef = useClickOutside(() => setActiveDropdown(null));
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   
   // Bloquea el scroll del body cuando el menú móvil está abierto
   useEffect(() => {
@@ -173,8 +192,32 @@ export const Header = () => {
     return () => { document.body.style.overflow = 'auto' };
   }, [isMobileMenuOpen]);
 
+useEffect(() => {
+  const cargarNotificaciones = async () => {
+    try {
+      const data = await getNotificaciones();
 
+      // 🧠 Normalizamos la estructura para que coincida con el Dropdown
+      const normalizadas = data.map((n) => ({
+        id: n.id || n._id || n.ID || Math.random().toString(36).slice(2),
+        isRead: n.isRead ?? n.leida ?? n.read ?? false,
+        title: n.title || n.titulo || n.asunto || "Notificación",
+        message: n.message || n.mensaje || n.descripcion || "Sin contenido disponible",
+      }));
 
+      setNotifications(normalizadas);
+
+      const noLeidas = normalizadas.filter(n => !n.isRead).length;
+      setUnreadCount(noLeidas);
+    } catch (error) {
+      console.error("Error al cargar notificaciones:", error);
+      setNotifications([]);
+      setUnreadCount(0);
+    }
+  };
+
+  cargarNotificaciones();
+}, []);
   const toggleDropdown = (name) => {
     setActiveDropdown(activeDropdown === name ? null : name);
   };
@@ -186,12 +229,13 @@ export const Header = () => {
   }
 
   const DROPDOWNS = {
-      notifications: <NotificationsDropdown closeDropdown={closeAll} />,
-      cart: <CartDropdown closeDropdown={closeAll} />,
-      user: <UserDropdown closeDropdown={closeAll} />,
-  };
+    // Pasamos las notificaciones del estado al dropdown
+    notifications: <NotificationsDropdown closeDropdown={closeAll} notifications={notifications} />,
+    cart: <CartDropdown closeDropdown={closeAll} />,
+    user: <UserDropdown closeDropdown={closeAll} />,
+ };
   
-  const unreadNotifications = MOCK_NOTIFICATIONS.filter(n => !n.isRead).length;
+  const unreadNotifications = unreadCount;
 
   return (
     <header className="header-main">
@@ -203,20 +247,7 @@ export const Header = () => {
             <span className="logo-text-mobile">SOL</span>
           </Link>
 
-          <div className="search-bar-container">
-            <div className="search-bar-wrapper">
-              <input
-                type="text"
-                placeholder="Ej. cyber monday"
-                className="search-input"
-                aria-label="Buscar productos"
-              />
-              <SearchIcon className="search-icon" />
-            </div>
-          </div>
-
           <div className="nav-icons">
-            {/* Iconos de Desktop (se ocultan en móvil) */}
             <div className="nav-icons-desktop">
               <button onClick={() => toggleDropdown('notifications')} className="icon-button" aria-label={`Notificaciones (${unreadNotifications} no leídas)`}>
                 <BellIcon className="icon-lg" />
@@ -232,8 +263,10 @@ export const Header = () => {
               <button onClick={() => toggleDropdown('user')} className="icon-button" aria-label="Menú de usuario">
                 <UserIcon className="icon-lg" />
               </button>
+              
             </div>
-            
+
+
             <button onClick={() => toggleDropdown('cart')} className="icon-button" aria-label={`Carrito de compras (${cartCount} items)`}>
               <CartIcon className="icon-lg" />
               {cartCount > 0 && (

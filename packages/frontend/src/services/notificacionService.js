@@ -1,6 +1,5 @@
 import axios from 'axios'; 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-
 /*USUARIO HARDCODEADO */
 const HARDCODED_USER_ID = '6681c6b125d0c32a023f03b2'; 
 
@@ -17,10 +16,6 @@ export const getNotificaciones = async (leida = undefined) => {
         
         const response = await axios.get(`${API_BASE_URL}/usuarios/${HARDCODED_USER_ID}/notificaciones`, { params });
         
-        if (!Array.isArray(response.data)) {
-            return []; 
-        }
-
         return response.data.map(notif => ({
             ...notif,
             id: notif._id || notif.id, 

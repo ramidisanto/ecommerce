@@ -31,8 +31,8 @@ const CartPage = () => {
 
                         {cartItems.map(item => {
 
-                            const imagenProducto = item.fotos && item.photos.length > 0
-                                ? item.photos[0]
+                            const imagenProducto = item.fotos && item.fotos.length > 0
+                                ? item.fotos[0]
                                 : "/images/LOGOSOL.png";
 
                             const itemId = item._id || item.id;

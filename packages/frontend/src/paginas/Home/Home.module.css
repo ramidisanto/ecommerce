@@ -1,85 +1,92 @@
 .homeSection {
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-text-align: center;
-min-height: 80vh; 
-padding: 2rem 0; 
-background-color: #F1F5F9;
-color: #1A2C42;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: #F1F5F9;
+  color: #1A2C42;
 }
 
+/* HERO principal */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 45vh; /* antes 70vh */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+
+.hero img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(70%);
+  z-index: 0;
+}
+
+.heroOverlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(26, 44, 66, 0.55);
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  padding: 2rem;
+  max-width: 800px;
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+.heroTitle {
+  font-size: 2.2rem; /* antes 3rem */
+}
+
+.heroSubtitle {
+  font-size: 1.1rem; /* antes 1.3rem */
+  max-width: 600px;
+}
+
+.heroButton {
+  background-color: #FF6B00;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 12px;
+  border: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.heroButton:hover {
+  transform: scale(1.05);
+  background-color: #e66000;
+}
+
+/* Contenido de productos destacados */
 .homeContent {
-max-width: 1500px; 
-padding: 0 2rem; 
-width: 100%;
-box-sizing: border-box; 
+  max-width: 1500px;
+  width: 100%;
+  padding: 3rem 2rem;
+  box-sizing: border-box;
+  animation: fadeUp 1s ease;
 }
 
-.homeTitle {
-font-size: 3.5rem; 
-font-weight: 700;
-margin-bottom: 1rem;
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1A2C42;
+  margin-bottom: 2rem;
 }
 
-.homeSubtitle {
-font-size: 1.25rem;
-margin-bottom: 2rem;
-color: #4A4A4A; 
-line-height: 1.6;
-}
-
-.homeButtons {
-display: flex;
-justify-content: center;
-gap: 1rem; 
-}
-
-.primaryButton, .secondaryButton {
-padding: 15px 30px;
-font-size: 1rem;
-font-weight: 600;
-border-radius: 8px;
-cursor: pointer;
-border: 2px solid transparent;
-transition: all 0.3s ease;
-}
-
-.primaryButton {
-background-color: #FF6B00; 
-color: white;
-border-color: #FF6B00;
-}
-
-.primaryButton:hover {
-background-color: #e66000;
-border-color: #e66000;
-}
-
-.secondaryButton {
-background-color: transparent;
-color: #1A2C42;
-border-color: #1A2C42;
-}
-
-.secondaryButton:hover {
-background-color: #1A2C42;
-color: white;
-}
-
-
-.homeBanner {
-width: 100%; 
-height: auto; 
-margin-bottom: 2rem;
-}
-
-/**/
-.spinnerContainer {
-padding: 4rem;
-}
-
+/* Skeletons */
 .skeletonContainer {
   display: flex;
   justify-content: center;
@@ -89,11 +96,11 @@ padding: 4rem;
 }
 
 .skeletonCard {
-  background-color: #1a1a1a;
+  background-color: #ffffff;
   border-radius: 16px;
   padding: 1rem;
   width: 220px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .skeletonImage {
@@ -111,4 +118,15 @@ padding: 4rem;
 
 .skeletonButton {
   border-radius: 8px;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
 }

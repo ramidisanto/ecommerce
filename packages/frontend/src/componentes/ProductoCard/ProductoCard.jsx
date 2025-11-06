@@ -55,6 +55,13 @@ export const ProductoCard = ({ producto }) => {
       />
       <div className="producto-tienda-info">
         <h3 className="producto-tienda-name">{producto.titulo}</h3>
+        <div className="product-categories">
+            {producto.categorias && producto.categorias.map((cat, index) => (
+            <span key={index} className="product-category">
+                  {cat}
+            </span>
+        ))}
+        </div>
 
         <div className="producto-tienda-details">
           <span className="producto-tienda-price">
@@ -62,7 +69,6 @@ export const ProductoCard = ({ producto }) => {
           </span>
         </div>
 
-        {/* Controles de cantidad */}
         <div className="producto-cantidad">
           <Button
             size="sm"

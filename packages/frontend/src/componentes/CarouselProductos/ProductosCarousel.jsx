@@ -1,69 +1,85 @@
 import React, { useState, useEffect } from "react";
-import './ProductosCarousel.css';
+import "./ProductosCarousel.css";
 import ProductoItem from "./ProductoItem.jsx";
 
-export default function ProductoCarousel({ productos, itemsVisibles = 4 }) {
-    useEffect(() => {
-        setIndex(0);
-    }, [productos]);
+export default function ProductoCarousel({ productos }) {
+  const [index, setIndex] = useState(0);
+  const [itemsVisibles, setItemsVisibles] = useState(4);
 
-    const [index, setIndex] = useState(0);
-
-    const siguiente = () => {
-        if (index < productos.length - itemsVisibles) {
-            setIndex(index + 1);
-        }
+  // Detectar tamaño de pantalla
+  useEffect(() => {
+    const updateItems = () => {
+      if (window.innerWidth < 600) setItemsVisibles(1);
+      else if (window.innerWidth < 900) setItemsVisibles(2);
+      else if (window.innerWidth < 1200) setItemsVisibles(3);
+      else setItemsVisibles(4);
     };
 
-    const anterior = () => {
-        if (index > 0) {
-            setIndex(index - 1);
-        }
-    };
+    updateItems();
+    window.addEventListener("resize", updateItems);
+    return () => window.removeEventListener("resize", updateItems);
+  }, []);
 
-    if (!Array.isArray(productos) || productos.length === 0) {
-        return <p className="carousel-empty">No hay productos disponibles</p>;
-    }
+  // Resetear índice al cambiar productos
+  useEffect(() => {
+    setIndex(0);
+  }, [productos]);
 
-    return (
-        <div className="carousel-container">
-            <h2 className="carousel-title">Productos Destacados</h2>
+  if (!Array.isArray(productos) || productos.length === 0) {
+    return <p className="carousel-empty">No hay productos disponibles</p>;
+  }
 
-            <div className="carousel-wrapper">
-                <div className="carousel-viewport">
-                    <div
-                        className="carousel-track"
-                        style={{
-                            transform: `translateX(-${index * (100 / itemsVisibles)}%)`,
-                        }}
-                    >
-                        {productos.map((producto) => (
-                            <ProductoItem
-                                producto={producto}
-                                key={producto._id || producto.id}
-                                itemsVisibles={itemsVisibles}
-                            />
-                        ))}
-                    </div>
-                </div>
+  const maxIndex = Math.max(0, productos.length - itemsVisibles);
 
-                <button
-                    onClick={anterior}
-                    disabled={index === 0}
-                    className={`carousel-btn left-btn ${index === 0 ? "disabled" : ""}`}
-                >
-                    ◀
-                </button>
+  const siguiente = () => {
+    if (index < maxIndex) setIndex(index + 1);
+  };
 
-                <button
-                    onClick={siguiente}
-                    disabled={index >= productos.length - itemsVisibles}
-                    className={`carousel-btn right-btn ${index >= productos.length - itemsVisibles ? "disabled" : ""
-                        }`}
-                >
-                    ▶
-                </button>
-            </div>
+  const anterior = () => {
+    if (index > 0) setIndex(index - 1);
+  };
+
+  return (
+    <div className="carousel-container">
+      <h2 className="carousel-title">Productos Destacados</h2>
+
+      <div className="carousel-wrapper">
+        <div className="carousel-viewport">
+          <div
+            className="carousel-track"
+            style={{
+              width: `${(productos.length * 100) / itemsVisibles}%`,
+              transform: `translateX(-${index * (100 / itemsVisibles)}%)`,
+            }}
+          >
+            {productos.map((producto) => (
+              <div
+                key={producto._id || producto.id}
+                className="carousel-item"
+                style={{ flex: `0 0 ${100 / itemsVisibles}%` }}
+              >
+                <ProductoItem producto={producto} />
+              </div>
+            ))}
+          </div>
         </div>
-    );
+
+        <button
+          onClick={anterior}
+          disabled={index === 0}
+          className={`carousel-btn left-btn ${index === 0 ? "disabled" : ""}`}
+        >
+          ◀
+        </button>
+
+        <button
+          onClick={siguiente}
+          disabled={index >= maxIndex}
+          className={`carousel-btn right-btn ${index >= maxIndex ? "disabled" : ""}`}
+        >
+          ▶
+        </button>
+      </div>
+    </div>
+  );
 }

@@ -167,7 +167,7 @@ const ProductoDetalle = () => {
                     <div className="product-info">
                         <h1 className="product-title">{product.titulo}</h1>
                         {/* */}
-                        <Link to={`/tienda/${product.vendedorId._id}`} className="product-seller-link">
+                        <Link to={`/vendedor/${product.vendedorId._id}/productos`} className="product-seller-link">
                             Vendido por {product.vendedorId.nombre}
                         </Link>
                         
@@ -175,6 +175,13 @@ const ProductoDetalle = () => {
                         
                         <div className="product-description">
                             <p>{product.descripcion}</p>
+                        </div>
+                        <div className="product-categories">
+                            {product.categorias && product.categorias.map((cat, index) => (
+                            <span key={index} className="product-category">
+                                {cat}
+                            </span>
+                        ))}
                         </div>
                         
                         <div className="product-actions">
@@ -199,7 +206,7 @@ const ProductoDetalle = () => {
                 <div className="related-products">
                     <h2>Más de {product.vendedorId.nombre}</h2>
                     <div className="related-products-grid">
-                        {relatedProducts.map(p => <ProductoCard key={p._id} product={p} />)}
+                        {relatedProducts.map(p => <ProductoCard key={p._id} producto={p} />)}
                     </div>
                 </div>
             )}

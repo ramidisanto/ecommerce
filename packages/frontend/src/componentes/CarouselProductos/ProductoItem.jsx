@@ -15,7 +15,6 @@ const ProductoItem = ({ producto, itemsVisibles }) => {
         <div
             key={producto._id}
             className="carousel-card"
-            style={{ flexBasis: `calc(100% / ${itemsVisibles})` }}
         >
             <div className="producto-card">
                 <img

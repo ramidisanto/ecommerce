@@ -39,7 +39,6 @@ export const CartProvider = ({ children }) => {
     
       return [...prevItems, { ...newProduct, quantity }];
     });
-    addNotification(`"${product.titulo}" se agregó al carrito con éxito`, "success");
   };
 
   const removeItem = (productId) => {
