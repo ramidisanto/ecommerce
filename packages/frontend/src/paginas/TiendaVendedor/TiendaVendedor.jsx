@@ -140,10 +140,10 @@ export const TiendaVendedor = () => {
         <button 
         className="btn-primary btn-filtrar" 
         onClick={aplicarFiltros}
-        disabled={isLoading} // Deshabilita el botón mientras carga
+          disabled={isLoading} // Deshabilita el botón mientras carga
     >
-        <Search size={18} /> Filtrar
-    </button>
+          <Search size={18} /> Filtrar
+        </button>
       </div>
 
       {isLoading ? (
