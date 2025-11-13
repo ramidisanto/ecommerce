@@ -25,16 +25,26 @@ export const TiendaVendedor = () => {
   useEffect(() => {
     const fetchProductos = async () => {
       if (!id) return;
+      
+      const filtros = {
+        nombre,
+        categorias,
+        descripcion,
+        precioMin,
+        precioMax,
+        sort,
+        page,
+        limit
+      };
       try {
         setIsLoading(true);
-        const data = await getProductosPorVendedor(id);
+        setError(null);
+        const data = await getProductosPorVendedor(id, filtros);
         if (data && data.length > 0) {
           setProductos(data);
-          setProductosFiltrados(data);
           setVendedorNombre(data[0].vendedorId.nombre);
         } else {
           setProductos([]);
-          setProductosFiltrados([]);
           setVendedorNombre('Vendedor');
         }
       } catch (err) {
@@ -45,25 +55,8 @@ export const TiendaVendedor = () => {
       }
     };
     fetchProductos();
-  }, [id]);
+  }, [id, nombre, categorias, descripcion, precioMin, precioMax, sort, page, limit]);
 
-  useEffect(() => {
-    let filtrados = productos.filter((p) => {
-      const coincideNombre = p.titulo.toLowerCase().includes(nombre.toLowerCase());
-      const coincideCategoria = categoria ? Array.isArray(p.categorias) ? p.categorias.some((cat) => cat.toLowerCase().includes(categoria.toLowerCase()))
-                                : p.categorias?.toLowerCase().includes(categoria.toLowerCase()) : true;
-      const coincideDescripcion = p.descripcion?.toLowerCase().includes(descripcion.toLowerCase());
-      const coincidePrecioMin = precioMin !== '' ? p.precio >= parseFloat(precioMin) : true;
-      const coincidePrecioMax = precioMax !== '' ? p.precio <= parseFloat(precioMax) : true;
-      return coincideNombre && coincideCategoria && coincideDescripcion && coincidePrecioMin && coincidePrecioMax;
-    });
-
-    if (orden === 'precioAsc') filtrados.sort((a, b) => a.precio - b.precio);
-    if (orden === 'precioDesc') filtrados.sort((a, b) => b.precio - a.precio);
-    if (orden === 'masVendido') filtrados.sort((a, b) => (b.cantidadVendida || 0) - (a.cantidadVendida || 0));
-
-    setProductosFiltrados(filtrados);
-  }, [nombre, categoria, descripcion, precioMin, precioMax, orden, productos]);
 
   const resetFiltros = () => {
     setNombre('');
@@ -92,7 +85,7 @@ export const TiendaVendedor = () => {
 
         <div className="filtro-item">
           <Tag className="filtro-icon" />
-          <input type="text" placeholder="Categoría" value={categoria} onChange={(e) => setCategoria(e.target.value)} />
+          <input type="text" placeholder="Categoría" value={categoria} onChange={(e) => setCategorias(e.target.value)} />
         </div>
 
         <div className="filtro-item">
@@ -128,7 +121,7 @@ export const TiendaVendedor = () => {
 
         <div className="filtro-item">
           <ArrowUpDown className="filtro-icon" />
-          <select value={orden} onChange={(e) => setOrden(e.target.value)}>
+          <select value={orden} onChange={(e) => setSort(e.target.value)}>
             <option value="">Ordenar por...</option>
             <option value="precioAsc">Precio: menor a mayor</option>
             <option value="precioDesc">Precio: mayor a menor</option>

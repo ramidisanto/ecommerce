@@ -1,5 +1,5 @@
-import React from "react";
-import { MOCK_ORDERS } from "../../mockData/data";
+import React, { use } from "react";
+import { getPedidosPorUsuario, marcarPedidoCancelado } from "../../services/pedidosService";
 import { ChevronLeftIcon } from "../../componentes/icons";
 import { OrderStatus } from "../../types";
 import { Button } from "../../componentes/Button/Button";
@@ -19,7 +19,7 @@ const getStatusChip = (status) => {
   return <span className={classNames[status]}>{status.replace("_", " ")}</span>;
 };
 
-const OrderCard = ({ order }) => {
+const OrderCard = ({ order, onCancel }) => {
   const canCancel =
     order.status === OrderStatus.PENDING ||
     order.status === OrderStatus.CONFIRMED;
@@ -28,10 +28,10 @@ const OrderCard = ({ order }) => {
     <div className="order-card">
       <div className="order-header">
         <div>
-          <h3>Pedido NRO. {order.id.slice(-6).toUpperCase()}</h3>
+          <h3>Pedido NRO. {String(order.id).slice(-6).toUpperCase()}</h3>
           <p>Fecha compra: {new Date(order.creationDate).toLocaleDateString()}</p>
         </div>
-        {getStatusChip(order.status)}
+        {getStatusChip(order.estado)}
       </div>
 
       <div className="order-body">
@@ -48,12 +48,16 @@ const OrderCard = ({ order }) => {
       <div className="order-footer">
         <span className="total">${order.total.toFixed(2)}</span>
         {canCancel ? (
-          <Button variant="danger" size="sm">
+          <Button 
+            variant="danger" 
+            size="sm"
+            onClick={() => onCancel(order.id)}
+          >
             Cancelar
           </Button>
         ) : (
           <Button variant="secondary" size="sm" disabled>
-            {order.status === OrderStatus.SHIPPED
+            {order.estado === OrderStatus.SHIPPED
               ? "Enviado"
               : "No cancelable"}
           </Button>
@@ -63,7 +67,53 @@ const OrderCard = ({ order }) => {
   );
 };
 
-export const OrdersPage = () => (
+export const OrdersPage = () => {
+  const [orders, setOrders] = React.useState([]);
+
+  const [loading, setLoading] = React.useState(true);
+
+  const [error, setError] = React.useState(null);
+
+  const fetchOrders = async () => {
+    try{
+      setLoading(true);
+      const data = await getPedidosPorUsuario();
+      setOrders(data);
+    } catch (err) {
+      console.error("Error al cargar pedidos:", err);
+      setError("No se pudieron cargar los pedidos.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const handleCancelOrder = async (orderId) => {
+    if (! window.confirm("¿Estás seguro de que deseas cancelar este pedido?")) {
+      return;
+    }
+    try {
+      await marcarPedidoCancelado(orderId);
+      alert("Pedido cancelado con éxito.");
+      fetchOrders();
+    } catch (err) {
+      console.error("Error al cancelar el pedido:", err);
+      alert("No se pudo cancelar el pedido. Intenta nuevamente.");
+    }
+  };
+
+  if (loading) {
+    return <div>Cargando pedidos...</div>;
+  } 
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  } 
+
+  return (
+  
   <div className="orders-container">
     <div className="orders-header">
       <Link to="/" className="back-link">
@@ -73,9 +123,14 @@ export const OrdersPage = () => (
     </div>
 
     <div>
-      {MOCK_ORDERS.map((order) => (
+      {orders.length > 0 ?(
+        orders.map((order) => (
         <OrderCard key={order.id} order={order} />
-      ))}
+      ))
+      ) : (
+        <p>No tienes pedidos realizados.</p>
+      )}
     </div>
   </div>
-);
+  );
+};

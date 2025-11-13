@@ -53,6 +53,11 @@ export class PedidoRepository {
         return await this.obtenerProductosDePedido(pedido);
     }
 
+    async obtenerPedidosPorVendedorId(vendedorId) {
+        const pedidos = await this.model.find({ 'items.producto.vendedor': vendedorId }).populate('items.producto');
+        return pedidos;
+    }
+
 
 }
   

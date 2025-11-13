@@ -100,4 +100,9 @@ async crearPedido(comprador, items, moneda, direccionEntrega) {
         await this.servicioNotificacion.enviarNotificacion(notificacion);
         return pedido;
     }
+
+    async obtenerVentasVendedor(vendedorId){
+        const pedidos = await this.pedidoRepository.obtenerPedidosPorVendedorId(vendedorId);
+        return pedidos;
+    }
 }

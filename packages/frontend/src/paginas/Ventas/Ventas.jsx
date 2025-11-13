@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { MOCK_SALES } from "../../mockData/data";
+import { getVentasPorVendedor, marcarPedidoEnviado } from "../../services/vendedorService";
 import { OrderStatus } from "../../types";
 import { ChevronLeftIcon, ChevronDownIcon } from "../../componentes/icons";
 import { Button } from "../../componentes/Button/Button";
 import "./Ventas.css";
 import { Link } from "react-router-dom";
+import { Spinner } from "react-bootstrap";
 
 const getStatusChip = (status) => {
   const classNames = {
@@ -18,11 +20,13 @@ const getStatusChip = (status) => {
   return <span className={classNames[status]}>{status.replace("_", " ")}</span>;
 };
 
-const SaleCard = ({ sale }) => {
+const SaleCard = ({ sale, onMarcarEnviado, isUpdating }) => {
   const isShippedOrBeyond =
     sale.status === OrderStatus.SHIPPED ||
     sale.status === OrderStatus.DELIVERED ||
     sale.status === OrderStatus.CANCELLED;
+
+  const saleId = sale.id;
 
   return (
     <div className="sale-card">
@@ -39,7 +43,7 @@ const SaleCard = ({ sale }) => {
         <p className="cart-title">Carrito:</p>
         <div className="cart-items">
           {sale.items.map((item) => (
-            <p key={item.product.id}>
+            <p key={item.product.id || item.product._id}>
               {item.quantity} x {item.product.title}
             </p>
           ))}
@@ -50,10 +54,15 @@ const SaleCard = ({ sale }) => {
         <span className="total">${sale.total.toFixed(2)}</span>
         {isShippedOrBeyond ? (
           <Button variant="secondary" size="sm" disabled>
-            Enviado
+            {sale.status === OrderStatus.CANCELLED ? 'Cancelado' : 'Enviado'}
           </Button>
         ) : (
-          <Button variant="primary" size="sm">
+          <Button 
+            variant="primary" 
+            size="sm" 
+            onClick={() => onMarcarEnviado(saleId)}
+            isLoading={isUpdating} 
+          >
             Marcar como enviado
           </Button>
         )}
@@ -62,19 +71,84 @@ const SaleCard = ({ sale }) => {
   );
 };
 
-export const SalesPage = () => (
-  <div className="sales-container">
-    <div className="sales-header">
-      <Link to="/" className="back-link">
-        <ChevronLeftIcon className="icon-md" />
-      </Link>
-      <h1>Mis Ventas</h1>
-    </div>
+export const SalesPage = () => {
+  const [ventas, setVentas] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [updatingId, setUpdatingId] = useState(null); 
 
-    <div>
-      {MOCK_SALES.map((sale) => (
-        <SaleCard key={sale.id} sale={sale} />
-      ))}
+  useEffect(() => {
+    const fetchVentas = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getVentasPorVendedor();
+        setVentas(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error al cargar ventas:", err);
+        setError("No se pudieron cargar las ventas.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchVentas();
+  }, []);
+
+  const handleMarcarEnviado = async (pedidoId) => {
+      setUpdatingId(pedidoId);
+      try {
+        const ventaActualizada = await marcarPedidoEnviado(pedidoId);
+        setVentas(prevVentas =>
+          prevVentas.map(venta =>
+            venta.id === pedidoId ? ventaActualizada : venta
+          )
+        );
+      } catch (err) {
+        console.error("Error al marcar como enviado:", err);
+    
+      } finally {
+        setUpdatingId(null); 
+      }
+    };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <Spinner animation="border" variant="dark" />
+        </div>
+      );
+    }
+
+    if (error) {
+      return <p style={{ textAlign: 'center', color: 'red' }}>{error}</p>;
+    }
+
+    if (ventas.length === 0) {
+      return <p style={{ textAlign: 'center' }}>Todavia no tenes ninguna venta.</p>;
+    }
+
+    return ventas.map((sale) => (
+      <SaleCard 
+        key={sale.id} 
+        sale={sale} 
+        onMarcarEnviado={handleMarcarEnviado}
+        isUpdating={updatingId === sale.id} 
+      />
+    ));
+  };
+
+  return (
+    <div className="sales-container">
+      <div className="sales-header">
+        <Link to="/" className="back-link">
+          <ChevronLeftIcon className="icon-md" />
+        </Link>
+        <h1>Mis Ventas</h1>
+      </div>
+      <div>
+        {renderContent()}
+      </div>
     </div>
-  </div>
-);
+  );
+};

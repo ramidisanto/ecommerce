@@ -90,6 +90,22 @@ export class PedidoController {
         res.status(200).json(pedido);
 
     }
+
+    async obtenerVentasVendedor(req, res){
+        const resultId = objectId.safeParse(req.params.id);
+        if (resultId.error) {
+            res.status(400).json(resultId.error.issues);
+            return;
+        }
+        const vendedorId = resultId.data;
+
+        const vendedor = await this.usuarioService.findById(vendedorId);
+        if (!vendedor) throw new NoExisteIdException(vendedorId, "usuario");
+
+        const ventas = await this.servicioPedido.obtenerVentasVendedor(vendedorId);
+        if (!ventas || ventas.length === 0) return res.status(204).send();
+        res.status(200).json(ventas);
+    }
 }
 
 

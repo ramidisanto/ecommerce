@@ -22,7 +22,7 @@ export class ProductoController {
 
         if (productosPaginados === null) {
             res.status(204).send();
-            return;
+            return; 
         }
         res.status(200).json(productosPaginados);
     }
