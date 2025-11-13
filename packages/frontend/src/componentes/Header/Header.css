@@ -1,4 +1,3 @@
-
 .icon-xs {width: 1rem; height: 1rem; } 
 .icon-md {width: 1.5rem; height: 1.5rem; }
 .icon-lg {width: 1.75rem; height: 1.75rem; } 
@@ -495,4 +494,78 @@ border-top: 1px solid #F1F5F9;
 .mobile-nav-link.active {
   /* Original: "bg-sol-yellow" */
   background-color: #FFC700; /* sol-yellow */
+}
+
+/* --- ESTILOS PARA KEYCLOAK --- */
+
+/* 1. Layout para Links de Navegación (Inicio / Página Segura) */
+.header-nav-links {
+  display: none; /* Oculto en móvil */
+}
+
+/* 2. Botón de Login principal */
+.header-login-btn-wrapper {
+  display: none; /* Oculto en móvil */
+}
+
+/* 3. Estilos para el Dropdown de Usuario (Cerrar Sesión) */
+.user-dropdown-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 8px 0;
+}
+
+.user-dropdown-link.logout-btn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #e53e3e; /* Rojo */
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 8px 16px;
+}
+
+.user-dropdown-link.logout-btn:hover {
+  background-color: #fff5f5;
+}
+
+
+/* --- MEDIA QUERIES (Escritorio) --- */
+@media (min-width: 768px) {
+  
+  /* Mostrar links de navegación */
+  .header-nav-links {
+    display: flex;
+    gap: 24px;
+    flex-grow: 1;
+    justify-content: center;
+    margin: 0 24px;
+  }
+
+  .header-nav-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    padding: 4px 0;
+  }
+
+  .header-nav-link:hover {
+    color: #4a90e2;
+  }
+
+  /* Mostrar botón de login al lado del carrito */
+  .header-login-btn-wrapper {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+  }
+}
+
+/* Estilos del menú móvil */
+.mobile-menu-login {
+  padding: 16px;
+  border-top: 1px solid #eee;
+  margin-top: 16px;
 }
