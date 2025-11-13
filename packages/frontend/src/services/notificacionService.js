@@ -1,7 +1,7 @@
 import axios from 'axios'; 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
 /*USUARIO HARDCODEADO */
-const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1'; 
+const HARDCODED_USER_ID = '68f04b23ed48bbdfd154a4f0'; 
 
 /**
  * Obtiene notificaciones del usuario.

@@ -53,8 +53,17 @@ export class PedidoRepository {
         return await this.obtenerProductosDePedido(pedido);
     }
 
-    async obtenerPedidosPorVendedorId(vendedorId) {
-        const pedidos = await this.model.find({ 'items.producto.vendedorId': vendedorId }).populate('items.producto');
+    async obtenerPedidosPorVendedorId(IdsDeProductos) {
+
+        const pedidos = await this.model.find({
+            'items': {
+                $elemMatch: {
+                    'producto': { $in: IdsDeProductos }
+                }
+            }
+        })
+        .populate('items.producto'); 
+
         console.log('Pedidos encontrados para el vendedor:', pedidos);
         return pedidos;
     }

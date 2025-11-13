@@ -30,8 +30,9 @@ export const Checkout = () => {
     return errors;
   };
 
-  console.log('Entró a onSubmit con values:', values);
+ 
   const onSubmit = async (values) => {
+  console.log('Entró a onSubmit con values:', values);
     try {
       
       // const usuario = new Usuario(
@@ -43,33 +44,59 @@ export const Checkout = () => {
       // );
 
       
-      const pedidoData = {
-        usuario: {
-          id : HARDCODED_USER_ID,
-          nombre: values.nombre,
-          email: values.email,
-          telefono: values.telefono,
-          tipo: HARDOCDE_TIPO,
-          fechaAlta: HARDCODED_FECHA_ALTA,
-        },
-        direccionEntrega: {
-          calle: values.calle,
-          numero: values.numero,
-          piso: values.piso,
-          depto: values.depto,
-          localidad: values.localidad,
-          provincia: values.provincia,
-          pais: values.pais,
-        },
-        items: cartItems.map((item) => ({
-          productoId: item._id || item.id ,
-          nombre: item.titulo,
-          cantidad: item.quantity,
-          precio: item.precio,
-        })),
-        total: cartTotal,
-        fecha: new Date().toISOString(),
-      };
+      // const pedidoData = {
+      //   usuario: {
+      //     id : HARDCODED_USER_ID,
+      //     nombre: values.nombre,
+      //     email: values.email,
+      //     telefono: values.telefono,
+      //     tipo: HARDOCDE_TIPO,
+      //     fechaAlta: HARDCODED_FECHA_ALTA,
+      //   },
+      //   direccionEntrega: {
+      //     calle: values.calle,
+      //     numero: values.numero,
+      //     piso: values.piso,
+      //     depto: values.depto,
+      //     codigoPostal: 1832,
+      //     localidad: values.localidad,
+      //     provincia: values.provincia,
+      //     pais: values.pais,
+      //     lat: 45,
+      //     lon: -73,
+      //   },
+      //   items: cartItems.map((item) => ({
+      //     productoId: item._id || item.id ,
+      //     nombre: item.titulo,
+      //     cantidad: item.quantity,
+      //     precio: item.precio,
+      //   })),
+      //   moneda: 'ARS',
+      //   total: cartTotal,
+      //   fecha: new Date().toISOString(),
+      // };
+
+    const pedidoData = {
+    comprador: HARDCODED_USER_ID, // 👈 en lugar de usuario
+    moneda: "ARS",
+    direccionEntrega: {
+    calle: values.calle,
+    altura: Number(values.numero), // 👈 backend espera "altura" (número)
+    piso: values.piso ? Number(values.piso) : null,
+    departamento: values.depto || null,
+    codigoPostal: 1832,
+    ciudad: values.localidad, // 👈 backend espera "ciudad"
+    provincia: values.provincia,
+    pais: values.pais,
+    lat: 45,
+    lon: -73,
+    },
+    items: cartItems.map((item) => ({
+    productoId: item._id || item.id,
+    cantidad: item.quantity,
+    precioUnitario: item.precio, // 👈 backend espera "precioUnitario"
+  })),
+};
 
       console.log('!!!!!!!!!!!!!!Datos finales del pedido a enviar:', pedidoData); 
 

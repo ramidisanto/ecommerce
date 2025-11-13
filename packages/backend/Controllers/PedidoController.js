@@ -133,14 +133,14 @@ const direccionSchema = z.object({
   ciudad: z.string().min(1, "La ciudad es obligatoria"),
   provincia: z.string().min(1, "La provincia es obligatoria"),
   pais: z.string().min(1, "El país es obligatorio"),
-  lat: z.number(),
-  lon: z.number(),
+  lat: z.number().optional().nullable(),
+  lon: z.number().optional().nullable(),
 });
 
 // Schema principal del pedido
 export const pedidoSchema = z.object({
     comprador: objectId,
-    moneda: z.enum(["ARS", "USD", "EUR"]), 
+    moneda: z.enum(["ARS", "USD", "EUR"]).optional().nullable(), 
     direccionEntrega: direccionSchema,
     items: z.array(itemSchema).min(1, "Debe haber al menos un item"),
 });

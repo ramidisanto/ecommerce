@@ -3,10 +3,6 @@ const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1'; 
 
-const mapSaleData = (sale) => ({
-    ...sale,
-    id: sale._id || sale.id 
-});
 
 export const getVentasPorVendedor = async () => {
     try {
@@ -21,7 +17,7 @@ export const getVentasPorVendedor = async () => {
             ventas = response.data.ventas;
         }
         
-        return ventas.map(mapSaleData); 
+        return ventas; 
 
     } catch (error) {
         console.error('Error fetching ventas:', error);
@@ -33,8 +29,9 @@ export const marcarPedidoEnviado = async (pedidoId) => {
     try {
     
         const response = await axios.patch(`${API_BASE_URL}/pedido/${pedidoId}/enviado`);
-        
-        return mapSaleData(response.data); 
+
+        return true;
+
     } catch (error) {
         console.error('Error marcando como enviado:', error);
         throw error;
