@@ -1,0 +1,158 @@
+.checkout-container {
+background: #ffffff;
+padding: 2.5rem 3rem;
+border-radius: 1.2rem;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+display: flex;
+flex-direction: column;
+gap: 2.5rem;
+}
+
+.checkout-title {
+font-size: 2rem;
+color: #1e293b;
+text-align: center;
+font-weight: 700;
+margin-bottom: 1rem;
+}
+
+.checkout-section-title {
+font-size: 1.3rem;
+font-weight: 600;
+color: #334155;
+border-bottom: 2px solid #e2e8f0;
+padding-bottom: 0.4rem;
+margin-bottom: 1.2rem;
+}
+
+.checkout-form {
+display: flex;
+flex-direction: column;
+gap: 2rem;
+}
+
+.form-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr); 
+column-gap: 2rem; 
+row-gap: 1.5rem;  
+}
+
+.form-group {
+display: flex;
+flex-direction: column;
+}
+
+.form-group label {
+font-weight: 600;
+margin-bottom: 0.4rem;
+color: #475569;
+font-size: 0.95rem;
+}
+
+.form-group input {
+border: 1px solid #cbd5e1;
+border-radius: 8px;
+padding: 0.7rem 0.9rem;
+font-size: 1rem;
+background-color: #f8fafc;
+transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+border-color: #0ea5e9;
+box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+background-color: #fff;
+outline: none;
+}
+
+.error {
+color: #ef4444;
+font-size: 0.85rem;
+margin-top: 0.3rem;
+min-height: 1rem;
+}
+
+.checkout-total {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 1.2rem 1.5rem;
+background: #f1f5f9;
+border-radius: 10px;
+font-size: 1.1rem;
+margin-top: 1.5rem;
+}
+
+.checkout-total p {
+color: #475569;
+}
+
+.checkout-total h2 {
+color: #16a34a;
+font-size: 1.8rem;
+font-weight: 700;
+}
+
+.checkout-buttons {
+display: flex;
+justify-content: flex-end;
+gap: 1rem;
+margin-top: 2rem;
+}
+
+.checkout-buttons button {
+padding: 0.8rem 1.5rem;
+border-radius: 8px;
+font-weight: 600;
+font-size: 1rem;
+cursor: pointer;
+}
+
+.checkout-buttons button:first-child {
+background-color: #e2e8f0;
+color: #1e293b;
+}
+
+.checkout-buttons button:first-child:hover {
+background-color: #cbd5e1;
+}
+
+.checkout-buttons button:last-child {
+background-color: #0ea5e9;
+color: white;
+}
+
+.checkout-buttons button:last-child:hover {
+background-color: #0284c7;
+}
+
+/* lo de Responsive */
+@media (max-width: 768px) {
+  .checkout-container {
+  padding: 2rem;
+  margin: 1.5rem;
+  }
+
+  .checkout-buttons {
+  flex-direction: column;
+  }
+
+  .checkout-buttons button {
+  width: 100%;
+  }
+
+  .checkout-total {
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+  }
+
+  .form-grid {
+  grid-template-columns: 1fr; 
+  }
+
+
+}
+
+

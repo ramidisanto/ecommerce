@@ -7,7 +7,16 @@ export default function productoRoutes(getController) {
     const router = express.Router();
     router.use(loggerMiddleware);
 
-    // http://localhost:8000/vendedor/:id/productos?titulo=algo&categoria=otraCosa&descripcion=masCosas&precioMin=100&precioMax=500&sort=precioAsc
+    // NUEVA RUTAAAAAA, endpoint para carrusel de Home (1 producto más vendido por vendedor)
+    router.get('/productos/destacados', async (req, res, next) => {
+        try {
+          await getController(ProductoController).obtenerProductosDestacados(req, res);
+        } catch (err) {
+          next(err);
+        }
+    });
+
+    // RUTA EXISTENTE, http://localhost:8000/vendedor/:id/productos...
     router.get('/vendedor/:id/productos', async (req, res, next) => {
         try {
           await getController(ProductoController).obtenerProductosPorVendedor(req, res);
@@ -16,8 +25,15 @@ export default function productoRoutes(getController) {
         }
     });
 
+    router.get('/productos/:id', async (req, res, next) => {
+        try {
+          await getController(ProductoController).obtenerProductoPorId(req, res); 
+        } catch (err) {
+          next(err);
+        }
+    });
+
     router.use(productoErrorHandler);
 
     return router;
-
 }

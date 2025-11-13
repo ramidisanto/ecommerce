@@ -1,0 +1,129 @@
+.homeSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: #F1F5F9;
+  color: #1A2C42;
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  height: 45vh; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+
+.hero img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(70%);
+  z-index: 0;
+}
+
+.heroOverlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(26, 44, 66, 0.55);
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  padding: 2rem;
+  max-width: 800px;
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+.heroTitle {
+  font-size: 2.2rem; 
+}
+
+.heroSubtitle {
+  font-size: 1.1rem; 
+  max-width: 600px;
+}
+
+.heroButton {
+  background-color: #FF6B00;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 12px;
+  border: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.heroButton:hover {
+  transform: scale(1.05);
+  background-color: #e66000;
+}
+
+.homeContent {
+  max-width: 1500px;
+  width: 100%;
+  padding: 3rem 2rem;
+  box-sizing: border-box;
+  animation: fadeUp 1s ease;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1A2C42;
+  margin-bottom: 2rem;
+}
+
+
+.skeletonContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.skeletonCard {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1rem;
+  width: 220px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.skeletonImage {
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+}
+
+.skeletonTitle {
+  margin-bottom: 0.5rem;
+}
+
+.skeletonPrice {
+  margin-bottom: 1rem;
+}
+
+.skeletonButton {
+  border-radius: 8px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}

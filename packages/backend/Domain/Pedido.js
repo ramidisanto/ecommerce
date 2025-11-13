@@ -90,7 +90,7 @@ export class Pedido{
   // actualizarEstado(nuevoEstado: EstadoPedido, quien: Usuario, motivo: String): void
   actualizarEstado(estado, usuario, motivo){
       this.setEstado(estado);
-      const nuevoEstado = new CambioEstadoPedido(new Date().toISOString().split("T")[0], estado, usuario, motivo);
+      const nuevoEstado = new CambioEstadoPedido(estado, usuario, motivo);
       this.historialEstados.push(nuevoEstado);
   }
 

@@ -1,0 +1,92 @@
+.producto-tienda-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.producto-tienda-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.producto-tienda-image {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+}
+
+.producto-tienda-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.producto-tienda-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+    height: 2.6em;
+    line-height: 1.3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.producto-tienda-stock {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 12px;
+}
+
+.producto-tienda-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.producto-tienda-sales {
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.producto-tienda-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2c2c2c;
+}
+
+.producto-tienda-actions {
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.producto-cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem 0 1rem 0;
+  gap: 0.5rem;
+}
+
+.producto-cantidad-valor {
+  font-size: 1rem;
+  font-weight: 500;
+  width: 2rem;
+  text-align: center;
+}

@@ -47,7 +47,7 @@ export class PedidoController {
         
 
         if(pedido){   
-            res.status(200).json(aPedidoRest(pedido));
+            res.status(200).json(pedido);
         } else {
             throw new NoExisteIdException(pedidoId, "pedido");
         }

@@ -33,7 +33,7 @@ async crearPedido(comprador, items, moneda, direccionEntrega) {
 
     const pedido = new Pedido(comprador, itemsPedido, moneda, direccionEntrega);
 
-    const estadoInicial = new CambioEstadoPedido(new Date().toISOString().split("T")[0], EstadoPedido.Pendiente, comprador, "Pedido creado");
+    const estadoInicial = new CambioEstadoPedido(EstadoPedido.Pendiente, comprador, "Pedido creado");
     const pedidoParaGuardar = {
         comprador: comprador._id || comprador.id,
         items: itemsPedido.map(i => ({
@@ -62,7 +62,6 @@ async crearPedido(comprador, items, moneda, direccionEntrega) {
 
 
     async cancelarPedido(pedidoId){
-        console.log("entrada al servicio");
         const pedido = await this.pedidoRepository.obtenerPedidoPorId(pedidoId);
         if (!pedido){
             throw new NoExisteIdException(pedidoId, "pedido");

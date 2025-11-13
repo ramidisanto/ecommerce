@@ -4,8 +4,8 @@ export class CambioEstadoPedido{
     usuario;
     motivo;
 
-    constructor(fecha, estado, usuario, motivo){
-        this.fecha = fecha;
+    constructor(estado, usuario, motivo){
+        this.fecha = new Date().toISOString().split("T")[0];
         this.estado = estado;
         this.usuario = usuario;
         this.motivo = motivo;

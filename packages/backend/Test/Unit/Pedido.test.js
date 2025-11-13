@@ -36,10 +36,11 @@ describe('Verificar pedido', () => {
     test('Debería actualizarse el estado correctamente', () =>{
         pedido.actualizarEstado("EN_PREPARACION", comprador_nuevo, "El pedido ya fue aprobado, ahora entra en preparación");
         
-        const estadoPreparacion = new CambioEstadoPedido("2025-10-02","EN_PREPARACION",pedido,comprador_nuevo, "El pedido ya fue aprobado, ahora entra en preparación");
-
+        const estadoPreparacion = new CambioEstadoPedido("EN_PREPARACION",comprador_nuevo, "El pedido ya fue aprobado, ahora entra en preparación");
+        const listaEstados = [estadoPreparacion];
         expect(pedido.getEstado()).toBe("EN_PREPARACION");
-        expect(pedido.getHistorialEstados()).toStrictEqual([estadoPreparacion]);
+        
+        expect(pedido.getHistorialEstados()).toStrictEqual(listaEstados);
     });
 
     test('Debería validar correctamente que se puede cancelar un pedido', () => {
