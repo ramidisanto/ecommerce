@@ -163,10 +163,10 @@ const MobileMenu = ({ isOpen, closeMenu }) => {
                 </button>
             </div>
             <nav className="mobile-menu-nav">
-                <NavLink to="/" onClick={closeMenu} className={getLinkClass}>Inicio</NavLink>
-                <NavLink to="/protegida" onClick={closeMenu} className={getLinkClass}>Página Segura</NavLink>
+                {/*<NavLink to="/" onClick={closeMenu} className={getLinkClass}>Inicio</NavLink>
+                <NavLink to="/protegida" onClick={closeMenu} className={getLinkClass}>Página Segura</NavLink>*/}
                 
-                {/* Solo mostramos links de usuario si está logueado */}
+
                 {keycloak.authenticated && (
                     <>
                         <NavLink to="/ventas" onClick={closeMenu} className={getLinkClass}>Mis Ventas</NavLink>
@@ -177,7 +177,6 @@ const MobileMenu = ({ isOpen, closeMenu }) => {
             </nav>
 
             <div className="mobile-menu-login">
-                {/* Botón Login/Logout condicional */}
                 {!keycloak.authenticated ? (
                     <Button 
                         variant="primary" 
@@ -211,7 +210,6 @@ MobileMenu.propTypes = {
 };
 
 export const Header = () => {
-  // Obtenemos estado de autenticación
   const { keycloak, initialized } = useKeycloak();
 
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -231,7 +229,6 @@ export const Header = () => {
   }, [isMobileMenuOpen]);
 
   useEffect(() => {
-    // Solo cargar notificaciones si está logueado
     if (keycloak.authenticated) {
         const cargarNotificaciones = async () => {
             try {
@@ -282,15 +279,14 @@ export const Header = () => {
             <span className="logo-text-desktop">TIENDA SOL</span>
             <span className="logo-text-mobile">SOL</span>
           </Link>
-
+          {/*
           <nav className="header-nav-links">
             <Link to="/" className="header-nav-link">Inicio</Link>
             <Link to="/protegida" className="header-nav-link">Página Segura</Link>
-          </nav>
+          </nav>*/}
 
           <div className="nav-icons">
             <div className="nav-icons-desktop">
-                {/* Solo mostrar notificaciones y usuario si está logueado */}
                 {keycloak.authenticated && (
                     <>
                         <button onClick={() => toggleDropdown('notifications')} className="icon-button" aria-label={`Notificaciones (${unreadNotifications} no leídas)`}>
@@ -305,7 +301,6 @@ export const Header = () => {
                             }
                         </button>
                         
-                        {/* Botón de la personita: Solo aparece si está logueado */}
                         <button onClick={() => toggleDropdown('user')} className="icon-button" aria-label="Menú de usuario">
                             <UserIcon className="icon-lg" />
                         </button>
@@ -313,7 +308,6 @@ export const Header = () => {
                 )}
             </div>
 
-            {/* El carrito lo dejamos visible siempre (común en e-commerce) */}
             <button onClick={() => toggleDropdown('cart')} className="icon-button" aria-label={`Carrito de compras (${cartCount} items)`}>
               <CartIcon className="icon-lg" />
               {cartCount > 0 && (
@@ -323,7 +317,6 @@ export const Header = () => {
               )}
             </button>
             
-            {/* Botón Iniciar Sesión: Solo aparece si NO está logueado */}
             {!keycloak.authenticated && (
                 <div className="header-login-btn-wrapper">
                     <Button 

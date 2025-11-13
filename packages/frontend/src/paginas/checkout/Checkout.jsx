@@ -5,12 +5,14 @@ import { useCart } from '../../componentes/Context/CartContext';
 import { Button } from '../../componentes/Button/Button';
 import './Checkout.css';
 import { CrearPedido } from '../../services/pedidosService';
+import { useNotification } from '../../componentes/Context/NotificationContext';
 
 const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1';
 const HARDOCDE_TIPO = `COMPRADOR`;
 const HARDCODED_FECHA_ALTA = '2025-10-10T12:00:00.000+00:00';
 
 export const Checkout = () => {
+  const {addNotification} = useNotification();
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
 
@@ -104,12 +106,12 @@ export const Checkout = () => {
       const response = await CrearPedido(pedidoData);
       console.log('Pedido creado:', response);
 
-      alert(`Pedido creado con éxito por $${cartTotal.toFixed(2)}!`);
+      addNotification( `Pedido creado con éxito por $${cartTotal.toFixed(2)}!`,'success');
       clearCart();
       navigate('/');
     } catch (error) {
       console.error('Error al crear el pedido:', error);
-      alert('Ocurrió un error al crear el pedido. Intenta nuevamente.');
+      addNotification('Ocurrió un error al crear el pedido. Intenta nuevamente.', 'error');
     }
   };
 

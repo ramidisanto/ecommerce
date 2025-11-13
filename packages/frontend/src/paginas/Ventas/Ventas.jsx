@@ -7,6 +7,7 @@ import { Button } from "../../componentes/Button/Button";
 import "./Ventas.css";
 import { Link } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
+import { useNotification } from "../../componentes/Context/NotificationContext";
 
 const getStatusChip = (status) => {
   const classNames = {
@@ -72,7 +73,8 @@ const SaleCard = ({ sale, onMarcarEnviado, isUpdating }) => {
 };
 
 export const SalesPage = () => {
-const [ventas, setVentas] = useState([]);
+  const { addNotification } = useNotification();
+  const [ventas, setVentas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updatingId, setUpdatingId] = useState(null); 
@@ -102,12 +104,12 @@ const [ventas, setVentas] = useState([]);
     setUpdatingId(pedidoId);
     try {
       await marcarPedidoEnviado(pedidoId);
-      alert("Pedido marcado como enviado.");
+      addNotification("Pedido marcado como enviado.", 'success');
       fetchVentas(); 
 
     } catch (err) {
       console.error("Error al marcar como enviado:", err);
-      alert("No se pudo actualizar el pedido. Intenta nuevamente.");
+      addNotification("No se pudo actualizar el pedido. Intenta nuevamente.", 'error');
     } finally {
       setUpdatingId(null); 
     }

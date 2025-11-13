@@ -1,11 +1,11 @@
-import React from "react";
+import React, { use } from "react";
 import { getPedidosPorUsuario, marcarPedidoCancelado } from "../../services/pedidosService";
 import { ChevronLeftIcon } from "../../componentes/icons";
 import { OrderStatus } from "../../types";
 import { Button } from "../../componentes/Button/Button";
 import "./Pedidos.css";
 import { Link } from "react-router-dom";
-
+import { useNotification } from "../../componentes/Context/NotificationContext";
 
 const getStatusChip = (status) => {
   const classNames = {
@@ -68,6 +68,7 @@ const OrderCard = ({ order, onCancel }) => {
 };
 
 export const OrdersPage = () => {
+  const {addNotification} = useNotification();
   const [orders, setOrders] = React.useState([]);
 
   const [loading, setLoading] = React.useState(true);
@@ -97,11 +98,11 @@ export const OrdersPage = () => {
     }
     try {
       await marcarPedidoCancelado(orderId);
-      alert("Pedido cancelado con éxito.");
+      addNotification("Pedido cancelado con éxito.", 'success');
       fetchOrders();
     } catch (err) {
       console.error("Error al cancelar el pedido:", err);
-      alert("No se pudo cancelar el pedido. Intenta nuevamente.");
+      addNotification("No se pudo cancelar el pedido. Intenta nuevamente.", 'error');
     }
   };
 
