@@ -14,7 +14,7 @@ export const TiendaVendedor = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [nombre, setNombre] = useState('');
+  const [titulo, setTitulo] = useState('');
   const [categorias, setCategorias] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [precioMin, setPrecioMin] = useState('');
@@ -29,7 +29,7 @@ export const TiendaVendedor = () => {
       if (!id) return;
       
       const filtros = {
-        nombre: nombre,
+        titulo: titulo,
         categorias: categorias,
         descripcion: descripcion,
         precioMin: precioMin,
@@ -59,9 +59,16 @@ export const TiendaVendedor = () => {
     fetchProductos();
   }, [id, filtroTrigger]);
 
+  const aplicarFiltros = () => {
+    if (page !== 1) {
+        setPage(1);
+    } else {
+        setFiltroTrigger(prev => prev + 1);
+    }
+};
 
   const resetFiltros = () => {
-    setNombre('');
+    setTitulo('');
     setCategorias('');
     setDescripcion('');
     setPrecioMin('');
@@ -69,6 +76,7 @@ export const TiendaVendedor = () => {
     setSort('');
     setPage(1);
     setLimit(10);
+    setFiltroTrigger(prev => prev + 1);
   };
 
   return (
@@ -84,7 +92,7 @@ export const TiendaVendedor = () => {
       <div className="filtros-wrapper">
         <div className="filtro-item">
           <Search className="filtro-icon" />
-          <input type="text" placeholder="Buscar por nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          <input type="text" placeholder="Buscar por nombre" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
         </div>
 
         <div className="filtro-item">
@@ -137,11 +145,7 @@ export const TiendaVendedor = () => {
           <XCircle size={18} /> Limpiar
         </button>
 
-        <button 
-        className="btn-primary btn-filtrar" 
-        onClick={aplicarFiltros}
-          disabled={isLoading} // Deshabilita el botón mientras carga
-    >
+        <button className="btn-filtrar" onClick={aplicarFiltros} disabled={isLoading}>
           <Search size={18} /> Filtrar
         </button>
       </div>

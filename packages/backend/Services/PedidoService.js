@@ -86,7 +86,31 @@ async crearPedido(comprador, items, moneda, direccionEntrega) {
 
     async obtenerHistorialPedidos(usuarioId){
         const pedidos = await this.pedidoRepository.obtenerPedidosPorUsuarioId(usuarioId);
-        return pedidos;
+        const pedidosCompletos = pedidos.map(datos => {
+            const itemsDomain = datos.items.map(item =>
+            {
+                return new ItemPedido(item.producto, item.cantidad, item.precioUnitario);
+            });
+            const pedidoDomain = new Pedido(
+                datos.comprador,
+                itemsDomain,
+                datos.moneda,
+                datos.direccionEntrega
+            );
+            pedidoDomain.id = datos._id;
+            pedidoDomain.fechaCreacion = datos.fechaCreacion;
+            pedidoDomain.estado = datos.estado;
+            pedidoDomain.historialEstados = datos.historialEstados;
+
+            const totalCalculado = pedidoDomain.calcularTotal();
+
+            return{
+                ...datos.toObject(),
+                total: totalCalculado
+            };
+        });
+        return pedidosCompletos;
+        
     }
 
     async marcarPedidoEnviado(pedidoId){

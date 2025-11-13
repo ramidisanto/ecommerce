@@ -6,7 +6,9 @@ import { Button } from '../../componentes/Button/Button';
 import './Checkout.css';
 import { CrearPedido } from '../../services/pedidosService';
 
-const HARDCODED_USER_ID = '6681c6b125d0c32a023f03b2';
+const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1';
+const HARDOCDE_TIPO = `COMPRADOR`;
+const HARDCODED_FECHA_ALTA = '2025-10-10T12:00:00.000+00:00';
 
 export const Checkout = () => {
   const navigate = useNavigate();
@@ -15,7 +17,7 @@ export const Checkout = () => {
   const validate = (values) => {
     const errors = {};
     if (!values.nombre.trim()) errors.nombre = 'El nombre es obligatorio';
-    if (!values.apellido.trim()) errors.apellido = 'El apellido es obligatorio';
+    //if (!values.apellido.trim()) errors.apellido = 'El apellido es obligatorio';
     if (!values.email.trim()) errors.email = 'El email es obligatorio';
     else if (!/\S+@\S+\.\S+/.test(values.email)) errors.email = 'El email no es válido';
     if (!values.telefono.trim()) errors.telefono = 'El teléfono es obligatorio';
@@ -24,9 +26,11 @@ export const Checkout = () => {
     if (!values.localidad.trim()) errors.localidad = 'La localidad es obligatoria';
     if (!values.provincia.trim()) errors.provincia = 'La provincia es obligatoria';
     if (!values.pais.trim()) errors.pais = 'El país es obligatorio';
+
     return errors;
   };
 
+  console.log('Entró a onSubmit con values:', values);
   const onSubmit = async (values) => {
     try {
       
@@ -45,8 +49,8 @@ export const Checkout = () => {
           nombre: values.nombre,
           email: values.email,
           telefono: values.telefono,
-          tipo: values.tipo,
-          fechaAlta: values.fechaAlta,
+          tipo: HARDOCDE_TIPO,
+          fechaAlta: HARDCODED_FECHA_ALTA,
         },
         direccionEntrega: {
           calle: values.calle,
@@ -58,16 +62,18 @@ export const Checkout = () => {
           pais: values.pais,
         },
         items: cartItems.map((item) => ({
-          productoId: item.id,
-          nombre: item.nombre,
-          cantidad: item.cantidad,
+          productoId: item._id || item.id ,
+          nombre: item.titulo,
+          cantidad: item.quantity,
           precio: item.precio,
         })),
         total: cartTotal,
         fecha: new Date().toISOString(),
       };
 
-      
+      console.log('!!!!!!!!!!!!!!Datos finales del pedido a enviar:', pedidoData); 
+
+
       const response = await CrearPedido(pedidoData);
       console.log('Pedido creado:', response);
 
@@ -91,7 +97,7 @@ export const Checkout = () => {
   } = useForm(
     {
       nombre: '',
-      apellido: '',
+      //apellido: '',
       email: '',
       telefono: '',
       calle: '',
@@ -105,6 +111,9 @@ export const Checkout = () => {
     onSubmit,
     validate
   );
+
+  console.log('VALID?', isValid);
+  console.log('CART ITEMS:', cartItems);
 
   return (
     <div className="checkout-container">
@@ -125,7 +134,7 @@ export const Checkout = () => {
             <span className="error">{showError('nombre')}</span>
           </div>
 
-          <div className="form-group">
+          {/* <div className="form-group">
             <label>Apellido</label>
             <input
               name="apellido"
@@ -135,7 +144,7 @@ export const Checkout = () => {
               placeholder="Tu apellido"
             />
             <span className="error">{showError('apellido')}</span>
-          </div>
+          </div> */}
 
           <div className="form-group">
             <label>Email</label>

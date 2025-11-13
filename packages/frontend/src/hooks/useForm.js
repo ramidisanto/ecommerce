@@ -3,10 +3,13 @@ import { useState } from 'react';
 
 export function useForm(initialValues, onSubmit, validate) {
   const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState({});
+  //const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState(validate ? validate(initialValues) : {});
   const [touched, setTouched] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [triedSubmit, setTriedSubmit] = useState(false);
+
+  const isValid = Object.keys(errors).length === 0;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,5 +42,5 @@ export function useForm(initialValues, onSubmit, validate) {
   const showError = (name) =>
     (touched[name] || triedSubmit) && errors[name] ? errors[name] : '';
 
-  return { values, errors, handleChange, handleBlur, handleSubmit, showError, isSubmitting };
+  return { values, errors, handleChange, handleBlur, handleSubmit, showError, isSubmitting, isValid };
 }
