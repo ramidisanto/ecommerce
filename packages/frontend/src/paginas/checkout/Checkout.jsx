@@ -5,8 +5,8 @@ import { useCart } from '../../componentes/Context/CartContext';
 import { Button } from '../../componentes/Button/Button';
 import './Checkout.css';
 import { CrearPedido } from '../../services/pedidosService';
-import { TipoUsuario } from '../../domain/TipoUsuario';
-import { Usuario } from '../../domain/Usuario';
+
+const HARDCODED_USER_ID = '6681c6b125d0c32a023f03b2';
 
 export const Checkout = () => {
   const navigate = useNavigate();
@@ -30,22 +30,23 @@ export const Checkout = () => {
   const onSubmit = async (values) => {
     try {
       
-      const usuario = new Usuario(
-        `${values.nombre} ${values.apellido}`,
-        values.email,
-        values.telefono,
-        TipoUsuario.Cliente,
-        new Date().toISOString()
-      );
+      // const usuario = new Usuario(
+      //   `${values.nombre} ${values.apellido}`,
+      //   values.email,
+      //   values.telefono,
+      //   TipoUsuario.Cliente,
+      //   new Date().toISOString()
+      // );
 
       
       const pedidoData = {
         usuario: {
-          nombre: usuario.getNombre(),
-          email: usuario.email,
-          telefono: usuario.telefono,
-          tipo: usuario.tipo,
-          fechaAlta: usuario.fechaAlta,
+          id : HARDCODED_USER_ID,
+          nombre: values.nombre,
+          email: values.email,
+          telefono: values.telefono,
+          tipo: values.tipo,
+          fechaAlta: values.fechaAlta,
         },
         direccionEntrega: {
           calle: values.calle,

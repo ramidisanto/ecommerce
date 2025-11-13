@@ -1,7 +1,7 @@
 import axios from 'axios'; 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
 
-const HARDCODED_USER_ID = '6681c6b125d0c32a023f03b2'; 
+const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1'; 
 
 const mapSaleData = (sale) => ({
     ...sale,

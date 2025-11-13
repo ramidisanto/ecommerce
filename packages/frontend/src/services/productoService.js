@@ -36,4 +36,4 @@ export const getProductoPorId = async (productoId) => {
     }
 };
 
-export const getProductosFiltrados = async
+

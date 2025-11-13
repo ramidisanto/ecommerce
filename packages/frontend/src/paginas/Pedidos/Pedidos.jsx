@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React from "react";
 import { getPedidosPorUsuario, marcarPedidoCancelado } from "../../services/pedidosService";
 import { ChevronLeftIcon } from "../../componentes/icons";
 import { OrderStatus } from "../../types";
@@ -21,15 +21,15 @@ const getStatusChip = (status) => {
 
 const OrderCard = ({ order, onCancel }) => {
   const canCancel =
-    order.status === OrderStatus.PENDING ||
-    order.status === OrderStatus.CONFIRMED;
+    order.estado === OrderStatus.PENDING ||
+    order.estado === OrderStatus.CONFIRMED;
 
   return (
     <div className="order-card">
       <div className="order-header">
         <div>
           <h3>Pedido NRO. {String(order.id).slice(-6).toUpperCase()}</h3>
-          <p>Fecha compra: {new Date(order.creationDate).toLocaleDateString()}</p>
+          <p>Fecha compra: {new Date(order.fechaCreacion).toLocaleDateString()}</p>
         </div>
         {getStatusChip(order.estado)}
       </div>
@@ -38,8 +38,8 @@ const OrderCard = ({ order, onCancel }) => {
         <p className="cart-title">Carrito:</p>
         <div className="cart-items">
           {order.items.map((item) => (
-            <p key={item.product.id}>
-              {item.quantity} x {item.product.title}
+            <p key={item.producto.id}>
+              {item.cantidad} x {item.producto.titulo}
             </p>
           ))}
         </div>
@@ -125,7 +125,7 @@ export const OrdersPage = () => {
     <div>
       {orders.length > 0 ?(
         orders.map((order) => (
-        <OrderCard key={order.id} order={order} />
+        <OrderCard key={order.id} order={order} onCancel={handleCancelOrder}/>
       ))
       ) : (
         <p>No tienes pedidos realizados.</p>

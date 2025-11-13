@@ -10,31 +10,33 @@ import './TiendaVendedor.css';
 export const TiendaVendedor = () => {
   const { id } = useParams();
   const [productos, setProductos] = useState([]);
-  const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [vendedorNombre, setVendedorNombre] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [nombre, setNombre] = useState('');
-  const [categoria, setCategoria] = useState('');
+  const [categorias, setCategorias] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [precioMin, setPrecioMin] = useState('');
   const [precioMax, setPrecioMax] = useState('');
-  const [orden, setOrden] = useState('');
+  const [sort, setSort] = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [filtroTrigger, setFiltroTrigger] = useState(0);
 
   useEffect(() => {
     const fetchProductos = async () => {
       if (!id) return;
       
       const filtros = {
-        nombre,
-        categorias,
-        descripcion,
-        precioMin,
-        precioMax,
-        sort,
-        page,
-        limit
+        nombre: nombre,
+        categorias: categorias,
+        descripcion: descripcion,
+        precioMin: precioMin,
+        precioMax: precioMax,
+        sort: sort,
+        page: page,
+        limit: limit
       };
       try {
         setIsLoading(true);
@@ -55,16 +57,18 @@ export const TiendaVendedor = () => {
       }
     };
     fetchProductos();
-  }, [id, nombre, categorias, descripcion, precioMin, precioMax, sort, page, limit]);
+  }, [id, filtroTrigger]);
 
 
   const resetFiltros = () => {
     setNombre('');
-    setCategoria('');
+    setCategorias('');
     setDescripcion('');
     setPrecioMin('');
     setPrecioMax('');
-    setOrden('');
+    setSort('');
+    setPage(1);
+    setLimit(10);
   };
 
   return (
@@ -85,7 +89,7 @@ export const TiendaVendedor = () => {
 
         <div className="filtro-item">
           <Tag className="filtro-icon" />
-          <input type="text" placeholder="Categoría" value={categoria} onChange={(e) => setCategorias(e.target.value)} />
+          <input type="text" placeholder="Categoría" value={categorias} onChange={(e) => setCategorias(e.target.value)} />
         </div>
 
         <div className="filtro-item">
@@ -121,7 +125,7 @@ export const TiendaVendedor = () => {
 
         <div className="filtro-item">
           <ArrowUpDown className="filtro-icon" />
-          <select value={orden} onChange={(e) => setSort(e.target.value)}>
+          <select value={sort} onChange={(e) => setSort(e.target.value)}>
             <option value="">Ordenar por...</option>
             <option value="precioAsc">Precio: menor a mayor</option>
             <option value="precioDesc">Precio: mayor a menor</option>
@@ -132,6 +136,14 @@ export const TiendaVendedor = () => {
         <button className="btn-reset" onClick={resetFiltros}>
           <XCircle size={18} /> Limpiar
         </button>
+
+        <button 
+        className="btn-primary btn-filtrar" 
+        onClick={aplicarFiltros}
+        disabled={isLoading} // Deshabilita el botón mientras carga
+    >
+        <Search size={18} /> Filtrar
+    </button>
       </div>
 
       {isLoading ? (
@@ -140,11 +152,11 @@ export const TiendaVendedor = () => {
         </div>
       ) : error ? (
         <p className="tienda-error">{error}</p>
-      ) : productosFiltrados.length === 0 ? (
+      ) : productos.length === 0 ? (
         <p className="tienda-empty">No hay productos que coincidan con los filtros.</p>
       ) : (
         <div className="producto-grid">
-          {productosFiltrados.map((producto) => (
+          {productos.map((producto) => (
             <ProductoCard key={producto._id} producto={producto} />
           ))}
         </div>

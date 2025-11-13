@@ -34,11 +34,6 @@ const ItemPedidoSchema = new mongoose.Schema({
                 required: true,
                 min: 0
 }}, { _id: false }); 
-/*
-ItemPedidoSchema.pre(/^find/, function(next) {
-    this.populate('productoId');
-    next();
-});*/
 
 ItemPedidoSchema.loadClass(ItemPedido);
 
@@ -53,7 +48,7 @@ const PedidoSchema = new mongoose.Schema({
         type: [ItemPedidoSchema],
         required: true
     },
-    // evitamos adrede el atributo total por ser calculable
+   
     moneda: {
         type: String,
         required: true,
