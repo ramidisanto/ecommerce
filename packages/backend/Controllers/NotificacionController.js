@@ -17,7 +17,6 @@ export class NotificacionController{
 /////// GET => Obtener notificaciones de un usuario
     async obtenerNotificacionesDeUsuario(req, res){
 
-        // const resultId = objectId.safeParse(req.params.id); 
         const resultId = req.params.id;
 
         const resultLeida = leidaTransform.safeParse(req.query.leida);
@@ -99,6 +98,12 @@ const leidaTransform = z
     return z.NEVER;
   })
   .optional();
+
+  const objectId = z
+    .string()
+    .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+      message: "El id no es un ObjectId válido",
+    });
 
   
 

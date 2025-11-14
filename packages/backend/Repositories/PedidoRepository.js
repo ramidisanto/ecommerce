@@ -40,7 +40,12 @@ export class PedidoRepository {
 }
 
     async obtenerPedidosPorUsuarioId(usuarioId) {
-        return await this.model.find({ comprador: usuarioId });
+        
+        const pedidos = await this.model.find({ comprador: usuarioId });
+
+        console.log('Pedidos encontrados para el usuario:', pedidos);
+        
+        return pedidos;
     }
 
     async obtenerProductosDePedido(pedido) {

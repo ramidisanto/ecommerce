@@ -93,14 +93,8 @@ export class PedidoController {
     }
 
     async obtenerVentasVendedor(req, res){
-        //const resultId = objectId.safeParse(req.params.id);
-        const vendedorId = req.params.id;
         
-        if (resultId.error) {
-            res.status(400).json(resultId.error.issues);
-            return;
-        }
-        //const vendedorId = resultId.data;
+        const vendedorId = req.params.id;
 
         const vendedor = await this.usuarioService.findById(vendedorId);
         if (!vendedor) throw new NoExisteIdException(vendedorId, "usuario");
@@ -112,7 +106,6 @@ export class PedidoController {
 }
 
 
-// Validador de ObjectId de Mongoose
 const objectId = z
   .string()
   .refine((val) => mongoose.Types.ObjectId.isValid(val), {

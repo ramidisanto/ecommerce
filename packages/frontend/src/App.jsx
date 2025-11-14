@@ -15,9 +15,7 @@ import ProductoDetalle from './paginas/DetalleProducto/DetalleProducto';
 import NotificationProvider from './componentes/Context/NotificationContext';
 import { ToastContainer } from './componentes/Toast/ToastContainer';
 import Home from './paginas/Home/Home';
-import PaginaProtegida from './paginas/PaginaProtegida/PaginaProtegida'; // Tu componente de página segura
 import PrivateRoute from "./helpers/PrivateRoute";
-
 import './App.css';
 
 function App() {
