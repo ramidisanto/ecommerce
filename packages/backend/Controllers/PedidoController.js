@@ -56,19 +56,20 @@ export class PedidoController {
 
      async obtenerHistorial (req, res){
         
-        const resultId = objectId.safeParse(req.params.id); 
+        //const resultId = objectId.safeParse(req.params.id); 
+        const resultId = req.params.id;
 
         if (resultId.error) {
             res.status(400).json(resultId.error.issues);
             return;
         }
 
-        const usuarioId = resultId.data;
+        //const usuarioId = resultId.data;
 
-        const usuario = await this.usuarioService.findById(usuarioId);
-        if (!usuario) throw new NoExisteIdException(usuarioId, "usuario");
+        const usuario = await this.usuarioService.findById(resultId);
+        if (!usuario) throw new NoExisteIdException(resultId, "usuario");
 
-        const pedidos = await this.servicioPedido.obtenerHistorialPedidos(usuarioId);
+        const pedidos = await this.servicioPedido.obtenerHistorialPedidos(resultId);
         if (!pedidos || pedidos.length === 0) return res.status(204).send();
 
         res.status(200).json(pedidos);
@@ -92,12 +93,14 @@ export class PedidoController {
     }
 
     async obtenerVentasVendedor(req, res){
-        const resultId = objectId.safeParse(req.params.id);
+        //const resultId = objectId.safeParse(req.params.id);
+        const vendedorId = req.params.id;
+        
         if (resultId.error) {
             res.status(400).json(resultId.error.issues);
             return;
         }
-        const vendedorId = resultId.data;
+        //const vendedorId = resultId.data;
 
         const vendedor = await this.usuarioService.findById(vendedorId);
         if (!vendedor) throw new NoExisteIdException(vendedorId, "usuario");
@@ -139,7 +142,7 @@ const direccionSchema = z.object({
 
 // Schema principal del pedido
 export const pedidoSchema = z.object({
-    comprador: objectId,
+    comprador: String,
     moneda: z.enum(["ARS", "USD", "EUR"]).optional().nullable(), 
     direccionEntrega: direccionSchema,
     items: z.array(itemSchema).min(1, "Debe haber al menos un item"),

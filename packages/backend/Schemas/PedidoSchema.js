@@ -40,7 +40,8 @@ ItemPedidoSchema.loadClass(ItemPedido);
 
 const PedidoSchema = new mongoose.Schema({
     comprador: {
-        type: mongoose.Schema.Types.ObjectId,       
+        // type: mongoose.Schema.Types.ObjectId,       
+        type: String,
         ref: "Usuario",
         required: true
     },
@@ -82,7 +83,8 @@ const PedidoSchema = new mongoose.Schema({
         },
         // no tendrÃ­a sentido meter el pedido en el historial de cambios de estado
         usuario: {
-            type: mongoose.Schema.Types.ObjectId,
+           // type: mongoose.Schema.Types.ObjectId,
+            type: String,
             ref: "Usuario",
             required: true
         },

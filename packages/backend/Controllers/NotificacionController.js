@@ -17,12 +17,8 @@ export class NotificacionController{
 /////// GET => Obtener notificaciones de un usuario
     async obtenerNotificacionesDeUsuario(req, res){
 
-         const resultId = objectId.safeParse(req.params.id); 
-
-        if (resultId.error) {
-            res.status(400).json(resultId.error.issues);
-            return;
-        }
+        // const resultId = objectId.safeParse(req.params.id); 
+        const resultId = req.params.id;
 
         const resultLeida = leidaTransform.safeParse(req.query.leida);
 
@@ -31,19 +27,18 @@ export class NotificacionController{
             return;
         }
 
-        const id = resultId.data;
         const leida = resultLeida.data;
 
-        if ( !await this.usuarioService.exists(id)) { 
-            throw new NoExisteIdException(id, "usuario");
+        if ( !await this.usuarioService.exists(resultId)) { 
+            throw new NoExisteIdException(resultId, "usuario");
         }
 
         let notificaciones;
 
         if (leida !== undefined){
-            notificaciones = await this.notificacionService.obtenerNotificacionesDeUsuarioLeidas(id, leida);
+            notificaciones = await this.notificacionService.obtenerNotificacionesDeUsuarioLeidas(resultId, leida);
         }else{
-            notificaciones = await this.notificacionService.obtenerNotificacionesDeUsuario(id);
+            notificaciones = await this.notificacionService.obtenerNotificacionesDeUsuario(resultId);
         }
 
         if (notificaciones === null || notificaciones.length === 0) {
@@ -105,11 +100,5 @@ const leidaTransform = z
   })
   .optional();
 
-  // Validador de ObjectId de Mongoose
-  const objectId = z
-    .string()
-    .refine((val) => mongoose.Types.ObjectId.isValid(val), {
-      message: "El id de producto no es un ObjectId válido",
-    });
   
 

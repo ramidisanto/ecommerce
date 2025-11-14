@@ -7,18 +7,13 @@ export class ProductoController {
     }
 
     async obtenerProductosPorVendedor(req, res) {
-        const resultId = objectId.safeParse(req.params.id);
+        //const resultId = objectId.safeParse(req.params.id);
+        const resultId = req.params.id;
 
-        if (resultId.error) {
-            res.status(400).json(resultId.error.issues);
-            return;
-        }
-
-        const vendedorId = resultId.data;
         const { page = 1, limit = 10 } = req.query;
         const filtros = req.query;
 
-        const productosPaginados = await this.productoService.buscarTodosPorVendedor(page, limit, filtros, vendedorId)
+        const productosPaginados = await this.productoService.buscarTodosPorVendedor(page, limit, filtros, resultId)
 
         if (productosPaginados === null) {
             res.status(204).send();

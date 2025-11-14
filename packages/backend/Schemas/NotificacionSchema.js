@@ -4,7 +4,8 @@ import { Notificacion } from '../Domain/Notificacion.js';
 const NotificacionSchema = new mongoose.Schema({
     usuarioDestino: {
         //Por referencia
-        type: mongoose.Schema.Types.ObjectId,
+        //type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: "Usuario",
         required: true
     },
