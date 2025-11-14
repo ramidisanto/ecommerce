@@ -1,13 +1,29 @@
 import axios from 'axios'; 
+import  keycloak  from '../Keycloak.js';
+
 const API_BASE_URL = process.env.REACT_APP_API_URL;
+//const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1'; 
 
-const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1'; 
-
+axios.interceptors.request.use(
+  config => {
+    
+    if (keycloak.authenticated) {
+      config.headers.Authorization = `Bearer ${keycloak.token}`;
+    }
+    return config;
+  }, 
+  error => {
+    return Promise.reject(error);
+  }
+);
 
 export const getVentasPorVendedor = async () => {
     try {
        
-        const response = await axios.get(`${API_BASE_URL}/vendedor/${HARDCODED_USER_ID}/ventas`);
+        const userId = keycloak.tokenParsed.sub; 
+        if (!userId) throw new Error("No se encontró el ID del usuario en Keycloak");
+
+        const response = await axios.get(`${API_BASE_URL}/vendedor/${userId}/ventas`);
         
         let ventas = [];
        
@@ -28,7 +44,7 @@ export const getVentasPorVendedor = async () => {
 export const marcarPedidoEnviado = async (pedidoId) => {
     try {
     
-        const response = await axios.patch(`${API_BASE_URL}/pedido/${pedidoId}/enviado`);
+        await axios.patch(`${API_BASE_URL}/pedido/${pedidoId}/enviado`);
 
         return true;
 

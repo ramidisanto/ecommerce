@@ -1,11 +1,26 @@
 import axios from 'axios';
+import  keycloak  from '../Keycloak.js';
+
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-/*USUARIO HARDCODEADO */
-const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1';
 
 
-export const getPedidosPorUsuario = async (usuarioId = HARDCODED_USER_ID) => {
+//const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1'; 
+
+axios.interceptors.request.use(
+  config => {
+    if (keycloak.authenticated) {
+      config.headers.Authorization = `Bearer ${keycloak.token}`;
+    }
+    return config;
+  }, 
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+export const getPedidosPorUsuario = async (usuarioId = keycloak.tokenParsed.sub) => {
     try {
+        if (!usuarioId) throw new Error("No se encontró el ID del usuario en Keycloak");
         const response = await axios.get(`${API_BASE_URL}/usuarios/${usuarioId}/pedidos`);
         return response.data.map(pedido => ({
             ...pedido,
@@ -59,7 +74,7 @@ export const getPedidosPorUsuario = async (usuarioId = HARDCODED_USER_ID) => {
 
 export const marcarPedidoCancelado = async (pedidoId) => {
     try {
-        const response = await axios.delete(`${API_BASE_URL}/pedido/${pedidoId}`);
+        await axios.delete(`${API_BASE_URL}/pedido/${pedidoId}`);
         return true;
     }
         catch (error) {

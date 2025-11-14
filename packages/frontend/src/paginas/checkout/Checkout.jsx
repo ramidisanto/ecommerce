@@ -7,9 +7,10 @@ import './Checkout.css';
 import { CrearPedido } from '../../services/pedidosService';
 import { useNotification } from '../../componentes/Context/NotificationContext';
 
+import { obtenerCoordenadas } from '../../services/geocodingService';
+
 const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1';
-const HARDOCDE_TIPO = `COMPRADOR`;
-const HARDCODED_FECHA_ALTA = '2025-10-10T12:00:00.000+00:00';
+
 
 export const Checkout = () => {
   const {addNotification} = useNotification();
@@ -28,14 +29,27 @@ export const Checkout = () => {
     if (!values.localidad.trim()) errors.localidad = 'La localidad es obligatoria';
     if (!values.provincia.trim()) errors.provincia = 'La provincia es obligatoria';
     if (!values.pais.trim()) errors.pais = 'El país es obligatorio';
+    if (!values.codigoPostal.trim()) errors.codigoPostal = 'El código postal es obligatorio';
 
     return errors;
   };
 
  
   const onSubmit = async (values) => {
-  console.log('Entró a onSubmit con values:', values);
+  
     try {
+      const coords = await obtenerCoordenadas({
+        calle: values.calle,
+        numero: values.numero,
+        localidad: values.localidad,
+        provincia: values.provincia,
+        pais: values.pais,
+      });
+
+      if (!coords) {
+        addNotification("No pudimos obtener la ubicación. Revisá la dirección.", "error");
+        return;
+      }      
       
       // const usuario = new Usuario(
       //   `${values.nombre} ${values.apellido}`,
@@ -79,30 +93,28 @@ export const Checkout = () => {
       // };
 
     const pedidoData = {
-    comprador: HARDCODED_USER_ID, // 👈 en lugar de usuario
-    moneda: "ARS",
-    direccionEntrega: {
-    calle: values.calle,
-    altura: Number(values.numero), // 👈 backend espera "altura" (número)
-    piso: values.piso ? Number(values.piso) : null,
-    departamento: values.depto || null,
-    codigoPostal: 1832,
-    ciudad: values.localidad, // 👈 backend espera "ciudad"
-    provincia: values.provincia,
-    pais: values.pais,
-    lat: 45,
-    lon: -73,
-    },
-    items: cartItems.map((item) => ({
-    productoId: item._id || item.id,
-    cantidad: item.quantity,
-    precioUnitario: item.precio, // 👈 backend espera "precioUnitario"
-  })),
-};
+      comprador: HARDCODED_USER_ID, 
+      moneda: "ARS",
+      direccionEntrega: {
+      calle: values.calle,
+      altura: Number(values.numero), 
+      piso: values.piso ? Number(values.piso) : null,
+      departamento: values.depto || null,
+      codigoPostal: Number(values.codigoPostal),
+      ciudad: values.localidad, 
+      provincia: values.provincia,
+      pais: values.pais,
+      lat: coords.lat,
+      lon: coord.lon,
+      },
+      items: cartItems.map((item) => ({
+      productoId: item._id || item.id,
+      cantidad: item.quantity,
+      precioUnitario: item.precio, 
+      })),
+      };
 
-      console.log('!!!!!!!!!!!!!!Datos finales del pedido a enviar:', pedidoData); 
-
-
+      
       const response = await CrearPedido(pedidoData);
       console.log('Pedido creado:', response);
 
@@ -136,6 +148,7 @@ export const Checkout = () => {
       localidad: '',
       provincia: '',
       pais: '',
+      codigoPostal: '',
     },
     onSubmit,
     validate
@@ -259,6 +272,18 @@ export const Checkout = () => {
               placeholder="Ciudad o barrio"
             />
             <span className="error">{showError('localidad')}</span>
+          </div>
+
+          <div className="form-group">
+            <label>Codigo Postal</label>
+            <input
+              name="codigoPostal"
+              value={values.codigoPostal}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Ej: 1832"
+            />
+            <span className="error">{showError('codigoPostal')}</span>
           </div>
 
           <div className="form-group">
