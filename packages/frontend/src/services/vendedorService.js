@@ -2,20 +2,7 @@ import axios from 'axios';
 import  keycloak  from '../Keycloak.js';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-//const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1'; 
 
-axios.interceptors.request.use(
-  config => {
-    
-    if (keycloak.authenticated) {
-      config.headers.Authorization = `Bearer ${keycloak.token}`;
-    }
-    return config;
-  }, 
-  error => {
-    return Promise.reject(error);
-  }
-);
 
 export const getVentasPorVendedor = async () => {
     try {

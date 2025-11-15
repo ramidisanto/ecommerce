@@ -4,20 +4,6 @@ import  keycloak  from '../Keycloak.js';
 const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 
-//const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1'; 
-
-axios.interceptors.request.use(
-  config => {
-    if (keycloak.authenticated) {
-      config.headers.Authorization = `Bearer ${keycloak.token}`;
-    }
-    return config;
-  }, 
-  error => {
-    return Promise.reject(error);
-  }
-);
-
 export const getPedidosPorUsuario = async (usuarioId = keycloak.tokenParsed.sub) => {
     try {
         if (!usuarioId) throw new Error("No se encontró el ID del usuario en Keycloak");

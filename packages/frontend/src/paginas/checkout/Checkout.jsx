@@ -6,25 +6,13 @@ import { Button } from '../../componentes/Button/Button';
 import './Checkout.css';
 import { CrearPedido } from '../../services/pedidosService';
 import { useNotification } from '../../componentes/Context/NotificationContext';
-import  keycloak  from '../../Keycloak.js';
+import { useKeycloak } from "@react-keycloak/web";  
 import { obtenerCoordenadas } from '../../services/geocodingService';
-import axios from 'axios';
-//const HARDCODED_USER_ID = '690bbf9ee29dcdbf52c8ecd1';
 
-axios.interceptors.request.use(
-  config => {
-    if (keycloak.authenticated) {
-      config.headers.Authorization = `Bearer ${keycloak.token}`;
-    }
-    return config;
-  }, 
-  error => {
-    return Promise.reject(error);
-  }
-);
 
 export const Checkout = () => {
   const {addNotification} = useNotification();
+  const { keycloak } = useKeycloak();
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
 

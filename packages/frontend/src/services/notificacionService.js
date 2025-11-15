@@ -3,20 +3,7 @@ import  keycloak  from '../Keycloak.js';
 
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-//const HARDCODED_USER_ID = '68f04b23ed48bbdfd154a4f0'; 
 
-
-axios.interceptors.request.use(
-  config => {
-    if (keycloak.authenticated) {
-      config.headers.Authorization = `Bearer ${keycloak.token}`;
-    }
-    return config;
-  }, 
-  error => {
-    return Promise.reject(error);
-  }
-);
 
 export const getNotificaciones = async (leida = undefined) => {
     try {

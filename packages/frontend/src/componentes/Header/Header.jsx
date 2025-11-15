@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-// IMPORTANTE: Traemos el hook de Keycloak
 import { useKeycloak } from '@react-keycloak/web'; 
 
 import { SunIcon, BellIcon,XIcon, CartIcon, UserIcon, TrashIcon, CheckCircleIcon, MenuIcon} from '../icons'; 
@@ -117,18 +116,21 @@ NotificationsDropdown.propTypes = {
 };
 
 const UserDropdown = ({ closeDropdown }) => {
-  // Hook para poder hacer logout
+  
   const { keycloak } = useKeycloak();
 
   return (
     <div className="user-dropdown">
+      <div className="user-dropdown-info">
+        <p className="user-info-name">{keycloak.tokenParsed?.name || keycloak.tokenParsed?.preferred_username}</p>
+        <p className="user-info-email">{keycloak.tokenParsed?.email}</p>
+      </div>
+      <div className="user-dropdown-divider"></div>
       <Link to="/ventas" onClick={closeDropdown} className="user-dropdown-link">Mis Ventas</Link>
       <Link to="/pedidos" onClick={closeDropdown} className="user-dropdown-link">Mis Pedidos</Link>
-      
-      {/* Quitamos Página Segura de aquí */}
       <div className="user-dropdown-divider"></div>
       
-      {/* Botón de cerrar sesión */}
+     
       <button 
         onClick={() => {
             closeDropdown();
@@ -141,7 +143,7 @@ const UserDropdown = ({ closeDropdown }) => {
     </div>
   );
 };
-UserDropdown.propTypes = { closeDropdown: PropTypes.func.isRequired };
+UserDropdown.propTypes = { closeDropdown: PropTypes.func.isRequired, keycloak: PropTypes.object.isRequired};
 
 const MobileMenu = ({ isOpen, closeMenu }) => {
     const { keycloak } = useKeycloak();
@@ -163,9 +165,6 @@ const MobileMenu = ({ isOpen, closeMenu }) => {
                 </button>
             </div>
             <nav className="mobile-menu-nav">
-                {/*<NavLink to="/" onClick={closeMenu} className={getLinkClass}>Inicio</NavLink>
-                <NavLink to="/protegida" onClick={closeMenu} className={getLinkClass}>Página Segura</NavLink>*/}
-                
 
                 {keycloak.authenticated && (
                     <>
@@ -211,7 +210,7 @@ MobileMenu.propTypes = {
 
 export const Header = () => {
   const { keycloak, initialized } = useKeycloak();
-
+  const location = useLocation();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); 
   const { cartCount } = useCart();
@@ -251,7 +250,7 @@ export const Header = () => {
           };
           cargarNotificaciones();
     }
-  }, [keycloak.authenticated]);
+  }, [keycloak.authenticated, location]);
 
   const toggleDropdown = (name) => {
     setActiveDropdown(activeDropdown === name ? null : name);
@@ -265,7 +264,7 @@ export const Header = () => {
   const DROPDOWNS = {
     notifications: <NotificationsDropdown closeDropdown={closeAll} notifications={notifications} />,
     cart: <CartDropdown closeDropdown={closeAll} />,
-    user: <UserDropdown closeDropdown={closeAll} />,
+    user: <UserDropdown closeDropdown={closeAll} keycloak={keycloak} />,
  };
   
   const unreadNotifications = unreadCount;

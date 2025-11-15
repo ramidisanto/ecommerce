@@ -6,4 +6,6 @@ const keycloak = new Keycloak({
   clientId: "tiendaSol",
 });
 
-export default keycloak;
+export const getUserId = () => keycloak.tokenParsed?.sub;
+
+export default  keycloak;

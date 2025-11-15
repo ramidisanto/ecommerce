@@ -4,19 +4,37 @@ import ProductoCarousel from '../../componentes/CarouselProductos/ProductosCarou
 import { getProductosDestacados } from '../../services/productoService';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { useKeycloak } from '@react-keycloak/web';
+
 
 function Home() {
   const [productos, setProductos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { keycloak, initialized } = useKeycloak();
 
   useEffect(() => {
+
+     if (!initialized) {
+      console.log("Esperando a Keycloak...");
+      return; 
+    }
+
     const fetchProductosDestacados = async () => {
       try {
         setIsLoading(true);
         setError(null);
         const data = await getProductosDestacados();
-        setProductos(data);
+        const usuarioLogeado = keycloak.tokenParsed?.sub;
+
+        if (usuarioLogeado && data.length > 0) {
+            const productosFiltrados = data.filter(producto => {
+              return producto.vendedorId && producto.vendedorId._id !== usuarioLogeado;
+            });
+            setProductos(productosFiltrados);
+        } else {
+            setProductos(data);
+        }
       } catch (err) {
         console.error("Error en Home.jsx al cargar productos destacados:", err);
         setError("No se pudieron cargar los productos destacados.");
@@ -25,7 +43,7 @@ function Home() {
       }
     };
     fetchProductosDestacados();
-  }, []);
+  }, [initialized, keycloak]);
 
   const renderContent = () => {
     if (isLoading) {
