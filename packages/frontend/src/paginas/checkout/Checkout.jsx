@@ -74,7 +74,7 @@ export const Checkout = () => {
       lon: coords.lon,
       },
       items: cartItems.map((item) => ({
-      productoId: item._id || item.id,
+      producto: item._id,
       cantidad: item.quantity,
       precioUnitario: item.precio, 
       })),

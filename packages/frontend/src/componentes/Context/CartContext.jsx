@@ -1,165 +1,166 @@
-import React, { createContext, useState, useContext, useEffect, use } from 'react';
-import PropTypes from 'prop-types'; 
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useNotification } from './NotificationContext';
-import { getUserId } from '../../Keycloak.js';
+import { useKeycloak } from '@react-keycloak/web';
 
 const CartContext = createContext(undefined);
 
 const calcularTotales = (items) => {
-  const count = items.reduce((sum, item) => sum + item.quantity, 0);
-  const total = items.reduce((sum, item) => sum + item.precio * item.quantity, 0);
+  const count = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const total = items.reduce((sum, item) => sum + (item.precio || 0) * (item.quantity || 0), 0);
   return { count, total };
 };
 
 export const CartProvider = ({ children }) => {
-
   const { addNotification } = useNotification();
-  const userId = getUserId();
+  const { keycloak, initialized } = useKeycloak();
+
+  // Deriva la clave del carrito a partir del token ya inicializado
   const getCartKey = () => {
-    if (!userId) return null; 
+    const userId = keycloak?.tokenParsed?.sub;
+    if (!initialized || !keycloak?.authenticated || !userId) return null;
     return `cart_${userId}`;
   };
 
-  const getInicialCart = () => {
+  const loadItemsFromStorage = () => {
     const cartKey = getCartKey();
-    if (!cartKey) return { items: [], count: 0, total: 0 };; // Si no hay usuario, carrito vacío
+    if (!cartKey) return [];
     try {
-      const storedItems = localStorage.getItem(cartKey);
-      const items = storedItems ? JSON.parse(storedItems) : [];
-      const { count, total } = calcularTotales(items); 
-      return { items, count, total };
-    } catch (error) {
-      console.error('Error al cargar el carrito de localStorage:', error);
-      return { items: [], count: 0, total: 0 };
+      const raw = localStorage.getItem(cartKey);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      console.error('Error leyendo localStorage:', e);
+      return [];
     }
   };
 
-  const [cartItems, setCartItems] = useState(getInicialCart().items);
-  const [cartCount, setCartCount] = useState(getInicialCart().count);
-  const [cartTotal, setCartTotal] = useState(getInicialCart().total);
+  // Estado unificado
+  const [cartItems, setCartItems] = useState(() => {
+    // Inicio "prudente": si Keycloak aún no inicializó devolvemos vacío.
+    // loadItemsFromStorage depende de initialized, así que no lo llamamos aquí.
+    return [];
+  });
 
+  // Al inicializar Keycloak (o cambiar de usuario autenticado) cargamos storage
   useEffect(() => {
-    const { items, count, total } = getInicialCart();
-    setCartItems(items);
-    setCartCount(count);
-    setCartTotal(total);
-
-  }, [userId]);
-
-  const setCart = (newItems) => {
-
-    const { count, total } = calcularTotales(newItems);
-
-    setCartItems(newItems);
-    setCartCount(count);
-    setCartTotal(total);
+    if (!initialized) return; // esperamos a que Keycloak esté listo
 
     const cartKey = getCartKey();
-    if (cartKey) {
-      try {
-            localStorage.setItem(cartKey, JSON.stringify(newItems));
-          } catch (error) {
-            console.error('Error al guardar el carrito en localStorage:', error);
-            addNotification('Error al guardar el carrito de compras.', 'error');
-          }
-      }
-    };
+    if (!cartKey) {
+      // no hay usuario autenticado: mantenemos carrito vacío en memoria
+      setCartItems([]);
+      return;
+    }
+
+    const stored = loadItemsFromStorage();
+    setCartItems(stored);
+  }, [initialized, keycloak?.authenticated, keycloak?.tokenParsed?.sub]);
+
+  // Guardar en storage (método centralizado)
+  const persist = (items) => {
+    setCartItems(items);
+    const cartKey = getCartKey();
+    if (!cartKey) return; // si no hay usuario, no persistimos por ahora
+    try {
+      localStorage.setItem(cartKey, JSON.stringify(items));
+    } catch (e) {
+      console.error('Error guardando carrito:', e);
+      addNotification('Error al guardar el carrito.', 'error');
+    }
+  };
+
+  // Helper que devuelve la "fuente de verdad" actual antes de mutar
+  const getLatestItems = () => {
+    const cartKey = getCartKey();
+    if (!cartKey) return cartItems.slice();
+    try {
+      const raw = localStorage.getItem(cartKey);
+      const stored = raw ? JSON.parse(raw) : [];
+      // si hay algo en storage lo usamos como base; si no, usamos el estado en memoria
+      return stored.length ? stored : cartItems.slice();
+    } catch (e) {
+      console.error('Error leyendo latest items:', e);
+      return cartItems.slice();
+    }
+  };
 
   const addItem = (product, quantity = 1) => {
-
-    if (!product.vendedorId || !product.vendedorId._id) {
-        console.error("El producto no tiene un vendedorId válido.", product);
-        addNotification("Error: El producto no se puede agregar.", "error");
-        return false;
+    if (!product || !product.vendedorId || !product.vendedorId._id) {
+      addNotification('Error: producto inválido.', 'error');
+      return false;
     }
 
+    // Antes de mutar, leemos la última versión del carrito (evita condiciones de carrera)
+    const base = getLatestItems();
     const newVendorId = product.vendedorId._id;
 
-   
-    if (cartItems.length > 0) {
-        const currentVendorId = cartItems[0].vendedorId._id;
-        
-        
-        if (currentVendorId !== newVendorId) {
-            const confirmed = window.confirm(
-                "Tienes productos de otro vendedor en tu carrito.\n\n¿Deseas vaciar el carrito y agregar este nuevo producto?"
-            );
-
-            if (confirmed) {
-                const newProduct = { ...product, id: product._id || product.id, quantity };
-                setCartItems([newProduct]); 
-                addNotification(`Carrito anterior vaciado. "${product.titulo}" agregado.`, "success");
-                return false;
-            } else {
-               
-                return false; 
-            }
-        }
-    }
-    
-const existingItem = cartItems.find(item => (item._id || item.id) === (product._id || product.id));
-    let newItems;
-     if (existingItem) {
-        newItems = cartItems.map(item =>
-          (item._id || item.id) === (product._id || product.id)
-             ? { ...item, quantity: item.quantity + quantity }
-             : item
+    if (base.length > 0) {
+      const currentVendorId = base[0].vendedorId._id;
+      if (currentVendorId !== newVendorId) {
+        const confirmed = window.confirm(
+          'Tienes productos de otro vendedor en tu carrito. ¿Vaciar y agregar?'
         );
-     } else {
-        const newProduct = { ...product, id: product._id || product.id };
-        newItems = [...cartItems, { ...newProduct, quantity }];
-     }
-    setCart(newItems); 
-     return true; 
-   };
+        if (!confirmed) return false;
+        const newProd = { ...product, id: product._id || product.id, quantity };
+        persist([newProd]);
+        addNotification(`Carrito vaciado exitosamente.`, 'success');
+        return true;
+      }
+    }
 
-   const removeItem = (productId) => {
-    const newItems = cartItems.filter(item => (item._id || item.id) !== productId);
-     setCart(newItems); 
-   };
+    const id = product._id || product.id;
+    const existing = base.find(i => (i._id || i.id) === id);
 
-   const updateQuantity = (productId, quantity) => {
-     if (quantity <= 0) {
-        removeItem(productId);
-        return;
-     }
-    const newItems = cartItems.map(item =>
-        (item._id || item.id) === productId ? { ...item, quantity } : item
-     );
-     setCart(newItems); 
-   };
+    let newItems;
+    if (existing) {
+      newItems = base.map(i =>
+        (i._id || i.id) === id ? { ...i, quantity: (i.quantity || 0) + quantity } : i
+      );
+    } else {
+      const newProduct = { ...product, id, quantity };
+      newItems = [...base, newProduct];
+    }
 
-   const clearCart = () => {
-     setCart([]); 
-   };
+    persist(newItems);
+    return true;
+  };
+
+  const removeItem = (productId) => {
+    const base = getLatestItems();
+    const newItems = base.filter(i => (i._id || i.id) !== productId);
+    persist(newItems);
+  };
+
+  const updateQuantity = (productId, quantity) => {
+    if (quantity <= 0) return removeItem(productId);
+    const base = getLatestItems();
+    const newItems = base.map(i => (i._id || i.id) === productId ? { ...i, quantity } : i);
+    persist(newItems);
+  };
+
+  const clearCart = () => persist([]);
+
+  const { count, total } = calcularTotales(cartItems);
 
   return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        addItem,
-        removeItem,
-        updateQuantity,
-        clearCart,
-        cartCount,
-        cartTotal,
-      }}
-    >
+    <CartContext.Provider value={{
+      cartItems,
+      cartCount: count,
+      cartTotal: total,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+    }}>
       {children}
     </CartContext.Provider>
   );
 };
 
-
-CartProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
+CartProvider.propTypes = { children: PropTypes.node.isRequired };
 
 export const useCart = () => {
-  const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
+  const ctx = useContext(CartContext);
+  if (ctx === undefined) throw new Error('useCart debe usarse dentro de CartProvider');
+  return ctx;
 };
-

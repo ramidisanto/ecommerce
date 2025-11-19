@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { getProductosPorVendedor } from '../../services/productoService';
 import { ProductoCard } from '../../componentes/ProductoCard/ProductoCard';
 import { ChevronLeftIcon } from '../../componentes/icons';
+import { Button } from '../../componentes/Button/Button';
 import { Spinner } from 'react-bootstrap';
 import { Search, Tag, FileText, ArrowUpDown, DollarSign, XCircle } from 'lucide-react';
 import './TiendaVendedor.css';
@@ -21,7 +22,9 @@ export const TiendaVendedor = () => {
   const [precioMax, setPrecioMax] = useState('');
   const [sort, setSort] = useState('');
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(4);
+  const [totalPages, setTotalPages] = useState(1); // ESTADO NUEVO
+  const [totalProducts, setTotalProducts] = useState(0); // ESTADO NUEVO
   const [filtroTrigger, setFiltroTrigger] = useState(0);
 
   useEffect(() => {
@@ -41,17 +44,27 @@ export const TiendaVendedor = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await getProductosPorVendedor(id, filtros);
-        if (data && data.length > 0) {
+        
+        // Obtenemos el objeto completo con { productos, totalPaginas, totalProductos, pagina }
+        const response = await getProductosPorVendedor(id, filtros);
+        const data = response.productos || [];
+
+        if (data.length > 0) {
           setProductos(data);
           setVendedorNombre(data[0].vendedorId.nombre);
+          setTotalPages(response.totalPaginas || 1); // <--- Captura de metadatos
+          setTotalProducts(response.totalProductos || 0); // <--- Captura de metadatos
         } else {
           setProductos([]);
           setVendedorNombre('Vendedor');
+          setTotalPages(1); 
+          setTotalProducts(0); 
         }
       } catch (err) {
         console.error(err);
         setError("No se pudieron cargar los productos.");
+        setTotalPages(1);
+        setTotalProducts(0);
       } finally {
         setIsLoading(false);
       }
@@ -60,12 +73,20 @@ export const TiendaVendedor = () => {
   }, [id, filtroTrigger]);
 
   const aplicarFiltros = () => {
+    // Si la página es diferente a 1, la reseteamos, lo que disparará el useEffect.
     if (page !== 1) {
         setPage(1);
     } else {
+        // Si ya estamos en la página 1, forzamos el re-fetch.
         setFiltroTrigger(prev => prev + 1);
     }
-};
+  };
+  
+  // NUEVA FUNCIÓN: Maneja el cambio de página
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    setFiltroTrigger(prev => prev + 1); // Forzar el re-fetch
+  };
 
   const resetFiltros = () => {
     setTitulo('');
@@ -75,7 +96,7 @@ export const TiendaVendedor = () => {
     setPrecioMax('');
     setSort('');
     setPage(1);
-    setLimit(10);
+    setLimit(4);
     setFiltroTrigger(prev => prev + 1);
   };
 
@@ -159,11 +180,36 @@ export const TiendaVendedor = () => {
       ) : productos.length === 0 ? (
         <p className="tienda-empty">No hay productos que coincidan con los filtros.</p>
       ) : (
-        <div className="producto-grid">
-          {productos.map((producto) => (
-            <ProductoCard key={producto._id} producto={producto} />
-          ))}
-        </div>
+        <>
+            <div className="producto-grid">
+              {productos.map((producto) => (
+                <ProductoCard key={producto._id} producto={producto} />
+              ))}
+            </div>
+            
+            {/* Controles de Paginación */}
+            {totalPages > 1 && (
+                <div className="pagination-controls">
+                    <Button 
+                        variant="secondary" 
+                        onClick={() => handlePageChange(page - 1)} 
+                        disabled={page === 1 || isLoading}
+                    >
+                        Anterior
+                    </Button>
+                    <span className="pagination-info">
+                        Página {page} de {totalPages} ({totalProducts} productos)
+                    </span>
+                    <Button 
+                        variant="secondary" 
+                        onClick={() => handlePageChange(page + 1)} 
+                        disabled={page === totalPages || isLoading}
+                    >
+                        Siguiente
+                    </Button>
+                </div>
+            )}
+        </>
       )}
     </div>
   );

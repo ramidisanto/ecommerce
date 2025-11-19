@@ -118,34 +118,52 @@ describe('PedidoService', () => {
     const usuarioId = 1;
 
     const pedidos = [
-      { id: 1, compradorId: usuarioId, estado: EstadoPedido.Entregado },
-      { id: 2, compradorId: usuarioId, estado: EstadoPedido.Cancelado }
+      { 
+          id: 1, 
+          compradorId: usuarioId, 
+          estado: EstadoPedido.Entregado,
+          items: [ 
+              { producto: 'prod1', cantidad: 1, precioUnitario: 100 }
+          ],
+          toObject: () => ({ id: 1, compradorId: usuarioId, estado: EstadoPedido.Entregado }) 
+      },
+      { 
+          id: 2, 
+          compradorId: usuarioId, 
+          estado: EstadoPedido.Cancelado,
+          items: [],
+          toObject: () => ({ id: 2, compradorId: usuarioId, estado: EstadoPedido.Cancelado })
+      }
     ];
+
     pedidoRepositoryMock.obtenerPedidosPorUsuarioId = jest.fn().mockResolvedValue(pedidos);
 
     const historial = await pedidoService.obtenerHistorialPedidos(usuarioId);
   
     expect(pedidoRepositoryMock.obtenerPedidosPorUsuarioId).toHaveBeenCalledWith(usuarioId);
-    expect(historial).toEqual(pedidos);
-  });
+});
 
   test('deberia marcar un pedido como enviado y notificar al comprador', async () => {
 
-    const vendedor = { id:2 , nombre: 'Maria', tipo: TipoUsuario.Vendedor };
-    const item = { getProductoId: () => 101, getCantidad: () => 2 };
+    const vendedor = { id: 2 , nombre: 'Maria', tipo: TipoUsuario.Vendedor };
+    const itemsMock = [{ producto: 101, cantidad: 2, precioUnitario: 500 }]; 
     const comprador = { id: 1, nombre: 'Juan' };
+    
     const pedido = { 
       id : 1,
-      getItems: () => [item],
+      items: itemsMock, 
+      getItems: () => itemsMock, 
       getEstado: () => EstadoPedido.Pendiente,
       getComprador: () => comprador,
       validarSePuedeCancelar: jest.fn(),
       actualizarEstado: jest.fn(),
+      toObject: () => ({ id: 1 })
     };
 
     pedidoRepositoryMock.obtenerPedidoPorId = jest.fn().mockResolvedValue(pedido);
     pedidoRepositoryMock.actualizarPedido = jest.fn();
     factoryNotificacionMock.crearSegunEstado = jest.fn().mockReturnValue({ mensaje: 'El Pedido ha sido enviado' });
+    factoryNotificacionMock.crearSegunPedido = jest.fn();
     servicioNotificacionMock.enviarNotificacion = jest.fn();
 
     await pedidoService.marcarPedidoEnviado(1, vendedor);

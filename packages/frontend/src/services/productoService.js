@@ -9,7 +9,7 @@ export const getProductosPorVendedor = async(vendedorId, filtros) => {
                 params: filtros
             }
         );
-        return response.data.productos || []; 
+        return response.data; 
     } catch (error) {
         console.error('Error fetching productos por vendedor:', error);
         throw error;

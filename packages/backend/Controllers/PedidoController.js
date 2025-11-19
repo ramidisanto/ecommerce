@@ -31,7 +31,7 @@ export class PedidoController {
 
 }
 
-     async cancelarPedido (req, res){
+    async cancelarPedido (req, res){
 
         const resultIdPedido = objectId.safeParse(req.params.pedidoId); 
 
@@ -54,7 +54,7 @@ export class PedidoController {
     }
         
 
-     async obtenerHistorial (req, res){
+    async obtenerHistorial (req, res){
         
         //const resultId = objectId.safeParse(req.params.id); 
         const resultId = req.params.id;
@@ -75,7 +75,7 @@ export class PedidoController {
         res.status(200).json(pedidos);
         }
 
-      async marcarPedidoEnviado(req, res){
+    async marcarPedidoEnviado(req, res){
         const resultId = objectId.safeParse(req.params.id);
 
         if (resultId.error) {
