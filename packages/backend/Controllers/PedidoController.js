@@ -135,7 +135,7 @@ const direccionSchema = z.object({
 
 // Schema principal del pedido
 export const pedidoSchema = z.object({
-    comprador: String,
+    comprador: z.string().min(1, "El ID del comprador es obligatorio"),
     moneda: z.enum(["ARS", "USD", "EUR"]).optional().nullable(), 
     direccionEntrega: direccionSchema,
     items: z.array(itemSchema).min(1, "Debe haber al menos un item"),

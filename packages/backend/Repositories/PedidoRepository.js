@@ -19,7 +19,7 @@ export class PedidoRepository {
         estado: pedido.estado,
         comprador: pedido.comprador,
         items: pedido.items.map(i => ({
-            producto: i.producto._id || i.producto, // asegúrate de que sea un ObjectId
+            producto: i.producto._id || i.producto,
             cantidad: i.cantidad,
             precioUnitario: i.precioUnitario
         })),
