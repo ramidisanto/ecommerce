@@ -20,9 +20,11 @@ export const ProductoCard = ({ producto }) => {
   const handleAddToCart = (e) => {
     e.stopPropagation();
     if (producto.stock > 0) {
-      addItem(producto, quantity);
-      addNotification(`${producto.titulo} añadido al carrito!`, 'success');
-      setQuantity(1);
+      const fueAgregado = addItem(producto, quantity);
+      if (fueAgregado){
+        addNotification(`${producto.titulo} añadido al carrito!`, 'success');
+        setQuantity(1);
+      }
     }
   };
 

@@ -15,7 +15,7 @@ const ProductoSchema = new mongoose.Schema({
         maxlength: 200
     }, 
     vendedorId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: "Usuario",
         required: true
     },

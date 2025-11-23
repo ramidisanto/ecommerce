@@ -28,7 +28,7 @@ app.use(
   }),
 );
 
-const port = process.env.SERVER_PORT 
+const port = process.env.PORT 
 dotenv.config();
 
 // Se envía al server el puerto

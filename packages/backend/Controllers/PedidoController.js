@@ -31,7 +31,7 @@ export class PedidoController {
 
 }
 
-     async cancelarPedido (req, res){
+    async cancelarPedido (req, res){
 
         const resultIdPedido = objectId.safeParse(req.params.pedidoId); 
 
@@ -54,27 +54,28 @@ export class PedidoController {
     }
         
 
-     async obtenerHistorial (req, res){
+    async obtenerHistorial (req, res){
         
-        const resultId = objectId.safeParse(req.params.id); 
+        //const resultId = objectId.safeParse(req.params.id); 
+        const resultId = req.params.id;
 
         if (resultId.error) {
             res.status(400).json(resultId.error.issues);
             return;
         }
 
-        const usuarioId = resultId.data;
+        //const usuarioId = resultId.data;
 
-        const usuario = await this.usuarioService.findById(usuarioId);
-        if (!usuario) throw new NoExisteIdException(usuarioId, "usuario");
+        const usuario = await this.usuarioService.findById(resultId);
+        if (!usuario) throw new NoExisteIdException(resultId, "usuario");
 
-        const pedidos = await this.servicioPedido.obtenerHistorialPedidos(usuarioId);
+        const pedidos = await this.servicioPedido.obtenerHistorialPedidos(resultId);
         if (!pedidos || pedidos.length === 0) return res.status(204).send();
 
         res.status(200).json(pedidos);
         }
 
-      async marcarPedidoEnviado(req, res){
+    async marcarPedidoEnviado(req, res){
         const resultId = objectId.safeParse(req.params.id);
 
         if (resultId.error) {
@@ -90,10 +91,21 @@ export class PedidoController {
         res.status(200).json(pedido);
 
     }
+
+    async obtenerVentasVendedor(req, res){
+        
+        const vendedorId = req.params.id;
+
+        const vendedor = await this.usuarioService.findById(vendedorId);
+        if (!vendedor) throw new NoExisteIdException(vendedorId, "usuario");
+
+        const ventas = await this.servicioPedido.obtenerVentasVendedor(vendedorId);
+        if (!ventas || ventas.length === 0) return res.status(204).send();
+        res.status(200).json(ventas);
+    }
 }
 
 
-// Validador de ObjectId de Mongoose
 const objectId = z
   .string()
   .refine((val) => mongoose.Types.ObjectId.isValid(val), {
@@ -117,14 +129,14 @@ const direccionSchema = z.object({
   ciudad: z.string().min(1, "La ciudad es obligatoria"),
   provincia: z.string().min(1, "La provincia es obligatoria"),
   pais: z.string().min(1, "El país es obligatorio"),
-  lat: z.number(),
-  lon: z.number(),
+  lat: z.number().optional().nullable(),
+  lon: z.number().optional().nullable(),
 });
 
 // Schema principal del pedido
 export const pedidoSchema = z.object({
-    comprador: objectId,
-    moneda: z.enum(["ARS", "USD", "EUR"]), 
+    comprador: z.string().min(1, "El ID del comprador es obligatorio"),
+    moneda: z.enum(["ARS", "USD", "EUR"]).optional().nullable(), 
     direccionEntrega: direccionSchema,
     items: z.array(itemSchema).min(1, "Debe haber al menos un item"),
 });

@@ -1,20 +1,22 @@
-import axios from 'axios'; 
-const API_BASE_URL = process.env.REACT_APP_API_URL;
-/*USUARIO HARDCODEADO */
-const HARDCODED_USER_ID = '6681c6b125d0c32a023f03b2'; 
+import axios from 'axios';
+import  keycloak  from '../Keycloak.js';
 
-/**
- * Obtiene notificaciones del usuario.
- * @param {boolean|undefined} leida - Si true devuelve solo leídas, si false sólo no leídas, si undefined devuelve todas.
- */
+
+const API_BASE_URL = process.env.REACT_APP_API_URL;
+
+
 export const getNotificaciones = async (leida = undefined) => {
     try {
+
+        const userId = keycloak.tokenParsed.sub; 
+        if (!userId) throw new Error("No se encontró el ID del usuario en Keycloak");
+
         const params = {};
         if (leida !== undefined) {
             params.leida = leida;
         }
         
-        const response = await axios.get(`${API_BASE_URL}/usuarios/${HARDCODED_USER_ID}/notificaciones`, { params });
+        const response = await axios.get(`${API_BASE_URL}/usuarios/${userId}/notificaciones`, { params });
         
         return response.data.map(notif => ({
             ...notif,
@@ -36,10 +38,6 @@ export const getNotificaciones = async (leida = undefined) => {
     }
 };
 
-/**
- * Marca una notificación como leída
- * @param {string} notificacionId - ID de la notificación a marcar.
- */
 
 export const marcarNotificacionComoLeida = async (notificacionId) => {
     try {

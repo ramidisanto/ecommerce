@@ -8,7 +8,7 @@ const DireccionEntregaSchema = new mongoose.Schema({
   altura: { type: Number, required: true },
   piso: { type: Number },
   departamento: { type: String },
-  codigoPostal: { type: Number, required: true },
+  codigoPostal: { type: Number, required: true},
   ciudad: { type: String, required: true },
   provincia: { type: String, required: true },
   pais: { type: String, required: true },
@@ -34,18 +34,13 @@ const ItemPedidoSchema = new mongoose.Schema({
                 required: true,
                 min: 0
 }}, { _id: false }); 
-/*
-ItemPedidoSchema.pre(/^find/, function(next) {
-    this.populate('productoId');
-    next();
-});*/
 
 ItemPedidoSchema.loadClass(ItemPedido);
 
 
 const PedidoSchema = new mongoose.Schema({
-    comprador: {
-        type: mongoose.Schema.Types.ObjectId,       
+    comprador: {  
+        type: String,
         ref: "Usuario",
         required: true
     },
@@ -53,7 +48,7 @@ const PedidoSchema = new mongoose.Schema({
         type: [ItemPedidoSchema],
         required: true
     },
-    // evitamos adrede el atributo total por ser calculable
+   
     moneda: {
         type: String,
         required: true,
@@ -85,9 +80,10 @@ const PedidoSchema = new mongoose.Schema({
             required: true,
             enum: ['PENDIENTE', 'ENVIADO', 'ENTREGADO', 'CANCELADO']    
         },
-        // no tendrÃ­a sentido meter el pedido en el historial de cambios de estado
+        
         usuario: {
-            type: mongoose.Schema.Types.ObjectId,
+           
+            type: String,
             ref: "Usuario",
             required: true
         },

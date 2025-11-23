@@ -40,6 +40,14 @@ export default function pedidoRoutes(getController) {
         }
     });
 
+    router.get('/vendedor/:id/ventas', async(req, res, next) =>{
+        try{
+            await getController(PedidoController).obtenerVentasVendedor(req, res);
+        } catch (err) {
+            next(err);
+        }
+    });
+
     router.use(pedidoErrorHandler);
 
     return router;

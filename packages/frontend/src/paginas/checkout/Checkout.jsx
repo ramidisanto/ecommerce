@@ -4,15 +4,21 @@ import { useForm } from '../../hooks/useForm';
 import { useCart } from '../../componentes/Context/CartContext';
 import { Button } from '../../componentes/Button/Button';
 import './Checkout.css';
+import { CrearPedido } from '../../services/pedidosService';
+import { useNotification } from '../../componentes/Context/NotificationContext';
+import { useKeycloak } from "@react-keycloak/web";  
+import { obtenerCoordenadas } from '../../services/geocodingService';
+
 
 export const Checkout = () => {
+  const {addNotification} = useNotification();
+  const { keycloak } = useKeycloak();
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
 
   const validate = (values) => {
     const errors = {};
     if (!values.nombre.trim()) errors.nombre = 'El nombre es obligatorio';
-    if (!values.apellido.trim()) errors.apellido = 'El apellido es obligatorio';
     if (!values.email.trim()) errors.email = 'El email es obligatorio';
     else if (!/\S+@\S+\.\S+/.test(values.email)) errors.email = 'El email no es válido';
     if (!values.telefono.trim()) errors.telefono = 'El teléfono es obligatorio';
@@ -21,14 +27,70 @@ export const Checkout = () => {
     if (!values.localidad.trim()) errors.localidad = 'La localidad es obligatoria';
     if (!values.provincia.trim()) errors.provincia = 'La provincia es obligatoria';
     if (!values.pais.trim()) errors.pais = 'El país es obligatorio';
+    if (!values.codigoPostal.trim()) errors.codigoPostal = 'El código postal es obligatorio';
+
     return errors;
   };
 
-  const onSubmit = (values) => {
-    console.log('Compra confirmada:', values);
-    alert(`¡Compra confirmada por $${cartTotal.toFixed(2)}!`);
-    clearCart();
-    navigate('/');
+ 
+  const onSubmit = async (values) => {
+  
+    try {
+
+      const userId = keycloak.tokenParsed.sub;
+
+      if(!userId){ 
+        addNotification('Usuario no autenticado. Por favor, inicia sesión.', 'error');
+        return;
+      }
+
+      const coords = await obtenerCoordenadas({
+        calle: values.calle,
+        numero: values.numero,
+        localidad: values.localidad,
+        provincia: values.provincia,
+        pais: values.pais,
+      });
+
+      if (!coords) {
+        addNotification("No pudimos obtener la ubicación. Revisá la dirección.", "error");
+        return;
+      }      
+      
+
+    const pedidoData = {
+      comprador: userId, 
+      moneda: "ARS",
+      direccionEntrega: {
+      calle: values.calle,
+      altura: Number(values.numero), 
+      piso: values.piso ? Number(values.piso) : null,
+      departamento: values.depto || null,
+      codigoPostal: Number(values.codigoPostal),
+      ciudad: values.localidad, 
+      provincia: values.provincia,
+      pais: values.pais,
+      lat: coords.lat,
+      lon: coords.lon,
+      },
+      items: cartItems.map((item) => ({
+      productoId: item._id,
+      cantidad: item.quantity,
+      precioUnitario: item.precio, 
+      })),
+      };
+
+      
+      const response = await CrearPedido(pedidoData);
+      console.log('Pedido creado:', response);
+
+      addNotification( `Pedido creado con éxito por $${cartTotal.toFixed(2)}!`,'success');
+      clearCart();
+      navigate('/');
+    } catch (error) {
+      console.error('Error al crear el pedido:', error);
+      addNotification('Ocurrió un error al crear el pedido. Intenta nuevamente.', 'error');
+    }
   };
 
   const {
@@ -42,7 +104,7 @@ export const Checkout = () => {
   } = useForm(
     {
       nombre: '',
-      apellido: '',
+      //apellido: '',
       email: '',
       telefono: '',
       calle: '',
@@ -52,10 +114,14 @@ export const Checkout = () => {
       localidad: '',
       provincia: '',
       pais: '',
+      codigoPostal: '',
     },
     onSubmit,
     validate
   );
+
+  console.log('VALID?', isValid);
+  console.log('CART ITEMS:', cartItems);
 
   return (
     <div className="checkout-container">
@@ -74,18 +140,6 @@ export const Checkout = () => {
               placeholder="Tu nombre"
             />
             <span className="error">{showError('nombre')}</span>
-          </div>
-
-          <div className="form-group">
-            <label>Apellido</label>
-            <input
-              name="apellido"
-              value={values.apellido}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              placeholder="Tu apellido"
-            />
-            <span className="error">{showError('apellido')}</span>
           </div>
 
           <div className="form-group">
@@ -175,6 +229,18 @@ export const Checkout = () => {
           </div>
 
           <div className="form-group">
+            <label>Codigo Postal</label>
+            <input
+              name="codigoPostal"
+              value={values.codigoPostal}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Ej: 1832"
+            />
+            <span className="error">{showError('codigoPostal')}</span>
+          </div>
+
+          <div className="form-group">
             <label>Provincia</label>
             <input
               name="provincia"
@@ -199,7 +265,6 @@ export const Checkout = () => {
           </div>
         </div>
 
-        
         <div className="checkout-total">
           <p>Total a pagar:</p>
           <h2>${cartTotal.toFixed(2)}</h2>
@@ -224,3 +289,5 @@ export const Checkout = () => {
 };
 
 export default Checkout;
+
+

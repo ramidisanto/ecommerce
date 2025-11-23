@@ -80,4 +80,18 @@ export class ProductoRepository {
     async findById(id) {
         return this.model.findById(id);
     }
+
+    async obtenerProductosDelVendedor(vendedorId){
+
+        const productosDelVendedor = await this.model.find({ vendedorId: vendedorId }).select('_id');
+        
+        if (productosDelVendedor.length === 0) {
+            console.log('El vendedor no tiene productos, por lo tanto no hay pedidos.');
+            return [];
+        }
+
+        const IdsDeProductos = productosDelVendedor.map(p => p._id);
+
+        return IdsDeProductos;
+    }
 }

@@ -19,7 +19,7 @@ export class PedidoRepository {
         estado: pedido.estado,
         comprador: pedido.comprador,
         items: pedido.items.map(i => ({
-            producto: i.producto._id || i.producto, // asegúrate de que sea un ObjectId
+            producto: i.producto._id || i.producto,
             cantidad: i.cantidad,
             precioUnitario: i.precioUnitario
         })),
@@ -40,7 +40,12 @@ export class PedidoRepository {
 }
 
     async obtenerPedidosPorUsuarioId(usuarioId) {
-        return await this.model.find({ comprador: usuarioId });
+        
+        const pedidos = await this.model.find({ comprador: usuarioId });
+
+        console.log('Pedidos encontrados para el usuario:', pedidos);
+        
+        return pedidos;
     }
 
     async obtenerProductosDePedido(pedido) {
@@ -51,6 +56,21 @@ export class PedidoRepository {
     async obtenerPedidoPorId(pedidoId) {
         const pedido = await this.model.findById(pedidoId);
         return await this.obtenerProductosDePedido(pedido);
+    }
+
+    async obtenerPedidosPorVendedorId(IdsDeProductos) {
+
+        const pedidos = await this.model.find({
+            'items': {
+                $elemMatch: {
+                    'producto': { $in: IdsDeProductos }
+                }
+            }
+        })
+        .populate('items.producto'); 
+
+        console.log('Pedidos encontrados para el vendedor:', pedidos);
+        return pedidos;
     }
 
 

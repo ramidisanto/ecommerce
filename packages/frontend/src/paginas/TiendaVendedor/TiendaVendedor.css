@@ -99,6 +99,19 @@
   font-weight: 500;
   transition: background-color 0.2s ease;
 }
+.btn-filtrar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ff6b00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
 
 .btn-reset:hover {
   background-color: #e85d00;
@@ -167,3 +180,38 @@
   }
 }
 
+/* ---------- Paginación (Nuevo) ---------- */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding: 1rem 0;
+    flex-wrap: wrap; 
+}
+
+.pagination-info {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #475569;
+    order: 0; 
+}
+
+.pagination-controls button {
+  min-width: 100px; 
+}
+
+/* Ajuste responsive para la paginación */
+@media (max-width: 768px) {
+  /* ... (otros estilos responsive) ... */
+  
+  .pagination-controls {
+    gap: 1rem;
+  }
+  .pagination-info {
+    order: -1; 
+    width: 100%;
+    text-align: center;
+  }
+}
