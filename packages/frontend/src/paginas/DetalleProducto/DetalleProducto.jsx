@@ -50,7 +50,7 @@ const ProductoDetalle = () => {
                 try {
                     
                     const data = await getProductosPorVendedor(product.vendedorId._id);
-                    const related = data
+                    const related = data.productos
                         .filter(p => p._id !== product._id)
                         .slice(0, 4);
                     setRelatedProducts(related);
