@@ -6,6 +6,7 @@ import { Button } from "../../componentes/Button/Button";
 import "./Pedidos.css";
 import { Link } from "react-router-dom";
 import { useNotification } from "../../componentes/Context/NotificationContext";
+import { OrderCardSkeleton } from "../../componentes/Skeleton/SkeletonCard";
 
 const getStatusChip = (status) => {
   const classNames = {
@@ -19,7 +20,7 @@ const getStatusChip = (status) => {
   return <span className={classNames[status]}>{status.replace("_", " ")}</span>;
 };
 
-const OrderCard = ({ order, onCancel }) => {
+const OrderCard = ({ order, onCancel, isCanceling }) => {
   const canCancel =
     order.estado === OrderStatus.PENDING ||
     order.estado === OrderStatus.CONFIRMED;
@@ -48,12 +49,13 @@ const OrderCard = ({ order, onCancel }) => {
       <div className="order-footer">
         <span className="total">${order.total.toFixed(2)}</span>
         {canCancel ? (
-          <Button 
-            variant="danger" 
+          <Button
+            variant="danger"
             size="sm"
             onClick={() => onCancel(order.id)}
+            isLoading={isCanceling === order.id}
           >
-            Cancelar
+            {isCanceling === order.id ? "Cancelando..." : "Cancelar"}
           </Button>
         ) : (
           <Button variant="secondary" size="sm" disabled>
@@ -68,15 +70,14 @@ const OrderCard = ({ order, onCancel }) => {
 };
 
 export const OrdersPage = () => {
-  const {addNotification} = useNotification();
+  const { addNotification } = useNotification();
   const [orders, setOrders] = React.useState([]);
-
   const [loading, setLoading] = React.useState(true);
-
   const [error, setError] = React.useState(null);
+  const [isCanceling, setIsCanceling] = React.useState(null);
 
   const fetchOrders = async () => {
-    try{
+    try {
       setLoading(true);
       const data = await getPedidosPorUsuario();
       setOrders(data);
@@ -93,45 +94,62 @@ export const OrdersPage = () => {
   }, []);
 
   const handleCancelOrder = async (orderId) => {
-    if (! window.confirm("¿Estás seguro de que deseas cancelar este pedido?")) {
+    if (!window.confirm("¿Estás seguro de que deseas cancelar este pedido?")) {
       return;
     }
     try {
+      setIsCanceling(orderId);
       await marcarPedidoCancelado(orderId);
       addNotification("Pedido cancelado con éxito.", 'success');
       fetchOrders();
     } catch (err) {
       console.error("Error al cancelar el pedido:", err);
       addNotification("No se pudo cancelar el pedido. Intenta nuevamente.", 'error');
+    } finally {
+      setIsCanceling(null);
     }
   };
 
   if (loading) {
-    return <div>Cargando pedidos...</div>;
-  } 
+    return (
+      <div className="orders-container">
+        <div className="orders-header">
+          <Link to="/" className="back-link">
+            <ChevronLeftIcon className="icon-md" />
+          </Link>
+          <h1>Mis Pedidos</h1>
+        </div>
+        <div>
+          <OrderCardSkeleton />
+          <OrderCardSkeleton />
+          <OrderCardSkeleton />
+        </div>
+      </div>
+    );
+  }
   if (error) {
     return <div className="error-message">{error}</div>;
-  } 
+  }
 
   return (
-  
-  <div className="orders-container">
-    <div className="orders-header">
-      <Link to="/" className="back-link">
-        <ChevronLeftIcon className="icon-md" />
-      </Link>
-      <h1>Mis Pedidos</h1>
-    </div>
 
-    <div>
-      {orders.length > 0 ?(
-        orders.map((order) => (
-        <OrderCard key={order.id} order={order} onCancel={handleCancelOrder}/>
-      ))
-      ) : (
-        <p>No tienes pedidos realizados.</p>
-      )}
+    <div className="orders-container">
+      <div className="orders-header">
+        <Link to="/" className="back-link">
+          <ChevronLeftIcon className="icon-md" />
+        </Link>
+        <h1>Mis Pedidos</h1>
+      </div>
+
+      <div>
+        {orders.length > 0 ? (
+          orders.map((order) => (
+            <OrderCard key={order.id} order={order} onCancel={handleCancelOrder} isCanceling={isCanceling} />
+          ))
+        ) : (
+          <p>No tienes pedidos realizados.</p>
+        )}
+      </div>
     </div>
-  </div>
   );
 };

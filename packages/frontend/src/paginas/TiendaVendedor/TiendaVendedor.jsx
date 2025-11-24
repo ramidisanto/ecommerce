@@ -7,6 +7,7 @@ import { Button } from '../../componentes/Button/Button';
 import { Spinner } from 'react-bootstrap';
 import { Search, Tag, FileText, ArrowUpDown, DollarSign, XCircle } from 'lucide-react';
 import './TiendaVendedor.css';
+import { ProductCardSkeleton } from '../../componentes/Skeleton/SkeletonCard';
 
 export const TiendaVendedor = () => {
   const { id } = useParams();
@@ -172,8 +173,11 @@ export const TiendaVendedor = () => {
       </div>
 
       {isLoading ? (
-        <div className="tienda-spinner">
-          <Spinner animation="border" role="status" variant="dark" />
+        <div className="producto-grid">
+          <ProductCardSkeleton />
+          <ProductCardSkeleton />
+          <ProductCardSkeleton />
+          <ProductCardSkeleton />
         </div>
       ) : error ? (
         <p className="tienda-error">{error}</p>

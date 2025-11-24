@@ -8,6 +8,7 @@ import "./Ventas.css";
 import { Link } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import { useNotification } from "../../componentes/Context/NotificationContext";
+import { OrderCardSkeleton } from "../../componentes/Skeleton/SkeletonCard";
 
 const getStatusChip = (status) => {
   const classNames = {
@@ -58,11 +59,11 @@ const SaleCard = ({ sale, onMarcarEnviado, isUpdating }) => {
             {sale.estado === OrderStatus.CANCELLED ? 'Cancelado' : 'Enviado'}
           </Button>
         ) : (
-          <Button 
-            variant="primary" 
-            size="sm" 
+          <Button
+            variant="primary"
+            size="sm"
             onClick={() => onMarcarEnviado(saleId)}
-            isLoading={isUpdating} 
+            isLoading={isUpdating}
           >
             Marcar como enviado
           </Button>
@@ -77,7 +78,7 @@ export const SalesPage = () => {
   const [ventas, setVentas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [updatingId, setUpdatingId] = useState(null); 
+  const [updatingId, setUpdatingId] = useState(null);
 
   const fetchVentas = async () => {
     try {
@@ -95,7 +96,8 @@ export const SalesPage = () => {
 
   useEffect(() => {
     fetchVentas();
-  }, []); 
+  }, []);
+
   const handleMarcarEnviado = async (pedidoId) => {
     if (!window.confirm("¿Estás seguro de que deseas marcar este pedido como enviado?")) {
       return;
@@ -105,22 +107,24 @@ export const SalesPage = () => {
     try {
       await marcarPedidoEnviado(pedidoId);
       addNotification("Pedido marcado como enviado.", 'success');
-      fetchVentas(); 
+      fetchVentas();
 
     } catch (err) {
       console.error("Error al marcar como enviado:", err);
       addNotification("No se pudo actualizar el pedido. Intenta nuevamente.", 'error');
     } finally {
-      setUpdatingId(null); 
+      setUpdatingId(null);
     }
   };
 
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <Spinner animation="border" variant="dark" />
-        </div>
+        <>
+          <OrderCardSkeleton />
+          <OrderCardSkeleton />
+          <OrderCardSkeleton />
+        </>
       );
     }
 
@@ -133,11 +137,11 @@ export const SalesPage = () => {
     }
 
     return ventas.map((sale) => (
-      <SaleCard 
-        key={sale._id} 
-        sale={sale} 
+      <SaleCard
+        key={sale._id}
+        sale={sale}
         onMarcarEnviado={handleMarcarEnviado}
-        isUpdating={updatingId === sale._id} 
+        isUpdating={updatingId === sale._id}
       />
     ));
   };

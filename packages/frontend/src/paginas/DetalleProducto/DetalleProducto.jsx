@@ -6,13 +6,14 @@ import { Button } from '../../componentes/Button/Button';
 import { useCart } from '../../componentes/Context/CartContext';
 import { ChevronLeftIcon, ChevronRightIcon } from '../../componentes/icons';
 import { Spinner } from 'react-bootstrap'; 
+import { ProductDetailSkeleton, ProductCardSkeleton } from '../../componentes/Skeleton/SkeletonCard';
 import './DetalleProducto.css'; 
 
 const ProductoDetalle = () => {
     const { productoId } = useParams();
     const { addItem } = useCart();
     const navigate = useNavigate();
-
+    const [loadingRelated, setLoadingRelated] = useState(true);
     const [product, setProduct] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -45,23 +46,25 @@ const ProductoDetalle = () => {
 
     
     useEffect(() => {
-        const fetchRelatedProducts = async () => {
-            if (product && product.vendedorId) {
-                try {
-                    
-                    const data = await getProductosPorVendedor(product.vendedorId._id);
-                    const related = data.productos
-                        .filter(p => p._id !== product._id)
-                        .slice(0, 4);
-                    setRelatedProducts(related);
-                } catch (err) {
-                    console.error("Error al buscar productos relacionados:", err);
-                }
+    const fetchRelatedProducts = async () => {
+        if (product && product.vendedorId) {
+            try {
+                setLoadingRelated(true);
+                const data = await getProductosPorVendedor(product.vendedorId._id);
+                const related = data.productos
+                    .filter(p => p._id !== product._id)
+                    .slice(0, 4);
+                setRelatedProducts(related);
+            } catch (err) {
+                console.error("Error al buscar productos relacionados:", err);
+            } finally {
+                setLoadingRelated(false);
             }
-        };
+        }
+    };
 
-        fetchRelatedProducts();
-    }, [product]); 
+    fetchRelatedProducts();
+}, [product]);
     
 
     
@@ -96,13 +99,18 @@ const ProductoDetalle = () => {
 
 
     if (loading) {
-        return (
-            <div className="product-loading">
-                <Spinner animation="border" role="status" variant="dark" />
-                <p>Cargando producto...</p>
+    return (
+        <div className="product-detail-container">
+            <div className="product-detail-header">
+                <button onClick={() => navigate(-1)} className="product-back-button">
+                    <ChevronLeftIcon className="icon-sm" />
+                    Volver
+                </button>
             </div>
-        );
-    }
+            <ProductDetailSkeleton />
+        </div>
+    );
+}
 
     if (error || !product) {
         return (
@@ -201,13 +209,22 @@ const ProductoDetalle = () => {
 
             
             {relatedProducts.length > 0 && (
-                <div className="related-products">
-                    <h2>Más de {product.vendedorId.nombre}</h2>
-                    <div className="related-products-grid">
-                        {relatedProducts.map(p => <ProductoCard key={p._id} producto={p} />)}
-                    </div>
-                </div>
-            )}
+    <div className="related-products">
+        <h2>Más de {product.vendedorId.nombre}</h2>
+        {loadingRelated ? (
+            <div className="related-products-grid">
+                <ProductCardSkeleton />
+                <ProductCardSkeleton />
+                <ProductCardSkeleton />
+                <ProductCardSkeleton />
+            </div>
+        ) : (
+            <div className="related-products-grid">
+                {relatedProducts.map(p => <ProductoCard key={p._id} producto={p} />)}
+            </div>
+        )}
+    </div>
+)}
         </div>
     );
 };
