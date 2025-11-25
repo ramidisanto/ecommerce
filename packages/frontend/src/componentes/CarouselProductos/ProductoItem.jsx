@@ -6,7 +6,7 @@ import "../../index.css";
 
 const ProductoItem = ({ producto, itemsVisibles }) => {
 
-    const idVendedor = producto.vendedorId._id;
+    const idVendedor = producto.vendedorId;
     const imagenProducto = producto.fotos && producto.fotos.length > 0
         ? producto.fotos[0]
         : "/images/LOGOSOL.png";

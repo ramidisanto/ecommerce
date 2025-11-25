@@ -49,17 +49,17 @@ export class ProductoService{
         const numeroPagina = Math.max(Number(page), 1);
         const elementosPorPagina = Math.min(Math.max(Number(limit), 1), 100);
 
-        const productosDeVendedor = this.productoRepository.buscarConFiltros(query, numeroPagina, elementosPorPagina, sortOption);
+        const productosDeVendedor = await this.productoRepository.buscarConFiltros(query, numeroPagina, elementosPorPagina, sortOption);
 
         return productosDeVendedor
     }
 
     async obtenerProductosDestacados() {
-        return this.productoRepository.obtenerMasVendidoPorVendedor();
+        return await this.productoRepository.obtenerMasVendidoPorVendedor();
     }
 
     async obtenerProductoPorId(productoId) {
-        return this.productoRepository.findById(productoId);
+        return await this.productoRepository.findById(productoId);
     }
 
 }

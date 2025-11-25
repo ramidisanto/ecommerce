@@ -9,8 +9,9 @@ import { UsuarioRepository } from "../Repositories/UsuarioRepository.js";
 import { ProductoRepository } from "../Repositories/ProductoRepository.js";
 import { PedidoRepository } from "../Repositories/PedidoRepository.js";
 import { CambioEstadoPedido } from "../Domain/CambioEstadoPedido.js";
-export class PedidoService{
-    constructor(pedidoRepository, usuarioRepository, productoRepository, servicioNotificacion, factoryNotificacion ){
+
+export class PedidoService {
+    constructor(pedidoRepository, usuarioRepository, productoRepository, servicioNotificacion, factoryNotificacion) {
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
         this.productoRepository = productoRepository;
@@ -18,65 +19,66 @@ export class PedidoService{
         this.factoryNotificacion = factoryNotificacion;
     }
 
-   
 
-async crearPedido(comprador, items, moneda, direccionEntrega) {
-    
-    const itemsPedido = [];
-    for (const item of items) {
-        const producto = await this.productoRepository.obtenerProductoPorId(item.productoId);
-        if (!producto) throw new NoExisteIdException(item.productoId, "producto");
-        producto.validarDisponible(item.cantidad);
-        const itemPedido = new ItemPedido(producto, item.cantidad, item.precioUnitario);
-        itemsPedido.push(itemPedido);
+    // OPTIMIZADO: Usa consulta en lote y bulkWrite
+    async crearPedido(comprador, items, moneda, direccionEntrega) {
+
+        const productosIds = items.map(item => item.productoId);
+        const productos = await this.productoRepository.obtenerProductosPorIds(productosIds);
+        const productosMap = new Map(productos.map(p => [p._id.toString(), p]));
+        const itemsPedido = [];
+        for (const item of items) {
+            const producto = productosMap.get(item.productoId.toString());
+            if (!producto) throw new NoExisteIdException(item.productoId, "producto");
+            producto.validarDisponible(item.cantidad);
+            const itemPedido = new ItemPedido(producto, item.cantidad, item.precioUnitario);
+            itemsPedido.push(itemPedido);
+        }
+
+        const pedido = new Pedido(comprador, itemsPedido, moneda, direccionEntrega);
+
+        const estadoInicial = new CambioEstadoPedido(EstadoPedido.Pendiente, comprador, "Pedido creado");
+        const pedidoParaGuardar = {
+            comprador: comprador._id || comprador.id,
+            items: itemsPedido.map(i => ({
+                producto: i.getProductoId(),
+                cantidad: i.getCantidad(),
+                precioUnitario: i.getPrecioUnitario()
+            })),
+            moneda,
+            direccionEntrega,
+            estado: "PENDIENTE",
+            historialEstados: [estadoInicial]
+        };
+
+        const pedidoGuardado = await this.pedidoRepository.crearPedido(pedidoParaGuardar);
+        const stockUpdates = itemsPedido.map(item => ({
+            productoId: item.getProductoId(),
+            cantidadIncremento: -item.getCantidad()
+        }));
+        await this.productoRepository.actualizarStockEnLote(stockUpdates);
+
+        const notificacion = this.factoryNotificacion.crearSegunPedido(pedido);
+        await this.servicioNotificacion.enviarNotificacion(notificacion);
+
+        return pedidoGuardado;
     }
 
-    const pedido = new Pedido(comprador, itemsPedido, moneda, direccionEntrega);
 
-    const estadoInicial = new CambioEstadoPedido(EstadoPedido.Pendiente, comprador, "Pedido creado");
-    const pedidoParaGuardar = {
-        comprador: comprador._id || comprador.id,
-        items: itemsPedido.map(i => ({
-            producto: i.getProductoId(),
-            cantidad: i.getCantidad(),
-            precioUnitario: i.getPrecioUnitario()
-        })),
-        moneda,
-        direccionEntrega,
-        estado: "PENDIENTE",
-        historialEstados: [estadoInicial]
-    };
-
-    const pedidoGuardado = await this.pedidoRepository.crearPedido(pedidoParaGuardar);
-
-    for (const item of itemsPedido) {
-        const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
-        producto.reducirStock(item.getCantidad());
-        await this.productoRepository.actualizarProducto(producto);
-    }
-    const notificacion = this.factoryNotificacion.crearSegunPedido(pedido);
-    await this.servicioNotificacion.enviarNotificacion(notificacion);
-
-    return pedidoGuardado;
-}
-
-
-    async cancelarPedido(pedidoId){
+    async cancelarPedido(pedidoId) {
         const pedido = await this.pedidoRepository.obtenerPedidoPorId(pedidoId);
-        if (!pedido){
+        if (!pedido) {
             throw new NoExisteIdException(pedidoId, "pedido");
         }
         pedido.validarSePuedeCancelar();
         pedido.actualizarEstado(EstadoPedido.Cancelado, pedido.comprador, "Pedido cancelado por el usuario");
-        await this.pedidoRepository.actualizarPedido(pedido);   
+        await this.pedidoRepository.actualizarPedido(pedido);
 
-        const items_domain = [];
-
-        for (const item of pedido.getItems()) {
-            const producto = await this.productoRepository.obtenerProductoPorId(item.getProductoId());
-            producto.aumentarStock(item.cantidad);
-            await this.productoRepository.actualizarProducto(producto);
-        }
+        const stockUpdates = pedido.getItems().map(item => ({
+            productoId: item.getProductoId(),
+            cantidadIncremento: item.cantidad 
+        }));
+        await this.productoRepository.actualizarStockEnLote(stockUpdates);
 
         const notificacion = this.factoryNotificacion.crearSegunPedido(pedido);
         await this.servicioNotificacion.enviarNotificacion(notificacion);
@@ -84,100 +86,60 @@ async crearPedido(comprador, items, moneda, direccionEntrega) {
         return pedido;
     }
 
-    async obtenerHistorialPedidos(usuarioId){
+
+    async obtenerHistorialPedidos(usuarioId) {
         const pedidos = await this.pedidoRepository.obtenerPedidosPorUsuarioId(usuarioId);
-        const pedidosCompletos = pedidos.map(datos => {
-            const itemsDomain = datos.items.map(item =>
-            {
-                return new ItemPedido(item.producto, item.cantidad, item.precioUnitario);
-            });
-            const pedidoDomain = new Pedido(
-                datos.comprador,
-                itemsDomain,
-                datos.moneda,
-                datos.direccionEntrega
-            );
-            pedidoDomain.id = datos._id;
-            pedidoDomain.fechaCreacion = datos.fechaCreacion;
-            pedidoDomain.estado = datos.estado;
-            pedidoDomain.historialEstados = datos.historialEstados;
 
-            const totalCalculado = pedidoDomain.calcularTotal();
+        const pedidosConTotal = pedidos.map(pedido => {
+            const total = pedido.items.reduce((sum, item) => {
+                return sum + (item.cantidad * item.precioUnitario);
+            }, 0);
 
-            return{
-                ...datos.toObject(),
-                total: totalCalculado
+            return {
+                ...pedido.toObject(),
+                total
             };
         });
-        return pedidosCompletos;
-        
+
+        return pedidosConTotal;
     }
 
-    async marcarPedidoEnviado(pedidoId){
+   
+    async marcarPedidoEnviado(pedidoId) {
         const pedido = await this.pedidoRepository.obtenerPedidoPorId(pedidoId);
-        let pedidos = [];
-        pedidos.push(pedido);
-        if (!pedido){
+        if (!pedido) {
             throw new NoExisteIdException(pedidoId, "pedido");
         }
         pedido.actualizarEstado(EstadoPedido.Enviado, pedido.getComprador(), "Pedido enviado");
         await this.pedidoRepository.actualizarPedido(pedido);
+
         const notificacion = this.factoryNotificacion.crearSegunPedido(pedido);
         await this.servicioNotificacion.enviarNotificacion(notificacion);
-        const pedidosCompletos = pedidos.map(datos => {
-            const itemsDomain = datos.items.map(item =>
-            {
-                return new ItemPedido(item.producto, item.cantidad, item.precioUnitario);
-            });
-            const pedidoDomain = new Pedido(
-                datos.comprador,
-                itemsDomain,
-                datos.moneda,
-                datos.direccionEntrega
-            );
-            pedidoDomain.id = datos._id;
-            pedidoDomain.fechaCreacion = datos.fechaCreacion;
-            pedidoDomain.estado = datos.estado;
-            pedidoDomain.historialEstados = datos.historialEstados;
 
-            const totalCalculado = pedidoDomain.calcularTotal();
+        const total = pedido.items.reduce((sum, item) => {
+            return sum + (item.cantidad * item.precioUnitario);
+        }, 0);
 
-            return{
-                ...datos.toObject(),
-                total: totalCalculado
-            };
-        });
-        return pedidosCompletos;
+        return {
+            ...pedido.toObject(),
+            total
+        };
     }
 
-    async obtenerVentasVendedor(vendedorId){
-
+    async obtenerVentasVendedor(vendedorId) {
         const IdsDeProductos = await this.productoRepository.obtenerProductosDelVendedor(vendedorId);
-        
         const pedidos = await this.pedidoRepository.obtenerPedidosPorVendedorId(IdsDeProductos);
-        const pedidosCompletos = pedidos.map(datos => {
-            const itemsDomain = datos.items.map(item =>
-            {
-                return new ItemPedido(item.producto, item.cantidad, item.precioUnitario);
-            });
-            const pedidoDomain = new Pedido(
-                datos.comprador,
-                itemsDomain,
-                datos.moneda,
-                datos.direccionEntrega
-            );
-            pedidoDomain.id = datos._id;
-            pedidoDomain.fechaCreacion = datos.fechaCreacion;
-            pedidoDomain.estado = datos.estado;
-            pedidoDomain.historialEstados = datos.historialEstados;
+        const ventasConTotal = pedidos.map(pedido => {
+            const total = pedido.items.reduce((sum, item) => {
+                return sum + (item.cantidad * item.precioUnitario);
+            }, 0);
 
-            const totalCalculado = pedidoDomain.calcularTotal();
-
-            return{
-                ...datos.toObject(),
-                total: totalCalculado
+            return {
+                ...pedido.toObject(),
+                total
             };
         });
-        return pedidosCompletos;
+
+        return ventasConTotal;
     }
 }

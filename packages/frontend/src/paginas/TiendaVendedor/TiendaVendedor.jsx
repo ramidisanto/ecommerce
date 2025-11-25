@@ -4,7 +4,6 @@ import { getProductosPorVendedor } from '../../services/productoService';
 import { ProductoCard } from '../../componentes/ProductoCard/ProductoCard';
 import { ChevronLeftIcon } from '../../componentes/icons';
 import { Button } from '../../componentes/Button/Button';
-import { Spinner } from 'react-bootstrap';
 import { Search, Tag, FileText, ArrowUpDown, DollarSign, XCircle } from 'lucide-react';
 import './TiendaVendedor.css';
 import { ProductCardSkeleton } from '../../componentes/Skeleton/SkeletonCard';

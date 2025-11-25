@@ -29,33 +29,25 @@ export class PedidoRepository {
         historialEstados: pedido.historialEstados,
     };
 
-    let pedidoActualizado = await this.model.findByIdAndUpdate(
+    await this.model.findByIdAndUpdate(
         pedido._id,
         pedidoData,
         { new: true, runValidators: true }
     );
 
-    pedidoActualizado = await this.obtenerProductosDePedido(pedidoActualizado);
-    return pedidoActualizado;
 }
 
     async obtenerPedidosPorUsuarioId(usuarioId) {
         
-        const pedidos = await this.model.find({ comprador: usuarioId });
-
-        console.log('Pedidos encontrados para el usuario:', pedidos);
-        
+        const pedidos = await this.model.find({ comprador: usuarioId }).populate('items.producto');
         return pedidos;
     }
 
-    async obtenerProductosDePedido(pedido) {
-        await pedido.populate('items.producto');
-        return pedido;
-    }
+   
 
     async obtenerPedidoPorId(pedidoId) {
-        const pedido = await this.model.findById(pedidoId);
-        return await this.obtenerProductosDePedido(pedido);
+        const pedido = await this.model.findById(pedidoId).populate('items.producto', 'comprador');
+        return pedido;
     }
 
     async obtenerPedidosPorVendedorId(IdsDeProductos) {
@@ -66,10 +58,9 @@ export class PedidoRepository {
                     'producto': { $in: IdsDeProductos }
                 }
             }
-        })
-        .populate('items.producto'); 
+        }).populate('comprador').populate('items.producto'); 
 
-        console.log('Pedidos encontrados para el vendedor:', pedidos);
+        
         return pedidos;
     }
 

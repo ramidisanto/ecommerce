@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React from "react";
 import { getPedidosPorUsuario, marcarPedidoCancelado } from "../../services/pedidosService";
 import { ChevronLeftIcon } from "../../componentes/icons";
 import { OrderStatus } from "../../types";

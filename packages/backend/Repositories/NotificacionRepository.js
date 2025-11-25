@@ -11,7 +11,7 @@ export class NotificacionRepository{
     async obtenerNotificacionesDeUsuarioLeidas(usuario, leida) { 
         return await this.model.find({ 
             usuarioDestino: usuario, 
-            leida: leida //No estoy seguro si de esta forma cuando leida = false me trae las no leidas. Según la IA funciona.
+            leida: leida 
         });
     }
 
@@ -47,32 +47,6 @@ export class NotificacionRepository{
     async findById(id) {
         return await this.model.findById(id);
     }
-
-
-    /*
-
-    // MAPPERS DE NOTIFICACION
-    aNotificacionDB(notificacion){
-        const notificacionDB = {
-            ...notificacion,
-        };
-        delete notificacion.id;
-        return notificacionDB;
-    }
-
-    async marcarNotificacionComoLeida(notificacionId){
-        await this.collection.updateOne(
-            { _id: new ObjectId(notificacionId) },
-            { $set: { leida: true, fechaLeida: new Date() } }
-        );
-    }
-
-    async guardarNotificacion(notificacion){
-        const notificacionDB = this.aNotificacionDB(notificacion);
-        const result = await this.collection.insertOne(notificacionDB);
-        notificacion.id = result.insertedId.toString();
-        return notificacion;
-    } */
 
 
 }

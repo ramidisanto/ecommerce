@@ -3,18 +3,18 @@ import { Usuario } from '../Domain/Usuario.js';
 
 const usuarioSchema = new mongoose.Schema({
     _id: {
-    type: String,
-    required: true
-    },
-  nombre: { 
         type: String,
         required: true
     },
-  email: {
+    nombre: {
         type: String,
         required: true
     },
-  telefono: {
+    email: {
+        type: String,
+        required: true
+    },
+    telefono: {
         type: Number,
         required: true
     },

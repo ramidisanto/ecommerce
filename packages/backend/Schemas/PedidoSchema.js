@@ -4,42 +4,43 @@ import { DireccionEntrega } from "../Domain/DireccionEntrega.js";
 import { ItemPedido } from "../Domain/ItemPedido.js";
 
 const DireccionEntregaSchema = new mongoose.Schema({
-  calle: { type: String, required: true },
-  altura: { type: Number, required: true },
-  piso: { type: Number },
-  departamento: { type: String },
-  codigoPostal: { type: Number, required: true},
-  ciudad: { type: String, required: true },
-  provincia: { type: String, required: true },
-  pais: { type: String, required: true },
-  lat: { type: Number },
-  lon: { type: Number }
+    calle: { type: String, required: true },
+    altura: { type: Number, required: true },
+    piso: { type: Number },
+    departamento: { type: String },
+    codigoPostal: { type: Number, required: true },
+    ciudad: { type: String, required: true },
+    provincia: { type: String, required: true },
+    pais: { type: String, required: true },
+    lat: { type: Number },
+    lon: { type: Number }
 }, { _id: false });
 
 DireccionEntregaSchema.loadClass(DireccionEntrega);
 
 const ItemPedidoSchema = new mongoose.Schema({
     producto: {
-                type: mongoose.Schema.Types.ObjectId,   
-                ref: "Producto",
-                required: true
-            },
-            cantidad: {
-                type: Number,
-                required: true,
-                min: 1
-            },
-            precioUnitario: {
-                type: Number,
-                required: true,
-                min: 0
-}}, { _id: false }); 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Producto",
+        required: true
+    },
+    cantidad: {
+        type: Number,
+        required: true,
+        min: 1
+    },
+    precioUnitario: {
+        type: Number,
+        required: true,
+        min: 0
+    }
+}, { _id: false });
 
 ItemPedidoSchema.loadClass(ItemPedido);
 
 
 const PedidoSchema = new mongoose.Schema({
-    comprador: {  
+    comprador: {
         type: String,
         ref: "Usuario",
         required: true
@@ -48,11 +49,11 @@ const PedidoSchema = new mongoose.Schema({
         type: [ItemPedidoSchema],
         required: true
     },
-   
+
     moneda: {
         type: String,
         required: true,
-        enum: ['ARS','USD','EUR']
+        enum: ['ARS', 'USD', 'EUR']
     },
     direccionEntrega: {
         type: DireccionEntregaSchema,
@@ -78,11 +79,11 @@ const PedidoSchema = new mongoose.Schema({
         estado: {
             type: String,
             required: true,
-            enum: ['PENDIENTE', 'ENVIADO', 'ENTREGADO', 'CANCELADO']    
+            enum: ['PENDIENTE', 'ENVIADO', 'ENTREGADO', 'CANCELADO']
         },
-        
+
         usuario: {
-           
+
             type: String,
             ref: "Usuario",
             required: true
@@ -98,9 +99,11 @@ const PedidoSchema = new mongoose.Schema({
     collection: 'pedidos'
 });
 
-PedidoSchema.pre(/^find/, function(next) {
-    this.populate('comprador').populate('historialEstados.usuario').populate('items.producto').populate('items.producto.vendedorId');
-    next();
-});
+// Índices para optimizar consultas
+PedidoSchema.index({ comprador: 1 }); // Búsqueda de pedidos por comprador
+PedidoSchema.index({ 'items.producto': 1 }); // Búsqueda de pedidos por producto (para ventas)
+PedidoSchema.index({ estado: 1 }); // Filtrado por estado
+PedidoSchema.index({ comprador: 1, fechaCreacion: -1 }); // Historial ordenado por fecha
+
 PedidoSchema.loadClass(Pedido);
 export const PedidoModel = mongoose.model('Pedido', PedidoSchema);

@@ -31,10 +31,8 @@ const NotificacionSchema = new mongoose.Schema({
     collection: 'notificaciones'
 });
 
-NotificacionSchema.pre(/^find/, function(next) {
-    this.populate('usuarioDestino');
-    next();
-});
+// Índice compuesto para optimizar búsqueda de notificaciones por usuario y estado de lectura
+NotificacionSchema.index({ usuarioDestino: 1, leida: 1 });
 
 NotificacionSchema.loadClass(Notificacion);
 export const NotificacionModel = mongoose.model('Notificacion', NotificacionSchema);

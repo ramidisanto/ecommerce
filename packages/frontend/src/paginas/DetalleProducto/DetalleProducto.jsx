@@ -5,7 +5,6 @@ import { ProductoCard } from '../../componentes/ProductoCard/ProductoCard';
 import { Button } from '../../componentes/Button/Button';
 import { useCart } from '../../componentes/Context/CartContext';
 import { ChevronLeftIcon, ChevronRightIcon } from '../../componentes/icons';
-import { Spinner } from 'react-bootstrap'; 
 import { ProductDetailSkeleton, ProductCardSkeleton } from '../../componentes/Skeleton/SkeletonCard';
 import './DetalleProducto.css'; 
 

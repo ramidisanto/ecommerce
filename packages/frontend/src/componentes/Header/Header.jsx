@@ -146,7 +146,7 @@ const UserDropdown = ({ closeDropdown }) => {
 UserDropdown.propTypes = { closeDropdown: PropTypes.func.isRequired, keycloak: PropTypes.object.isRequired};
 
 const MobileMenu = ({ isOpen, closeMenu }) => {
-    const { keycloak } = useKeycloak();
+    const { keycloak, initialized } = useKeycloak();
     if (!isOpen) return null;
 
     const getLinkClass = ({ isActive }) => {
@@ -165,18 +165,24 @@ const MobileMenu = ({ isOpen, closeMenu }) => {
                 </button>
             </div>
             <nav className="mobile-menu-nav">
-
-                {keycloak.authenticated && (
+                {!initialized ? (
+                    <p style={{padding: '20px', textAlign: 'center'}}>Cargando...</p>
+                ) : (
                     <>
-                        <NavLink to="/ventas" onClick={closeMenu} className={getLinkClass}>Mis Ventas</NavLink>
-                        <NavLink to="/pedidos" onClick={closeMenu} className={getLinkClass}>Mis Pedidos</NavLink>
-                        <NavLink to="/notificationes" onClick={closeMenu} className={getLinkClass}>Notificaciones</NavLink>
+                        {keycloak.authenticated && (
+                            <>
+                                <NavLink to="/ventas" onClick={closeMenu} className={getLinkClass}>Mis Ventas</NavLink>
+                                <NavLink to="/pedidos" onClick={closeMenu} className={getLinkClass}>Mis Pedidos</NavLink>
+                                <NavLink to="/notificationes" onClick={closeMenu} className={getLinkClass}>Notificaciones</NavLink>
+                            </>
+                        )}
                     </>
                 )}
             </nav>
 
             <div className="mobile-menu-login">
-                {!keycloak.authenticated ? (
+                {!initialized ? null : ( 
+                    !keycloak.authenticated ? (
                     <Button 
                         variant="primary" 
                         className="w-full"
@@ -198,6 +204,7 @@ const MobileMenu = ({ isOpen, closeMenu }) => {
                     >
                         Cerrar Sesión
                     </Button>
+                )
                 )}
             </div>
         </div>
@@ -278,60 +285,61 @@ export const Header = () => {
             <span className="logo-text-desktop">TIENDA SOL</span>
             <span className="logo-text-mobile">SOL</span>
           </Link>
-          {/*
-          <nav className="header-nav-links">
-            <Link to="/" className="header-nav-link">Inicio</Link>
-            <Link to="/protegida" className="header-nav-link">Página Segura</Link>
-          </nav>*/}
+          
 
-          <div className="nav-icons">
-            <div className="nav-icons-desktop">
-                {keycloak.authenticated && (
-                    <>
-                        <button onClick={() => toggleDropdown('notifications')} className="icon-button" aria-label={`Notificaciones (${unreadNotifications} no leídas)`}>
-                            <BellIcon className="icon-lg" />
-                            {unreadNotifications > 0 &&
-                            <span className="notification-badge-wrapper">
-                                <span className="notification-ping"></span>
-                                <span className="notification-badge">
-                                    {unreadNotifications}
-                                </span>
-                            </span>
-                            }
-                        </button>
-                        
-                        <button onClick={() => toggleDropdown('user')} className="icon-button" aria-label="Menú de usuario">
-                            <UserIcon className="icon-lg" />
-                        </button>
-                    </>
+              <div className="nav-icons">
+
+                {!initialized && (
+                    <div className="nav-skeleton" style={{ width: '100px', height: '40px', background: '#e0e0e0', borderRadius: '4px', opacity: 0.5 }}></div>
                 )}
-            </div>
+                {initialized && (
+        <>
+          <div className="nav-icons-desktop">
+            {/* Solo mostramos esto si está autenticado */}
+            {keycloak.authenticated && (
+              <>
+                <button onClick={() => toggleDropdown('notifications')} className="icon-button">
+                  <BellIcon className="icon-lg" />
+                  {unreadNotifications > 0 && (
+                    <span className="notification-badge-wrapper">
+                      <span className="notification-ping"></span>
+                      <span className="notification-badge">{unreadNotifications}</span>
+                    </span>
+                  )}
+                </button>
 
-            <button onClick={() => toggleDropdown('cart')} className="icon-button" aria-label={`Carrito de compras (${cartCount} items)`}>
-              <CartIcon className="icon-lg" />
-              {cartCount > 0 && (
-                <span className="cart-badge">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-            
-            {!keycloak.authenticated && (
-                <div className="header-login-btn-wrapper">
-                    <Button 
-                        variant="secondary" 
-                        size="sm" 
-                        className="header-login-btn"
-                        onClick={() => keycloak.login()}
-                    >
-                        Iniciar Sesión
-                    </Button>
-                </div>
+                <button onClick={() => toggleDropdown('user')} className="icon-button">
+                  <UserIcon className="icon-lg" />
+                </button>
+              </>
             )}
+          </div>
 
-            <button onClick={() => setIsMobileMenuOpen(true)} className="icon-button mobile-menu-toggle" aria-label="Abrir menú de navegación">
-              <MenuIcon className="icon-lg" />
-            </button>
+          {/* El carrito siempre se muestra, es independiente del login */}
+          <button onClick={() => toggleDropdown('cart')} className="icon-button">
+            <CartIcon className="icon-lg" />
+            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+          </button>
+
+          {/* Botón Iniciar Sesión: Solo si NO está autenticado Y YA inicializó */}
+          {!keycloak.authenticated && (
+            <div className="header-login-btn-wrapper">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="header-login-btn"
+                onClick={() => keycloak.login()}
+              >
+                Iniciar Sesión
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+
+      <button onClick={() => setIsMobileMenuOpen(true)} className="icon-button mobile-menu-toggle">
+        <MenuIcon className="icon-lg" />
+      </button>
 
              {activeDropdown && (
                 <div 

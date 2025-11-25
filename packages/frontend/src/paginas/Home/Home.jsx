@@ -14,26 +14,22 @@ function Home() {
   const { keycloak, initialized } = useKeycloak();
 
   useEffect(() => {
-
-     if (!initialized) {
-      console.log("Esperando a Keycloak...");
-      return; 
-    }
-
     const fetchProductosDestacados = async () => {
       try {
         setIsLoading(true);
         setError(null);
         const data = await getProductosDestacados();
-        const usuarioLogeado = keycloak.tokenParsed?.sub;
 
-        if (usuarioLogeado && data.length > 0) {
-            const productosFiltrados = data.filter(producto => {
-              return producto.vendedorId && producto.vendedorId._id !== usuarioLogeado;
-            });
-            setProductos(productosFiltrados);
+        // Solo filtrar si Keycloak está inicializado y el usuario está autenticado
+        if (initialized && keycloak.authenticated && keycloak.tokenParsed?.sub) {
+          const usuarioLogeado = keycloak.tokenParsed.sub;
+          const productosFiltrados = data.filter(producto => {
+            return producto.vendedorId && producto.vendedorId !== usuarioLogeado;
+          });
+          setProductos(productosFiltrados);
         } else {
-            setProductos(data);
+          // Sin autenticación o Keycloak no disponible, mostrar todos
+          setProductos(data);
         }
       } catch (err) {
         console.error("Error en Home.jsx al cargar productos destacados:", err);
@@ -42,6 +38,7 @@ function Home() {
         setIsLoading(false);
       }
     };
+
     fetchProductosDestacados();
   }, [initialized, keycloak]);
 

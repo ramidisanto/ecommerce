@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { MOCK_SALES } from "../../mockData/data";
 import { getVentasPorVendedor, marcarPedidoEnviado } from "../../services/vendedorService";
 import { OrderStatus } from "../../types";
-import { ChevronLeftIcon, ChevronDownIcon } from "../../componentes/icons";
+import { ChevronLeftIcon } from "../../componentes/icons";
 import { Button } from "../../componentes/Button/Button";
 import "./Ventas.css";
 import { Link } from "react-router-dom";
-import { Spinner } from "react-bootstrap";
 import { useNotification } from "../../componentes/Context/NotificationContext";
 import { OrderCardSkeleton } from "../../componentes/Skeleton/SkeletonCard";
 
@@ -53,7 +51,7 @@ const SaleCard = ({ sale, onMarcarEnviado, isUpdating }) => {
       </div>
 
       <div className="sale-footer">
-        <span className="total">${sale.total.toFixed(2)}</span>
+        <span className="total">${sale.total}</span>
         {isShippedOrBeyond ? (
           <Button variant="secondary" size="sm" disabled>
             {sale.estado === OrderStatus.CANCELLED ? 'Cancelado' : 'Enviado'}

@@ -30,7 +30,7 @@ export class ProductoRepository {
         const productos = await this.model.find(query)
             .skip(skip)
             .limit(elementosPorPagina)
-            .sort(sortOption);
+            .sort(sortOption).populate('vendedorId');
 
         const totalProductos = await this.model.countDocuments(query);
         const totalPaginas = Math.ceil(totalProductos / elementosPorPagina);
@@ -55,20 +55,7 @@ export class ProductoRepository {
                         producto: { $first: "$$ROOT" }
                     }
                 },
-                { $replaceRoot: { newRoot: "$producto" } },
-
-                {
-                    $lookup: {
-                        from: 'usuarios',
-                        localField: 'vendedorId',
-                        foreignField: '_id',
-                        as: 'vendedorId'
-                    }
-                },
-
-                {
-                    $unwind: '$vendedorId'
-                }
+                { $replaceRoot: { newRoot: "$producto" } }
             ]);
             return productos;
         } catch (error) {
@@ -78,13 +65,13 @@ export class ProductoRepository {
     }
 
     async findById(id) {
-        return this.model.findById(id);
+        return await this.model.findById(id).populate('vendedorId');
     }
 
-    async obtenerProductosDelVendedor(vendedorId){
+    async obtenerProductosDelVendedor(vendedorId) {
 
         const productosDelVendedor = await this.model.find({ vendedorId: vendedorId }).select('_id');
-        
+
         if (productosDelVendedor.length === 0) {
             console.log('El vendedor no tiene productos, por lo tanto no hay pedidos.');
             return [];
@@ -93,5 +80,20 @@ export class ProductoRepository {
         const IdsDeProductos = productosDelVendedor.map(p => p._id);
 
         return IdsDeProductos;
+    }
+
+    // Métodos optimizados para operaciones en lote
+    async obtenerProductosPorIds(ids) {
+        return await this.model.find({ _id: { $in: ids } });
+    }
+
+    async actualizarStockEnLote(updates) {
+        const operations = updates.map(({ productoId, cantidadIncremento }) => ({
+            updateOne: {
+                filter: { _id: productoId },
+                update: { $inc: { stock: cantidadIncremento } }
+            }
+        }));
+        return await this.model.bulkWrite(operations);
     }
 }
