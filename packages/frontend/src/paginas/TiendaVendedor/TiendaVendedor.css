@@ -47,7 +47,7 @@
   padding: 1rem 1.5rem;
   background-color: #f8fafc;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .filtro-item {
@@ -99,6 +99,7 @@
   font-weight: 500;
   transition: background-color 0.2s ease;
 }
+
 .btn-filtrar {
   display: flex;
   align-items: center;
@@ -182,36 +183,48 @@
 
 /* ---------- Paginación (Nuevo) ---------- */
 .pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 2rem;
-    padding: 1rem 0;
-    flex-wrap: wrap; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  flex-wrap: wrap;
 }
 
 .pagination-info {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #475569;
-    order: 0; 
+  font-size: 1rem;
+  font-weight: 500;
+  color: #475569;
+  order: 0;
 }
 
 .pagination-controls button {
-  min-width: 100px; 
+  min-width: 100px;
 }
 
 /* Ajuste responsive para la paginación */
 @media (max-width: 768px) {
   /* ... (otros estilos responsive) ... */
-  
+
   .pagination-controls {
     gap: 1rem;
   }
+
+  .pagination-controls button {
+    min-width: 120px;
+    /* Increased from 100px for better touch targets */
+    padding: 12px 20px;
+    /* Larger touch area */
+  }
+
   .pagination-info {
-    order: -1; 
+    order: -1;
     width: 100%;
     text-align: center;
+    font-size: 0.95rem;
+    /* Slightly smaller on mobile */
+    padding: 8px 0;
+    /* More breathing room */
   }
 }

@@ -18,11 +18,13 @@ const ProductoItem = ({ producto, itemsVisibles }) => {
             style={{ flexBasis: `calc(100% / ${itemsVisibles})` }}
         >
             <div className="producto-card">
-                <img
-                    src={imagenProducto}
-                    alt={producto.titulo}
-                    className="producto-image"
-                />
+                <Link to={`/vendedor/${idVendedor}/productos`} className="link-no-style">
+                    <img
+                        src={imagenProducto}
+                        alt={producto.titulo}
+                        className="producto-image"
+                    />
+                </Link>
                 <div className="producto-info">
                     <h3 className="producto-name">{producto.titulo}</h3>
                     <p className="producto-stock">Stock: {producto.stock}</p>

@@ -2,17 +2,36 @@ import React, { useState, useEffect, useRef } from "react";
 import './ProductosCarousel.css';
 import ProductoItem from "./ProductoItem.jsx";
 
-export default function ProductoCarousel({ productos, itemsVisibles = 3
- }) {
+export default function ProductoCarousel({ productos }) {
+    const [index, setIndex] = useState(0);
+    const trackRef = useRef(null);
+    const [cardWidth, setCardWidth] = useState(0);
+    const [itemsVisibles, setItemsVisibles] = useState(3);
+
+    // Calcular itemsVisibles según el ancho de la ventana
+    useEffect(() => {
+        const calculateItemsVisible = () => {
+            const width = window.innerWidth;
+            if (width < 768) {
+                setItemsVisibles(1); // Mobile
+            } else if (width < 1024) {
+                setItemsVisibles(2); // Tablet
+            } else {
+                setItemsVisibles(3); // Desktop
+            }
+        };
+
+        calculateItemsVisible();
+        window.addEventListener("resize", calculateItemsVisible);
+        return () => window.removeEventListener("resize", calculateItemsVisible);
+    }, []);
+
+    // Resetear índice cuando cambian los productos
     useEffect(() => {
         setIndex(0);
     }, [productos]);
 
-    const [index, setIndex] = useState(0);
-    const trackRef = useRef(null);
-    const [cardWidth, setCardWidth] = useState(0);
-
-    // medir ancho de la primera tarjeta y recalcular en resize
+    // Medir ancho de la primera tarjeta y recalcular en resize
     useEffect(() => {
         const measure = () => {
             const firstCard = trackRef.current?.children?.[0];
@@ -24,7 +43,7 @@ export default function ProductoCarousel({ productos, itemsVisibles = 3
         measure();
         window.addEventListener("resize", measure);
         return () => window.removeEventListener("resize", measure);
-    }, [productos, itemsVisibles]);
+    }, [productos]);
 
     const siguiente = () => {
         if (index < productos.length - itemsVisibles) {
