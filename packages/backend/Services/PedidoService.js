@@ -20,7 +20,6 @@ export class PedidoService {
     }
 
 
-    // OPTIMIZADO: Usa consulta en lote y bulkWrite
     async crearPedido(comprador, items, moneda, direccionEntrega) {
 
         const productosIds = items.map(item => item.productoId);

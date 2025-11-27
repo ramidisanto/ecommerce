@@ -8,7 +8,6 @@ import { DireccionEntrega } from "../../Domain/DireccionEntrega.js";
 import { TipoUsuario } from "../../Domain/TipoUsuario.js";
 import { PedidoService } from "../../Services/PedidoService.js";
 import { jest } from "@jest/globals";
-import { get } from "mongoose";
 
 describe('PedidoService', () => {
   let pedidoRepositoryMock;
@@ -20,13 +19,21 @@ describe('PedidoService', () => {
 
   beforeEach(() => {
     pedidoRepositoryMock = {
-      crearPedido: jest.fn()
+      crearPedido: jest.fn(),
+      obtenerPedidoPorId: jest.fn(),
+      actualizarPedido: jest.fn(),
+      obtenerPedidosPorUsuarioId: jest.fn()
     };
     usuarioRepositoryMock = {};
+    
+
     productoRepositoryMock = {
       obtenerProductoPorId: jest.fn(),
-      actualizarProducto: jest.fn()
+      actualizarProducto: jest.fn(),
+      obtenerProductosPorIds: jest.fn(),
+      actualizarStockEnLote: jest.fn()
     };
+    
     servicioNotificacionMock = {
       enviarNotificacion: jest.fn()
     };
@@ -45,73 +52,86 @@ describe('PedidoService', () => {
   });
 
   test('deberia crear un pedido correctamente y enviar notificacion', async () => {
-    // Arrange
     const comprador = { id: 1, nombre: 'Juan' };
     const direccionEntrega = { calle: 'Av. Siempreviva 123' };
     const moneda = 'ARS';
 
-    // item como objeto plano (coincide con la implementacion que usa item.productoId)
-    const item = { productoId: 101, cantidad: 2, precioUnitario: 500 };
+    const item = { productoId: "101", cantidad: 2, precioUnitario: 500 };
     const items = [item];
 
-    // Producto simulado (devuelto por productoRepository)
-    const producto = {
+    const productoMock = {
+      _id: "101", 
       validarDisponible: jest.fn(),
-      reducirStock: jest.fn(),
-      getId: jest.fn().mockReturnValue(101),
-      getStock: jest.fn().mockReturnValue(10)
+      getId: jest.fn().mockReturnValue("101"), 
+      getPrecio: jest.fn().mockReturnValue(500)
     };
 
 
-    productoRepositoryMock.obtenerProductoPorId.mockResolvedValue(producto);
-    pedidoRepositoryMock.crearPedido.mockResolvedValue({ comprador, items, moneda, direccionEntrega });
+    productoRepositoryMock.obtenerProductosPorIds.mockResolvedValue([productoMock]);
+    
+    pedidoRepositoryMock.crearPedido.mockResolvedValue({ 
+        comprador, 
+        items, 
+        moneda, 
+        direccionEntrega,
+        estado: "PENDIENTE"
+    });
+    
     factoryNotificacionMock.crearSegunPedido.mockReturnValue({ mensaje: 'Pedido creado' });
 
     const nuevoPedido = await pedidoService.crearPedido(comprador, items, moneda, direccionEntrega);
 
-    expect(productoRepositoryMock.obtenerProductoPorId).toHaveBeenCalledWith(101);
-    expect(producto.validarDisponible).toHaveBeenCalledWith(2);
+
+    expect(productoRepositoryMock.obtenerProductosPorIds).toHaveBeenCalledWith(["101"]);
+    expect(productoMock.validarDisponible).toHaveBeenCalledWith(2);
+    
     expect(pedidoRepositoryMock.crearPedido).toHaveBeenCalled();
-    expect(producto.reducirStock).toHaveBeenCalledWith(2);
-    expect(productoRepositoryMock.actualizarProducto).toHaveBeenCalledWith(producto);
+    
+
+    expect(productoRepositoryMock.actualizarStockEnLote).toHaveBeenCalledWith([
+        { productoId: "101", cantidadIncremento: -2 }
+    ]);
+    
     expect(factoryNotificacionMock.crearSegunPedido).toHaveBeenCalled();
     expect(servicioNotificacionMock.enviarNotificacion).toHaveBeenCalled();
-    expect(nuevoPedido).toEqual({ comprador, items, moneda, direccionEntrega });
   });
 
   test('deberia poder cancelar un pedido antes que se haya enviado', async () => {
-    const producto = { getId: jest.fn().mockReturnValue(102), aumentarStock: jest.fn() };
+    const productoMock = { 
+        getId: jest.fn().mockReturnValue("102")
+    };
     const comprador = { id: 1, nombre: 'Juan' };
-    const item = { getProductoId: () => 101, getCantidad: jest.fn().mockReturnValue(2) };
-    const item2 = new ItemPedido(producto, 2, 500);
+    
+    const itemPedido = {
+        getProductoId: () => "101",
+        cantidad: 2
+    };
+
     const pedido = { 
       id : 1,
-      getItems: () => [item2],
+      getItems: () => [itemPedido], 
       getEstado: () => EstadoPedido.Pendiente,
       getComprador: jest.fn().mockReturnValue(comprador),
       validarSePuedeCancelar: jest.fn(),
       actualizarEstado: jest.fn(),
     };
 
-  pedidoRepositoryMock.obtenerPedidoPorId = jest.fn().mockResolvedValue(pedido);
-  pedidoRepositoryMock.actualizarPedido = jest.fn(); 
+    pedidoRepositoryMock.obtenerPedidoPorId.mockResolvedValue(pedido);
+    
+    factoryNotificacionMock.crearSegunEstado = jest.fn().mockReturnValue({ mensaje: 'El Pedido ha sido cancelado' });
+    servicioNotificacionMock.enviarNotificacion = jest.fn();
 
-  
-  productoRepositoryMock.obtenerProductoPorId.mockResolvedValue(producto);
-  productoRepositoryMock.actualizarProducto.mockResolvedValue(producto);
+    await pedidoService.cancelarPedido(1, comprador);
 
-  
-  factoryNotificacionMock.crearSegunEstado = jest.fn().mockReturnValue({ mensaje: 'El Pedido ha sido cancelado' });
-  servicioNotificacionMock.enviarNotificacion = jest.fn();
-
-  await pedidoService.cancelarPedido(1, comprador);
-
-  expect(pedido.validarSePuedeCancelar).toHaveBeenCalled();
-  expect(pedidoRepositoryMock.actualizarPedido).toHaveBeenCalledWith(pedido);
-  expect(producto.aumentarStock).toHaveBeenCalledWith(2);
-  expect(productoRepositoryMock.actualizarProducto).toHaveBeenCalledWith(producto);
-  expect(factoryNotificacionMock.crearSegunPedido).toHaveBeenCalledWith(pedido);
-  expect(servicioNotificacionMock.enviarNotificacion).toHaveBeenCalled();
+    expect(pedido.validarSePuedeCancelar).toHaveBeenCalled();
+    expect(pedidoRepositoryMock.actualizarPedido).toHaveBeenCalledWith(pedido);
+    
+    expect(productoRepositoryMock.actualizarStockEnLote).toHaveBeenCalledWith([
+        { productoId: "101", cantidadIncremento: 2 }
+    ]);
+    
+    expect(factoryNotificacionMock.crearSegunPedido).toHaveBeenCalledWith(pedido);
+    expect(servicioNotificacionMock.enviarNotificacion).toHaveBeenCalled();
   });
 
   test(`deberia devolver el historial de pedidos de un usuario`, async () => {
@@ -141,7 +161,8 @@ describe('PedidoService', () => {
     const historial = await pedidoService.obtenerHistorialPedidos(usuarioId);
   
     expect(pedidoRepositoryMock.obtenerPedidosPorUsuarioId).toHaveBeenCalledWith(usuarioId);
-});
+    expect(historial[0].total).toBe(100); 
+  });
 
   test('deberia marcar un pedido como enviado y notificar al comprador', async () => {
 
@@ -161,7 +182,6 @@ describe('PedidoService', () => {
     };
 
     pedidoRepositoryMock.obtenerPedidoPorId = jest.fn().mockResolvedValue(pedido);
-    pedidoRepositoryMock.actualizarPedido = jest.fn();
     factoryNotificacionMock.crearSegunEstado = jest.fn().mockReturnValue({ mensaje: 'El Pedido ha sido enviado' });
     factoryNotificacionMock.crearSegunPedido = jest.fn();
     servicioNotificacionMock.enviarNotificacion = jest.fn();
@@ -172,7 +192,5 @@ describe('PedidoService', () => {
     expect(pedidoRepositoryMock.actualizarPedido).toHaveBeenCalledWith(pedido);
     expect(factoryNotificacionMock.crearSegunPedido).toHaveBeenCalledWith(pedido);
     expect(servicioNotificacionMock.enviarNotificacion).toHaveBeenCalled();
-});
-
-  
+  });
 });

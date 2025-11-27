@@ -82,7 +82,7 @@ export class ProductoRepository {
         return IdsDeProductos;
     }
 
-    // Métodos optimizados para operaciones en lote
+
     async obtenerProductosPorIds(ids) {
         return await this.model.find({ _id: { $in: ids } });
     }
