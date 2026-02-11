@@ -1,3 +1,18 @@
+# Full Stack E-commerce - Tienda Online
+
+Aplicación integral de comercio electrónico que permite gestionar el ciclo completo de una compra, desde la selección de productos hasta la confirmación del pedido.
+
+## 💻 Stack Tecnológico
+* **Frontend:** React (Client-Side Rendering).
+* **Backend:** Node.js con Express.
+* **Base de Datos:** MongoDB (NoSQL).
+
+## ⚙️ Funcionalidades
+* **Gestión de Carrito:** Persistencia de productos seleccionados y cálculo de totales.
+* **Flujo de Pedidos:** Funcionalidades para realizar, cancelar y realizar el seguimiento de envíos.
+* **Mocks de Datos:** Usuarios y catálogo de productos pre-cargados para pruebas de funcionalidad.
+* **Arquitectura:** Organización del código siguiendo el patrón de arquitectura en capas.
+
 Este repositorio es la base para el Trabajo Práctico de la materia **Desarrollo de Software (DDS)** de la carrera **Ingeniería en Sistemas de Información** de la **UTN FRBA**. Se trata de un **monorepo** que integra una aplicación frontend con Create React App y un backend con Express, facilitando el desarrollo y la gestión de ambos proyectos en un único entorno.
 
 ## Enunciado del proyecto
